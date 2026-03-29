@@ -1,0 +1,60 @@
+================================================================================
+DATE:        2026-03-29
+CONTRIBUTOR: Andrew Lim
+================================================================================
+
+SUMMARY
+-------
+Built the initial web scraper for Stanford's dining hall menu site:
+  https://rdeapps.stanford.edu/dininghallmenu/
+
+The scraper fetches today's menu for every dining hall and meal period,
+then writes the result to:
+  scraper/data/menu_YYYY-MM-DD.json
+
+Output structure:
+  {
+    "2026-03-29": {
+      "Arrillaga Family Dining Commons": {
+        "Lunch": {
+          "Items": ["Chicken & Waffles with Apple Syrup", "Grilled Chicken", ...]
+        }
+      }
+    }
+  }
+
+
+ISSUES ENCOUNTERED
+------------------
+1. User-Agent blocking
+   The server silently returns a blank 25 KB page shell for any request
+   without a browser-like User-Agent — no error, just HTTP 200 with an
+   empty menu area. Fix: set a Chrome User-Agent on the requests.Session.
+
+2. Wrong POST field names
+   ASP.NET WebForms POSTs use the `name` attribute (ctl00$MainContent$...)
+   not the `id` attribute (MainContent_...). Using id-style keys caused the
+   server to ignore all dropdown selections and return the default blank page.
+
+3. Date dropdown text includes day-of-week suffix
+   Option text is "3/29/2026 - Sunday", not "3/29/2026", so exact-string
+   matching never found today's option. Fallback to first non-empty option
+   value works correctly since today is always the first date listed.
+
+4. No section/station groupings in the HTML
+   Assumed the site grouped dishes under station headers (Entrees, Salad Bar).
+   In reality the menu is a flat <ul> — the .clsSectionName class is only
+   used for the "Ingredients:" label inside each dish. All dishes now go
+   under a single "Items" key.
+
+5. Dish name tag is <h3>, not <span>
+   Assumed <span class="clsLabel_Name">. Actual HTML is <h3 class="clsLabel_Name">.
+
+
+NEXT STEPS
+----------
+- Add allergens per dish (HTML has <span class="clsLabel_Allergens"> on each item)
+- Filter out non-dish placeholder entries (e.g. "Assorted Allergy-Friendly Items")
+- Set up daily cron job at 8am (TODO: add cron config once deployed)
+- Integrate scraper output with PostgreSQL schema (Week 1 milestone)
+================================================================================

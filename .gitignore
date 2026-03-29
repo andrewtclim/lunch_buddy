@@ -1,0 +1,17 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.env
+
+# Conda / virtualenv
+.conda/
+env/
+venv/
+
+# Scraped output — generated daily, not source-controlled
+scraper/data/
+data/
+
+# macOS
+.DS_Store
