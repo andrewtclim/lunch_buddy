@@ -1,6 +1,7 @@
 import requests
 from bs4 import BeautifulSoup
 from datetime import date
+from google.cloud import storage
 import json
 import os
 
@@ -232,41 +233,32 @@ def scrape_all_menus():
     return output
 
 
-def save_menu(data, output_dir="."):
+def upload_menu(data, bucket_name="stanford-dining-menus"):
     """
-    Serialise the scraped menu dict to a JSON file named menu_YYYY-MM-DD.json.
-    output_dir defaults to the current directory but can be overridden (e.g. for Docker volumes).
-    Returns the path of the file written.
+    Serialise the menu dict to JSON and upload directly to GCS.
+    No local file is written — the JSON goes straight from memory to the bucket.
     """
-    today_str = date.today().strftime("%Y-%m-%d")          # e.g. "2026-03-29"
-    filename = f"menu_{today_str}.json"
-    # join dir + filename safely on any OS
-    filepath = os.path.join(output_dir, filename)
+    today_str = date.today().strftime("%Y-%m-%d")
+    blob_name = f"menu_{today_str}.json"
 
-    # create output dir if it doesn't exist yet
-    os.makedirs(output_dir, exist_ok=True)
+    client = storage.Client()
+    bucket = client.bucket(bucket_name)
+    blob = bucket.blob(blob_name)
 
-    with open(filepath, "w", encoding="utf-8") as f:
-        # indent=2 for readable output; ensure_ascii=False preserves special
-        # chars in dish names
-        json.dump(data, f, indent=2, ensure_ascii=False)
+    # Upload JSON string directly — no intermediate file
+    blob.upload_from_string(
+        json.dumps(data, indent=2, ensure_ascii=False),
+        content_type="application/json",
+    )
 
-    print(f"Saved: {filepath}")
-    return filepath
+    print(f"Uploaded to gs://{bucket_name}/{blob_name}")
 
 
 if __name__ == "__main__":
-    # Entry point — run directly or via cron: `python scraper/menu_scraper.py`
-    # Output always lands in scraper/data/ regardless of working directory
-
     print(f"Scraping Stanford dining menus for {date.today().isoformat()} ...")
 
     # fetch and parse all halls + meal periods
     menu_data = scrape_all_menus()
-
-    # Save relative to this script's location so output is always scraper/data/,
-    # regardless of which directory the script is invoked from
-    script_dir = os.path.dirname(os.path.abspath(__file__))
-    save_menu(menu_data, output_dir=os.path.join(script_dir, "data"))
+    upload_menu(menu_data)
 
     print("Done.")

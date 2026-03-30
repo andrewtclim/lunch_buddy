@@ -1,0 +1,42 @@
+name: Daily Menu Scrape
+
+on:
+  schedule:
+    # 8:00 AM Pacific = 15:00 UTC (during daylight saving time)
+    - cron: "0 15 * * *"
+  # Lets you manually trigger from the Actions tab for testing
+  workflow_dispatch:
+  # Remove this once you've confirmed everything works
+  push:
+    branches:
+      - atl_dining_menu_scrapper
+
+jobs:
+  scrape:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Check out your repo so the runner has your code
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      # Install Python
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      # Install your scraper's dependencies
+      - name: Install dependencies
+        run: pip install requests beautifulsoup4 google-cloud-storage
+
+      # Write the GCS service account key to a temp file.
+      # The secret is stored as a base64-encoded string in GitHub.
+      - name: Authenticate to Google Cloud
+        run: |
+          echo "${{ secrets.GCP_SA_KEY }}" | base64 --decode > /tmp/gcp-key.json
+          echo "GOOGLE_APPLICATION_CREDENTIALS=/tmp/gcp-key.json" >> $GITHUB_ENV
+
+      # Run the scraper
+      - name: Run scraper
+        run: python scraper/menu_scraper.py
