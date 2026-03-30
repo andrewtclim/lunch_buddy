@@ -77,10 +77,10 @@ CHANGES (2026-03-29 — Lynn)
 - Replaced flat "Items" list with per-dish dict keyed by dish name
 - Added per-dish fields: ingredients, allergens, trace_allergens,
   description, mindful, gluten_free, vegetarian, vegan, halal, kosher
+- Save output directly to GCP bucket, executed at 8am daily via GitHub actions
 
 NEXT STEPS
 ----------
 - Filter out non-dish placeholder entries (e.g. "Assorted Allergy-Friendly Items")
-- Set up daily cloud run at 8am
 - Integrate scraper output with PostgreSQL schema (Week 1 milestone)
 ================================================================================

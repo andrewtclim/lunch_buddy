@@ -6,10 +6,6 @@ on:
     - cron: "0 15 * * *"
   # Lets you manually trigger from the Actions tab for testing
   workflow_dispatch:
-  # Remove this once you've confirmed everything works
-  push:
-    branches:
-      - atl_dining_menu_scrapper
 
 jobs:
   scrape:
