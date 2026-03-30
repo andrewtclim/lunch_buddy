@@ -14,28 +14,36 @@ def get_page_state():
       - Valid dropdown options for dining halls, meal periods, and today's date
     Returns: (session, hidden_tokens, dining_halls, meal_periods, today_value)
     """
-    session = requests.Session()                            # persist cookies across requests (ASP.NET needs this)
-    # Mimic a real browser — the server silently returns a blank page for non-browser user-agents
+    session = requests.Session(
+    )                            # persist cookies across requests (ASP.NET needs this)
+    # Mimic a real browser — the server silently returns a blank page for
+    # non-browser user-agents
     session.headers.update({
         "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
                       "AppleWebKit/537.36 (KHTML, like Gecko) "
                       "Chrome/124.0.0.0 Safari/537.36"
     })
-    response = session.get(BASE_URL)                        # initial GET — loads page with dropdowns pre-populated
+    # initial GET — loads page with dropdowns pre-populated
+    response = session.get(BASE_URL)
     # crash early if the site returns 4xx/5xx
     response.raise_for_status()
 
     # parse raw HTML into a queryable tree
     soup = BeautifulSoup(response.text, "html.parser")
 
-    # ASP.NET embeds these hidden fields on every page; the server rejects POSTs that don't echo them back
+    # ASP.NET embeds these hidden fields on every page; the server rejects
+    # POSTs that don't echo them back
     hidden = {
-        "__VIEWSTATE":          soup.find("input", {"id": "__VIEWSTATE"})["value"],
-        "__VIEWSTATEGENERATOR": soup.find("input", {"id": "__VIEWSTATEGENERATOR"})["value"],
-        "__EVENTVALIDATION":    soup.find("input", {"id": "__EVENTVALIDATION"})["value"],
-    }
+        "__VIEWSTATE": soup.find(
+            "input", {
+                "id": "__VIEWSTATE"})["value"], "__VIEWSTATEGENERATOR": soup.find(
+            "input", {
+                "id": "__VIEWSTATEGENERATOR"})["value"], "__EVENTVALIDATION": soup.find(
+            "input", {
+                "id": "__EVENTVALIDATION"})["value"], }
 
-    # Dining hall dropdown → {display name: option value}, e.g. {"Arrillaga Family Dining Commons": "01"}
+    # Dining hall dropdown → {display name: option value}, e.g. {"Arrillaga
+    # Family Dining Commons": "01"}
     loc_select = soup.find("select", {"id": "MainContent_lstLocations"})
     dining_halls = {
         opt.text.strip(): opt["value"]
@@ -52,15 +60,17 @@ def get_page_state():
         if opt.get("value")
     }
 
-    # Find today's date value in the dropdown — format is "3/29/2026" (no zero-padding)
-    today     = date.today()
+    # Find today's date value in the dropdown — format is "3/29/2026" (no
+    # zero-padding)
+    today = date.today()
     today_str = f"{today.month}/{today.day}/{today.year}"
-    day_select   = soup.find("select", {"id": "MainContent_lstDay"})
-    today_option = day_select.find("option", string=lambda t: t and t.strip() == today_str)
-    # If today isn't in the list, fall back to the first option that has a non-empty value
-    today_value  = today_option["value"] if today_option else next(
-        opt["value"] for opt in day_select.find_all("option") if opt.get("value")
-    )
+    day_select = soup.find("select", {"id": "MainContent_lstDay"})
+    today_option = day_select.find(
+        "option", string=lambda t: t and t.strip() == today_str)
+    # If today isn't in the list, fall back to the first option that has a
+    # non-empty value
+    today_value = today_option["value"] if today_option else next(
+        opt["value"] for opt in day_select.find_all("option") if opt.get("value"))
 
     return session, hidden, dining_halls, meal_periods, today_value
 
@@ -74,15 +84,16 @@ def fetch_menu(session, hidden, location_value, meal_value, day_value):
     payload = {
         # echo back the three required ASP.NET tokens
         **hidden,
-        # ASP.NET forms POST using the `name` attribute (ctl00$MainContent$...), not the `id`
-        "ctl00$MainContent$lstLocations":  location_value,  # selected dining hall
-        "ctl00$MainContent$lstMealType":   meal_value,      # selected meal period
-        "ctl00$MainContent$lstDay":        day_value,       # selected date
+        # ASP.NET forms POST using the `name` attribute
+        # (ctl00$MainContent$...), not the `id`
+        "ctl00$MainContent$lstLocations": location_value,  # selected dining hall
+        "ctl00$MainContent$lstMealType": meal_value,      # selected meal period
+        "ctl00$MainContent$lstDay": day_value,       # selected date
         # Simulate clicking the "Refresh" submit button — a real control the server trusts.
         # Using __doPostBack with a custom event target fails __EVENTVALIDATION; the button does not.
-        "__EVENTTARGET":                   "",              # empty = submitted via button, not __doPostBack
-        "__EVENTARGUMENT":                 "",
-        "ctl00$MainContent$btnRefresh":    "Refresh",      # the button's name + value, as a browser would send
+        "__EVENTTARGET": "",              # empty = submitted via button, not __doPostBack
+        "__EVENTARGUMENT": "",
+        "ctl00$MainContent$btnRefresh": "Refresh",      # the button's name + value, as a browser would send
     }
 
     # POST to same URL — session keeps cookies alive
@@ -95,23 +106,89 @@ def fetch_menu(session, hidden, location_value, meal_value, day_value):
 
 def parse_menu(soup):
     """
-    Extract dish names from a menu response page.
-    The site renders all dishes as a flat <ul> of <li class="clsMenuItem"> elements —
-    there are no section/station groupings in the HTML, so all dishes go under "Items".
-    Returns: {"Items": [dish_name, ...]} or {} if the meal period has no dishes.
+    Extract dishes with full metadata from a menu response page.
+    Each <li class="clsMenuItem"> contains the dish name, ingredients,
+    allergens, trace allergens, and dietary icons (GF, Vegan, etc.).
+    Returns: {dish_name: {ingredients, allergens, ...}, ...} or {} if empty.
     """
-    dishes = []
+    dishes = {}
 
-    for item in soup.find_all("li", class_="clsMenuItem"):  # each <li> is one dish
-        # Dish name lives in <h3 class="clsLabel_Name">
+    for item in soup.find_all("li", class_="clsMenuItem"):
+
+        # ── Dish name ──
         name_tag = item.find("h3", class_="clsLabel_Name")
         if not name_tag:
             continue
         dish_name = name_tag.get_text(strip=True)
-        if dish_name:
-            dishes.append(dish_name)
+        if not dish_name:
+            continue
 
-    return {"Items": dishes} if dishes else {}              # empty dict signals "no menu for this meal"
+        # ── Ingredients ──
+        # The <span class="clsLabel_Ingredients"> contains a child
+        # <span class="clsSectionName">Ingredients:</span> followed by the
+        # actual ingredient text.  get_text() grabs everything; we strip
+        # the leading label.
+        ingredients = ""
+        ing_tag = item.find("span", class_="clsLabel_Ingredients")
+        if ing_tag:
+            raw = ing_tag.get_text(strip=True)
+            # remove the "Ingredients:" prefix the site bakes into the span
+            ingredients = raw.replace("Ingredients:", "", 1).strip()
+
+        # ── Allergens ──
+        allergens = ""
+        alg_tag = item.find("span", class_="clsLabel_Allergens")
+        if alg_tag:
+            raw = alg_tag.get_text(strip=True)
+            allergens = raw.replace("Allergens:", "", 1).strip()
+
+        # ── Trace allergens ("Made on shared equipment with …") ──
+        trace_allergens = ""
+        trace_tag = item.find("span", class_="clsLabel_TraceAllergens")
+        if trace_tag:
+            raw = trace_tag.get_text(strip=True)
+            trace_allergens = raw.replace(
+                "Made on shared equipment with", "", 1).strip()
+
+        # ── Dietary flags ──
+        # The site renders diet icons as <img alt="Gluten Free">, etc.
+        # Collect all unique alt texts into a set, then store as booleans.
+        icon_alts = {
+            img["alt"]
+            for img in item.find_all("img", class_="clsLabel_IconImage")
+            if img.get("alt")
+        }
+
+        # ── Description (often empty, but populated for some dishes) ──
+        description = ""
+        desc_tag = item.find("span", class_="clsLabel_Description")
+        if desc_tag:
+            description = desc_tag.get_text(strip=True)
+
+        # ── Mindful designation (Stanford's nutrition program) ──
+        mindful = ""
+        mindful_tag = item.find("span", class_="clsMindful")
+        if mindful_tag:
+            mindful = mindful_tag.get_text(strip=True)
+
+        is_vegan = "Vegan" in icon_alts
+        is_vegetarian = "Vegetarian" in icon_alts or is_vegan
+
+        dishes[dish_name] = {
+            "description": description,
+            "ingredients": ingredients,
+            "allergens": allergens,
+            "trace_allergens": trace_allergens,
+            "gluten_free": "Gluten Free" in icon_alts,
+            "vegetarian": is_vegetarian,
+            "vegan": is_vegan,
+            "kosher": "Kosher" in icon_alts,
+            "halal": "Halal" in icon_alts,
+            "mindful": mindful,
+
+        }
+
+    return dishes
 
 
 def scrape_all_menus():
@@ -148,7 +225,8 @@ def scrape_all_menus():
                 output[today_str][hall_name][meal_name] = sections
 
         if not output[today_str][hall_name]:
-            # Hall has no meals today (closed or no data) — remove it to keep output clean
+            # Hall has no meals today (closed or no data) — remove it to keep
+            # output clean
             del output[today_str][hall_name]
 
     return output
@@ -169,7 +247,8 @@ def save_menu(data, output_dir="."):
     os.makedirs(output_dir, exist_ok=True)
 
     with open(filepath, "w", encoding="utf-8") as f:
-        # indent=2 for readable output; ensure_ascii=False preserves special chars in dish names
+        # indent=2 for readable output; ensure_ascii=False preserves special
+        # chars in dish names
         json.dump(data, f, indent=2, ensure_ascii=False)
 
     print(f"Saved: {filepath}")

@@ -1,6 +1,6 @@
 ================================================================================
 DATE:        2026-03-29
-CONTRIBUTOR: Andrew Lim
+CONTRIBUTOR: Andrew Lim, Lynn Tong
 ================================================================================
 
 SUMMARY
@@ -17,7 +17,18 @@ Output structure:
     "2026-03-29": {
       "Arrillaga Family Dining Commons": {
         "Lunch": {
-          "Items": ["Chicken & Waffles with Apple Syrup", "Grilled Chicken", ...]
+          "Chicken & Waffles with Apple Syrup": {
+            "description": "",
+            "ingredients": "chicken breast, waffle, apple cider syrup ...",
+            "allergens": "EGG, MILK, SOY, WHEAT",
+            "trace_allergens": "COCONUT, FISH, PEANUTS, ...",
+            "gluten_free": false,
+            "vegetarian": false,
+            "vegan": false,
+            "halal": false,
+            "kosher": false,
+            "mindful": ""
+          }
         }
       }
     }
@@ -50,11 +61,26 @@ ISSUES ENCOUNTERED
 5. Dish name tag is <h3>, not <span>
    Assumed <span class="clsLabel_Name">. Actual HTML is <h3 class="clsLabel_Name">.
 
+6. Vegan items not tagged vegetarian
+   The site assigns Vegan and Vegetarian icons independently — some dishes
+   are marked Vegan but not Vegetarian. Since vegan is a strict subset of
+   vegetarian, the scraper now forces vegetarian=true whenever vegan=true.
+
+7. Duplicate dish names within a single meal
+   Some meals list the same dish name twice (e.g. "Chef's Choice Breakfast
+   Special"). Because dishes are now keyed by name, the second occurrence
+   silently overwrites the first. Accepted for now since duplicates appear
+   to carry identical metadata.
+  
+CHANGES (2026-03-29 — Lynn)
+------------------------------
+- Replaced flat "Items" list with per-dish dict keyed by dish name
+- Added per-dish fields: ingredients, allergens, trace_allergens,
+  description, mindful, gluten_free, vegetarian, vegan, halal, kosher
 
 NEXT STEPS
 ----------
-- Add allergens per dish (HTML has <span class="clsLabel_Allergens"> on each item)
 - Filter out non-dish placeholder entries (e.g. "Assorted Allergy-Friendly Items")
-- Set up daily cron job at 8am (TODO: add cron config once deployed)
+- Set up daily cloud run at 8am
 - Integrate scraper output with PostgreSQL schema (Week 1 milestone)
 ================================================================================
