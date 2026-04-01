@@ -1,9 +1,9 @@
-# 🥗 Lunch Buddy
+# Lunch Buddy
 
 > AI-powered lunch recommendations for Stanford students — right place, right meal, right now.
 
 **Team:** Lynn Tong · Andrew Lim · Patrick Crouch  
-**Course:** MLOps — Spring 2026
+**Course:** MLOps Spring 2026
 
 ---
 
