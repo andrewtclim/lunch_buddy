@@ -91,7 +91,7 @@ pip install -r requirements.txt
    From `fastapi/`:
 
    ```bash
-   cp .env.example .env
+   touch .env
    ```
 
    Then open **`fastapi/.env`** (a single file in the `fastapi/` folder — not a directory) and paste the following, or merge these lines with your own values:
