@@ -142,12 +142,12 @@ docker tag lunch-buddy-api:latest YOUR_DOCKERHUB_USERNAME/lunch-buddy-api:latest
 docker push YOUR_DOCKERHUB_USERNAME/lunch-buddy-api:latest
 ```
 
-Run the container (replace placeholders). This passes MLflow settings, mounts **Application Default Credentials** from your machine, sets the GCP project, and maps host port **8000** to the app on **8080**:
+Run the container. Values below match **`fastapi/.env`** / local setup: MLflow at `http://35.232.122.64:5000`, model `models:/dummy_model/1`, and GCP project `lunch-buddy-491800` (same as `GOOGLE_CLOUD_PROJECT` in the local steps). Replace **`YOUR_DOCKERHUB_USERNAME`** with your Docker Hub name. This mounts **Application Default Credentials** and maps host **8000** → container **8080**:
 
 ```bash
 docker run --rm -p 8000:8080 \
-  -e GOOGLE_CLOUD_PROJECT=YOUR_GCP_PROJECT_ID \
-  -e MLFLOW_TRACKING_URI=http://YOUR_MLFLOW_HOST:5000 \
+  -e GOOGLE_CLOUD_PROJECT=lunch-buddy-491800 \
+  -e MLFLOW_TRACKING_URI=http://35.232.122.64:5000 \
   -e MLFLOW_MODEL_URI=models:/dummy_model/1 \
   -e USE_STUB_MODEL=0 \
   -e GOOGLE_APPLICATION_CREDENTIALS=/gcloud/adc.json \
