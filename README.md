@@ -87,8 +87,8 @@ pip install -r requirements.txt
 ```
 
 1. Copy `fastapi/.env` and set:
-   - `MLFLOW_TRACKING_URI` — your team MLflow server (e.g. `http://<VM_IP>:5000`)
-   - `MLFLOW_MODEL_URI` — e.g. `models:/dummy_model/1` or `models:/dummy_model/Production`
+   - `MLFLOW_TRACKING_URI` — `http://35.232.122.64:5000`
+   - `MLFLOW_MODEL_URI` — `models:/dummy_model/1`
    - `USE_STUB_MODEL=0` to load from the registry (set to `1` only for layout tests without MLflow/GCS)
 
 2. Authenticate for GCS (artifacts) and set the project the libraries should use:
@@ -132,7 +132,7 @@ Run the container (replace placeholders). This passes MLflow settings, mounts **
 ```bash
 docker run --rm -p 8000:8080 \
   -e GOOGLE_CLOUD_PROJECT=YOUR_GCP_PROJECT_ID \
-  -e MLFLOW_TRACKING_URI=http://http://35.232.122.64:5000 \
+  -e MLFLOW_TRACKING_URI=http://35.232.122.64:5000 \
   -e MLFLOW_MODEL_URI=models:/dummy_model/1 \
   -e USE_STUB_MODEL=0 \
   -e GOOGLE_APPLICATION_CREDENTIALS=/gcloud/adc.json \
