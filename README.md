@@ -57,9 +57,139 @@ An LLM agent surfaces a ranked top-3 recommendation, personalized to you and upd
 
 ---
 
-## Getting Started
+## Model serving API (FastAPI + MLflow)
 
-*Setup instructions coming soon.*
+The milestone API loads a **pyfunc** model from the **MLflow Model Registry** at startup and exposes JSON endpoints for health checks and predictions.
+
+### Where the endpoints are defined
+
+All HTTP routes (`/`, `/health`, `/predict`) live in:
+
+- **`fastapi/main.py`**
+
+### Prerequisites
+
+- **Python 3.11+** recommended (matches the Docker image).
+- **MLflow tracking server** reachable from your machine (team VM URL in `.env`).
+- **Model artifacts in GCS**: loading the real model requires Google credentials that can read the artifact bucket, plus a **GCP project ID** for the client libraries.
+
+---
+
+### Run the API locally (without Docker)
+
+From the repo root:
+
+```bash
+cd fastapi
+python -m venv .venv
+source .venv/bin/activate   # Windows: .venv\Scripts\activate
+pip install -r requirements.txt
+```
+
+1. Copy `fastapi/.env` and set:
+   - `MLFLOW_TRACKING_URI` — your team MLflow server (e.g. `http://<VM_IP>:5000`)
+   - `MLFLOW_MODEL_URI` — e.g. `models:/dummy_model/1` or `models:/dummy_model/Production`
+   - `USE_STUB_MODEL=0` to load from the registry (set to `1` only for layout tests without MLflow/GCS)
+
+2. Authenticate for GCS (artifacts) and set the project the libraries should use:
+
+   ```bash
+   gcloud auth application-default login
+   gcloud auth application-default set-quota-project lunch-buddy-491800
+   export GOOGLE_CLOUD_PROJECT=lunch-buddy-491800
+   ```
+
+   Your Google account also needs **Storage Object Viewer** (or equivalent) on the MLflow artifact bucket.
+
+3. Start the server:
+
+   ```bash
+   uvicorn main:app --reload --host 0.0.0.0 --port 8000
+   ```
+
+4. Open interactive docs: [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs)
+
+---
+
+### Build and run with Docker
+
+Build from the **`fastapi/`** directory (where the `Dockerfile` lives):
+
+```bash
+cd fastapi
+docker build -t lunch-buddy-api:latest .
+```
+
+**Tag and push** to Docker Hub using **your** Docker Hub username (must match the image name you submit and screenshot for grading):
+
+```bash
+docker tag lunch-buddy-api:latest YOUR_DOCKERHUB_USERNAME/lunch-buddy-api:latest
+docker push YOUR_DOCKERHUB_USERNAME/lunch-buddy-api:latest
+```
+
+Run the container (replace placeholders). This passes MLflow settings, mounts **Application Default Credentials** from your machine, sets the GCP project, and maps host port **8000** to the app on **8080**:
+
+```bash
+docker run --rm -p 8000:8080 \
+  -e GOOGLE_CLOUD_PROJECT=YOUR_GCP_PROJECT_ID \
+  -e MLFLOW_TRACKING_URI=http://YOUR_MLFLOW_HOST:5000 \
+  -e MLFLOW_MODEL_URI=models:/dummy_model/1 \
+  -e USE_STUB_MODEL=0 \
+  -e GOOGLE_APPLICATION_CREDENTIALS=/gcloud/adc.json \
+  -v "$HOME/.config/gcloud/application_default_credentials.json:/gcloud/adc.json:ro" \
+  YOUR_DOCKERHUB_USERNAME/lunch-buddy-api:latest
+```
+
+Then visit [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs).
+
+**Docker image name for the rubric:** use the same name in README, `docker run`, and Docker Hub (e.g. `YOUR_DOCKERHUB_USERNAME/lunch-buddy-api:latest`). Replace `YOUR_DOCKERHUB_USERNAME` with your account name after `docker login`.
+
+---
+
+### Example: `POST /predict`
+
+**Request (JSON body)** — fields match `PredictRequest` in `fastapi/main.py`:
+
+| Field | Type | Required |
+|-------|------|----------|
+| `preferences` | array of strings | yes |
+| `constraints` | array of strings | no (default `[]`) |
+| `user_id` | string | no |
+
+Example:
+
+```json
+{
+  "preferences": ["vegetarian", "quick"],
+  "constraints": ["no nuts"],
+  "user_id": "student-01"
+}
+```
+
+**Response (200)** — shape matches `PredictResponse`:
+
+```json
+{
+  "suggestions": ["sandwich", "salad"],
+  "rationale": "dummy"
+}
+```
+
+(Exact strings depend on the registered model; the dummy model returns fixed suggestions.)
+
+**curl example:**
+
+```bash
+curl -s -X POST "http://127.0.0.1:8000/predict" \
+  -H "Content-Type: application/json" \
+  -d '{"preferences": ["vegetarian"], "constraints": []}'
+```
+
+---
+
+## Getting Started (full app)
+
+*Broader Lunch Buddy app setup (database, scraper, LLM) — TBD.*
 
 ---
 
