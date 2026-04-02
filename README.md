@@ -132,7 +132,7 @@ Run the container (replace placeholders). This passes MLflow settings, mounts **
 ```bash
 docker run --rm -p 8000:8080 \
   -e GOOGLE_CLOUD_PROJECT=YOUR_GCP_PROJECT_ID \
-  -e MLFLOW_TRACKING_URI=http://YOUR_MLFLOW_HOST:5000 \
+  -e MLFLOW_TRACKING_URI=http://http://35.232.122.64:5000 \
   -e MLFLOW_MODEL_URI=models:/dummy_model/1 \
   -e USE_STUB_MODEL=0 \
   -e GOOGLE_APPLICATION_CREDENTIALS=/gcloud/adc.json \
