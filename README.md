@@ -3,7 +3,7 @@
 > AI-powered lunch recommendations for Stanford students — right place, right meal, right now.
 
 **Team:** Lynn Tong · Andrew Lim · Patrick Crouch  
-**Course:** MLOps Spring 2026
+**Course:** MLOps — Spring 2026
 
 ---
 
@@ -94,7 +94,7 @@ pip install -r requirements.txt
    touch .env
    ```
 
-   Then open **`fastapi/.env`** (a single file in the `fastapi/` folder — not a directory) and paste the following, or merge these lines with your own values:
+   Then open **`fastapi/.env`** and paste the following, or merge these lines with your own values:
 
    ```env
    MLFLOW_TRACKING_URI=http://35.232.122.64:5000
@@ -128,21 +128,31 @@ pip install -r requirements.txt
 
 ### Build and run with Docker
 
-Build from the **`fastapi/`** directory (where the `Dockerfile` lives):
+1. **Start Docker and stay signed in**  
+   - **Open Docker Desktop** (macOS / Windows) or ensure the Docker daemon is running (Linux). Wait until the UI shows the engine is **running** — `docker build` and `docker run` need this.  
+   - **Sign in to Docker Hub** from a terminal (required for **`docker push`**; optional if you only build and run locally):
+
+     ```bash
+     docker login
+     ```
+
+   - Use your existing Docker Hub username and password (or access token). You should see “Login Succeeded”.
+
+2. **Build the image** from the **`fastapi/`** directory (where the `Dockerfile` lives):
 
 ```bash
 cd fastapi
 docker build -t lunch-buddy-api:latest .
 ```
 
-**Tag and push** to Docker Hub using **your** Docker Hub username (must match the image name you submit and screenshot for grading):
+3. **Tag and push** to Docker Hub using **your** Docker Hub username (must match the image name you submit and screenshot for grading). You must be logged in (`docker login`) for `docker push`:
 
 ```bash
 docker tag lunch-buddy-api:latest YOUR_DOCKERHUB_USERNAME/lunch-buddy-api:latest
 docker push YOUR_DOCKERHUB_USERNAME/lunch-buddy-api:latest
 ```
 
-Run the container. Values below match **`fastapi/.env`** / local setup: MLflow at `http://35.232.122.64:5000`, model `models:/dummy_model/1`, and GCP project `lunch-buddy-491800` (same as `GOOGLE_CLOUD_PROJECT` in the local steps). Replace **`YOUR_DOCKERHUB_USERNAME`** with your Docker Hub name. This mounts **Application Default Credentials** and maps host **8000** → container **8080**:
+4. **Run the container.** Keep Docker running. Values below match **`fastapi/.env`** / local setup: MLflow at `http://35.232.122.64:5000`, model `models:/dummy_model/1`, and GCP project `lunch-buddy-491800` (same as `GOOGLE_CLOUD_PROJECT` in the local steps). Replace **`YOUR_DOCKERHUB_USERNAME`** with your Docker Hub name. This mounts **Application Default Credentials** and maps host **8000** → container **8080**:
 
 ```bash
 docker run --rm -p 8000:8080 \
