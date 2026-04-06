@@ -22,7 +22,7 @@ def get_menu_from_gcs():
 
 def flatten_menu_data(menu_data, target_date):
     """Converts nested JSON into a flat list of dicts."""
-    flattened = []
+    flattened = {}
     daily_menu = menu_data.get(target_date, {})
 
     for dining_hall, meals in daily_menu.items():
@@ -31,24 +31,17 @@ def flatten_menu_data(menu_data, target_date):
                 # Construct the pure culinary text for the embedding model
                 search_text = f"Dish: {dish_name}. Ingredients: {details.get('ingredients', '')}"
 
-                flattened.append(
-                    {
-                        "dish_name": dish_name,
-                        "dining_hall": dining_hall,
-                        "meal_time": meal_time,
-                        "search_text": search_text,
-                        "tags": [
-                            tag for tag in [
-                                "vegan",
-                                "vegetarian",
-                                "halal"] if details.get(tag)],
-                        "allergens": [
-                            a.strip().lower() for a in details.get(
-                                "allergens",
-                                "").split(",")] if details.get("allergens") else [],
-                        "ingredients": details.get(
-                            "ingredients",
-                            "")})
+                unique_key = (dish_name, dining_hall, meal_time)
+
+                flattened[unique_key] = {
+                    "dish_name": dish_name,
+                    "dining_hall": dining_hall,
+                    "meal_time": meal_time,
+                    "search_text": search_text,
+                    "tags": [tag for tag in ["vegan", "vegetarian", "halal"] if details.get(tag)],
+                    "allergens": [a.strip().lower() for a in details.get("allergens", "").split(",")] if details.get("allergens") else [],
+                    "ingredients": details.get("ingredients", "")
+                }
     return flattened
 
 
