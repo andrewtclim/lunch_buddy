@@ -42,7 +42,7 @@ def flatten_menu_data(menu_data, target_date):
                     "allergens": [a.strip().lower() for a in details.get("allergens", "").split(",")] if details.get("allergens") else [],
                     "ingredients": details.get("ingredients", "")
                 }
-    return flattened
+    return list(flattened.values())
 
 
 def get_embeddings_in_batches(items, client, batch_size=50):
