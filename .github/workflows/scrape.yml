@@ -35,16 +35,17 @@ jobs:
 
       # Step 4: Securely authenticate with Google Cloud
       - name: Authenticate to Google Cloud
-        uses: google-github-actions/auth@v2
-        with:
-          credentials_json: '${{ secrets.GCP_SA_KEY }}'
+        run: |
+          echo "${{ secrets.GCP_SA_KEY }}" | base64 --decode > /tmp/gcp-key.json
+          echo "GOOGLE_APPLICATION_CREDENTIALS=/tmp/gcp-key.json" >> $GITHUB_ENV
+
 
       # Step 5: Run the Scraper (Saves JSON to the Google Cloud Bucket)
       - name: Run Scraper
         env:
           PROJECT_ID: ${{ secrets.PROJECT_ID }}
           BUCKET_NAME: ${{ secrets.BUCKET_NAME }}
-        run: python scraper.py
+        run: python scraper/menu_scraper.py
 
       # Step 6: Run the AI Embedding & Database Upload
       - name: Ingest to Supabase
@@ -52,4 +53,4 @@ jobs:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
           PROJECT_ID: ${{ secrets.PROJECT_ID }}
           BUCKET_NAME: ${{ secrets.BUCKET_NAME }}
-        run: python ingest.py
+        run: python recommendations/menu_db_ingest.py
