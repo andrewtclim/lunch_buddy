@@ -10,7 +10,7 @@ on:
   # temp code to trigger on branch
   push:
     branches:
-      - your-test-branch-name  # CHANGE THIS to the actual name of your branch!
+      - feature/recommendations  # CHANGE THIS to the actual name of your branch!
 
 jobs:
   update-database:
