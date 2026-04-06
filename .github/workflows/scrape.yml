@@ -31,7 +31,7 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install google-genai google-cloud-storage psycopg2-binary
+          pip install google-genai google-cloud-storage psycopg2-binary requests beautifulsoup4
 
       # Step 4: Securely authenticate with Google Cloud
       - name: Authenticate to Google Cloud
