@@ -70,10 +70,10 @@ def upload_to_supabase(data_rows):
     cur = conn.cursor()
 
     upsert_query = """
-        INSERT INTO daily_menu
+        INSERT INTO daily_menu 
         (dish_name, dining_hall, meal_time, tags, allergens, ingredients, date_served, embedding)
         VALUES %s
-        ON CONFLICT (dish_name, dining_hall, date_served)
+        ON CONFLICT (dish_name, dining_hall, meal_time, date_served) 
         DO UPDATE SET embedding = EXCLUDED.embedding;
     """
 
