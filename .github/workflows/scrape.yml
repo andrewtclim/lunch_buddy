@@ -3,36 +3,53 @@ name: Daily Menu Scrape
 on:
   schedule:
     # 8:00 AM Pacific = 15:00 UTC (during daylight saving time)
-    - cron: "0 15 * * *"
+    - cron: "0 14 * * *"
   # Lets you manually trigger from the Actions tab for testing
   workflow_dispatch:
 
+  # temp code to trigger on branch
+  push:
+    branches:
+      - your-test-branch-name  # CHANGE THIS to the actual name of your branch!
+
 jobs:
-  scrape:
+  update-database:
     runs-on: ubuntu-latest
 
     steps:
-      # Check out your repo so the runner has your code
-      - name: Checkout repo
+      # Step 1: Get the code from the repository
+      - name: Checkout code
         uses: actions/checkout@v4
 
-      # Install Python
+      # Step 2: Install Python
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: "3.12"
+          python-version: '3.11' # Feel free to match this to your local version
 
-      # Install your scraper's dependencies
+      # Step 3: Install your libraries (psycopg2, google-genai, etc.)
       - name: Install dependencies
-        run: pip install requests beautifulsoup4 google-cloud-storage
-
-      # Write the GCS service account key to a temp file.
-      # The secret is stored as a base64-encoded string in GitHub.
-      - name: Authenticate to Google Cloud
         run: |
-          echo "${{ secrets.GCP_SA_KEY }}" | base64 --decode > /tmp/gcp-key.json
-          echo "GOOGLE_APPLICATION_CREDENTIALS=/tmp/gcp-key.json" >> $GITHUB_ENV
+          python -m pip install --upgrade pip
+          pip install google-genai google-cloud-storage psycopg2-binary
 
-      # Run the scraper
-      - name: Run scraper
-        run: python scraper/menu_scraper.py
+      # Step 4: Securely authenticate with Google Cloud
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: '${{ secrets.GCP_SA_KEY }}'
+
+      # Step 5: Run the Scraper (Saves JSON to the Google Cloud Bucket)
+      - name: Run Scraper
+        env:
+          PROJECT_ID: ${{ secrets.PROJECT_ID }}
+          BUCKET_NAME: ${{ secrets.BUCKET_NAME }}
+        run: python scraper.py
+
+      # Step 6: Run the AI Embedding & Database Upload
+      - name: Ingest to Supabase
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          PROJECT_ID: ${{ secrets.PROJECT_ID }}
+          BUCKET_NAME: ${{ secrets.BUCKET_NAME }}
+        run: python ingest.py
