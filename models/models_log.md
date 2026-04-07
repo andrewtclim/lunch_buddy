@@ -43,15 +43,17 @@ selected_at   -- timestamp
 ### Recommendation Flow
 ```
 1.  User opens app → POST /predict with user_id
-2.  Fetch user's preference_vector from users table
-3.  Cosine similarity query against today's daily_menu embeddings
+2.  Fetch user's preference_vector and allergens from users table
+3.  Cosine similarity query against today's daily_menu embeddings (top 10)
 4.  Allergen filter removes hard exclusions
-5.  Return top 3
-6.  User taps a choice → POST /select
-7.  Fetch chosen dish's embedding from daily_menu
-8.  Blend: new_vector = 0.85 × old + 0.15 × dish_vector
-9.  Write new_vector back to users table
-10. Log row to meal_selections
+5.  LLM #1 (Gemini Flash) generates top-3 recommendation with rationale
+6.  LLM #2 (Gemini Flash/Pro) verifies no allergen slippage or hallucinations
+7.  Return top 3 with rationale to user
+8.  User taps a choice → POST /select
+9.  Fetch chosen dish's embedding from daily_menu
+10. Blend: new_vector = 0.85 × old + 0.15 × dish_vector
+11. Write new_vector back to users table
+12. Log row to meal_selections
 ```
 
 ---
