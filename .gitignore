@@ -16,5 +16,10 @@ data/
 # Local Claude context — never commit
 CLAUDE.md
 
+# Generated experiment outputs — reproducible by running scripts
+models/experiments/*_results.json
+models/experiments/*.png
+mlflow.log
+
 # macOS
 .DS_Store
