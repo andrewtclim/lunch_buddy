@@ -1,0 +1,240 @@
+{
+  "signup_text": "I enjoy spicy and asian foods",
+  "allergens": [],
+  "days": [
+    {
+      "day": 1,
+      "date": "2026-03-29",
+      "recommendations": [
+        {
+          "dish_name": "Pork Vindaloo",
+          "dining_hall": "Florence Moore Dining",
+          "reason": "This is a spicy, classic Goan Indian dish, perfect for your preference."
+        },
+        {
+          "dish_name": "Creamy Butter Chicken",
+          "dining_hall": "Florence Moore Dining",
+          "reason": "A flavorful Indian curry with chili powder and aromatic spices that fits the Asian and spicy criteria."
+        },
+        {
+          "dish_name": "Curried Vegetables",
+          "dining_hall": "Florence Moore Dining",
+          "reason": "Features curry powder and cayenne pepper, providing both Asian flavors and a spicy kick."
+        }
+      ],
+      "chosen": "Creamy Butter Chicken",
+      "preference_summary_after": "Enjoys creamy Asian foods, and is open to exploring spicy options."
+    },
+    {
+      "day": 2,
+      "date": "2026-03-30",
+      "recommendations": [
+        {
+          "dish_name": "Butter Chicken",
+          "dining_hall": "Arrillaga Family Dining Commons",
+          "reason": "A creamy Indian dish with chili powder, fitting both creamy Asian and spicy preferences."
+        },
+        {
+          "dish_name": "Butter Vegetables",
+          "dining_hall": "Arrillaga Family Dining Commons",
+          "reason": "This creamy Indian dish with chili powder offers a flavorful creamy Asian and potentially spicy experience."
+        },
+        {
+          "dish_name": "Pancit Noodles",
+          "dining_hall": "Gerhard Casper Dining",
+          "reason": "Authentic Filipino noodles, offering a savory Asian option to explore."
+        }
+      ],
+      "chosen": "Pancit Noodles",
+      "preference_summary_after": "Prefers spicy Asian foods, including creamy Indian and Filipino noodle dishes."
+    },
+    {
+      "day": 3,
+      "date": "2026-03-31",
+      "recommendations": [
+        {
+          "dish_name": "Butter Chicken",
+          "dining_hall": "Arrillaga Family Dining Commons",
+          "reason": "Classic creamy Indian dish with chili powder, matching creamy Indian and spicy Asian preferences."
+        },
+        {
+          "dish_name": "Thai Red Curry Beef",
+          "dining_hall": "Arrillaga Family Dining Commons",
+          "reason": "Spicy Thai red curry with coconut, fitting spicy Asian foods and creamy preference."
+        },
+        {
+          "dish_name": "Seasoned Rice Noodles with Veggies",
+          "dining_hall": "Florence Moore Dining",
+          "reason": "Asian noodle dish with chili paste, aligning with spicy Asian foods and noodle preference."
+        }
+      ],
+      "chosen": "Seasoned Rice Noodles with Veggies",
+      "preference_summary_after": "Prefers spicy, creamy Asian and Indian dishes, especially noodles and chicken."
+    },
+    {
+      "day": 4,
+      "date": "2026-04-01",
+      "recommendations": [
+        {
+          "dish_name": "Butter Chicken",
+          "dining_hall": "Arrillaga Family Dining Commons",
+          "reason": "This Indian dish features creamy, spicy chicken, matching several key preferences."
+        },
+        {
+          "dish_name": "Gochujang Spiced Chicken",
+          "dining_hall": "Lakeside Dining",
+          "reason": "An Asian chicken dish with significant spicy notes from gochujang and pepper flakes."
+        },
+        {
+          "dish_name": "Yakisoba Noodles",
+          "dining_hall": "Florence Moore Dining",
+          "reason": "This creamy Asian noodle dish includes mayonnaise and a hint of Korean red pepper for spice."
+        }
+      ],
+      "chosen": "Gochujang Spiced Chicken",
+      "preference_summary_after": "Prefers spicy, savory Asian dishes, often featuring chicken or noodles."
+    },
+    {
+      "day": 5,
+      "date": "2026-04-02",
+      "recommendations": [
+        {
+          "dish_name": "Red Chili & Sesame Vermicelli Noodles",
+          "dining_hall": "Ricker Dining",
+          "reason": "Combines savory vermicelli noodles with red chili and sesame for a spicy Asian dish."
+        },
+        {
+          "dish_name": "Thai Basil Chicken",
+          "dining_hall": "Gerhard Casper Dining",
+          "reason": "Features chicken, Thai basil, and chili for a spicy, savory Asian experience."
+        },
+        {
+          "dish_name": "Butter Chicken",
+          "dining_hall": "Arrillaga Family Dining Commons",
+          "reason": "A rich, spicy, and savory Indian chicken dish with aromatic spices."
+        }
+      ],
+      "chosen": "Thai Basil Chicken",
+      "preference_summary_after": "Enjoys diverse spicy Asian cuisine, often featuring chicken and noodles."
+    },
+    {
+      "day": 6,
+      "date": "2026-04-03",
+      "recommendations": [
+        {
+          "dish_name": "Butter Chicken",
+          "dining_hall": "Arrillaga Family Dining Commons",
+          "reason": "Features chicken and chili powder for spice, representing a popular Asian (Indian) cuisine."
+        },
+        {
+          "dish_name": "Chayote Squash & Greens in Ginger Garlic Sauce",
+          "dining_hall": "Branner Dining",
+          "reason": "Offers a diverse East/Southeast Asian flavor profile with prominent ginger, garlic, and coconut aminos."
+        },
+        {
+          "dish_name": "Cilantro Brown Rice",
+          "dining_hall": "Stern Dining",
+          "reason": "Provides a spicy kick from jalapeno chili, fitting the 'spicy' preference and complementing diverse Asian flavors."
+        }
+      ],
+      "chosen": "Butter Chicken",
+      "preference_summary_after": "Loves spicy Asian chicken and noodle dishes, particularly creamy or seasoned preparations."
+    },
+    {
+      "day": 7,
+      "date": "2026-04-04",
+      "recommendations": [
+        {
+          "dish_name": "Gochujang Spicy Sauce",
+          "dining_hall": "Florence Moore Dining",
+          "reason": "A spicy, seasoned Asian component, aligning with the preference for spicy and seasoned preparations."
+        },
+        {
+          "dish_name": "Mongolian Beef",
+          "dining_hall": "Ricker Dining",
+          "reason": "Features distinct Asian flavors and is a well-seasoned preparation, matching the preference for Asian and seasoned dishes."
+        },
+        {
+          "dish_name": "Mojo Chicken",
+          "dining_hall": "Stern Dining",
+          "reason": "Contains chicken and is a distinctly seasoned preparation, fitting the preference for chicken and flavorful dishes."
+        }
+      ],
+      "chosen": "Gochujang Spicy Sauce",
+      "preference_summary_after": "Prefers spicy Asian dishes, often featuring chicken and noodles."
+    },
+    {
+      "day": 8,
+      "date": "2026-04-05",
+      "recommendations": [
+        {
+          "dish_name": "Tandoori Chicken",
+          "dining_hall": "Florence Moore Dining",
+          "reason": "This is a spicy Asian dish (Indian) that features chicken, aligning perfectly with the user's preferences."
+        },
+        {
+          "dish_name": "Biriyani",
+          "dining_hall": "Florence Moore Dining",
+          "reason": "This is a spicy Asian dish (Indian) containing chili powder, fitting the preference for spicy Asian cuisine."
+        },
+        {
+          "dish_name": "Paneer Butter Masala",
+          "dining_hall": "Florence Moore Dining",
+          "reason": "This is a spicy Asian dish (Indian) with chili powder in the curry sauce, aligning with the spicy Asian preference."
+        }
+      ],
+      "chosen": "Tandoori Chicken",
+      "preference_summary_after": "Enjoys spicy Asian cuisine, particularly chicken, creamy Indian dishes, and noodles."
+    },
+    {
+      "day": 9,
+      "date": "2026-04-06",
+      "recommendations": [
+        {
+          "dish_name": "Jamaican Coconut Curry Chicken",
+          "dining_hall": "Lakeside Dining",
+          "reason": "Features chicken in a creamy, spicy curry, aligning with preferences for creamy Indian and spicy Asian chicken dishes."
+        },
+        {
+          "dish_name": "Thai Red Curry Beef",
+          "dining_hall": "Arrillaga Family Dining Commons",
+          "reason": "Offers a spicy, creamy Asian flavor profile from Thai red curry, fitting the spicy Asian cuisine preference."
+        },
+        {
+          "dish_name": "Creamy Cajun Chicken",
+          "dining_hall": "Ricker Dining",
+          "reason": "While not Asian or Indian, this dish offers creamy chicken with a spicy kick, appealing to the 'creamy' and 'chicken' preferences."
+        }
+      ],
+      "chosen": "Jamaican Coconut Curry Chicken",
+      "preference_summary_after": "They love spicy Asian chicken and noodle dishes, including curries and rich sauces."
+    },
+    {
+      "day": 10,
+      "date": "2026-04-07",
+      "recommendations": [
+        {
+          "dish_name": "Coconut & Lime Chicken Curry",
+          "dining_hall": "Branner Dining",
+          "reason": "This dish features chicken in a spicy, rich Asian coconut curry, directly matching the preference for spicy Asian chicken and curries."
+        },
+        {
+          "dish_name": "Thai Red Curry Beef",
+          "dining_hall": "Arrillaga Family Dining Commons",
+          "reason": "A spicy, rich Thai red curry with characteristic Asian ingredients and a robust sauce, aligning well with the love for spicy Asian curries."
+        },
+        {
+          "dish_name": "Jamaican Vegetable Curry",
+          "dining_hall": "Branner Dining",
+          "reason": "This rich, coconut milk-based curry, although vegetarian and Jamaican, fits the preference for flavorful curries and rich sauces."
+        }
+      ],
+      "chosen": "Coconut & Lime Chicken Curry",
+      "preference_summary_after": "Loves spicy Asian, Indian, and rich, flavorful chicken dishes."
+    }
+  ],
+  "true_preferences": "enjoy korean and chinese foods expecially, I love spicy foods and my favorite protein is chicken",
+  "initial_score": 0.7912875312802728,
+  "final_score": 0.5925819500061505,
+  "score_improvement": -0.1987055812741223
+}
