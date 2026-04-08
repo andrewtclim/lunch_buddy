@@ -154,4 +154,47 @@ We are already on GCP and using Vertex AI for dish embeddings, so Gemini require
 
 Qwen adds a separate API key and third-party dependency with no clear quality advantage for this use case. Ollama is useful for local development but is not practical in a containerized GCP deployment without dedicated GPU hardware.
 
-A 10-round simulation of user choice showed near-flat scores (baseline 0.4702, round 10: 0.4649). A 50-round cold start simulation (no signup text, initialized from average dish embedding) was also flat. Both are expected with a single day of menu data — the same dishes surface every round regardless of vector drift, and the menu lacks coverage for several user profiles (no Korean dishes at all, for example). The learning loop needs multi-day menu data to demonstrate convergence. Pinned for later.
+Exp_01 simulations (10-round and 50-round cold start) were near-flat — expected, since the same menu surfaced every round regardless of vector drift. Exp_01 validated the pipeline; exp_02 is where meaningful evaluation begins.
+
+---
+
+## Exp_02 — Multi-Day Simulation (Apr 7, 2026)
+
+**Setup.** Backfilled 10 days of real Stanford dining data (2026-03-29 → 2026-04-07) from GCS into `backfill_menu`. ~300-350 dishes per day, 6-8 halls depending on the day. 15 mock users, alpha=0.85, 1 round per day. MLflow run: `exp02-multiday-simulation`.
+
+**How a mock user decides.** Each day: query `backfill_menu` ranked by the user's current preference vector, filter placeholders and allergens, present top 3. The user picks whichever of those 3 is closest to their hidden profile. That dish gets blended into the vector. The user always picks optimally from what is shown — the constraint is what the system surfaces, not the user's judgment.
+
+**User 04 — Mediterranean (signup: "light meals, mostly Mediterranean", hidden: hummus, falafel, grilled fish, tabbouleh).**
+
+| Day | Chosen | Score |
+|-----|--------|-------|
+| 0 | Antipasto Salad | 0.482 |
+| 1 | Roasted Asparagus | 0.486 |
+| 2 | Mediterranean Salad | 0.525 |
+| 3 | Beef Gyro | 0.522 |
+| 4-9 | Grilled Chicken (every day) | ~0.511 |
+
+Day 4's menu had no strong Mediterranean options in the top 3. Grilled Chicken was the best available, the vector shifted toward generic grilled protein, and Grilled Chicken dominated every subsequent day. Score plateaued at 0.51 — not a collapse, but no further improvement either.
+
+**Bad menu days are a problem — User 05 (signup: "I like spicy food", hidden: thai curry, spicy ramen, hot wings).**
+
+Weekdays surfaced Chicken Guajillo, Butter Chicken, Gochujang — reasonable spicy matches. Apr 4-5 (weekend, 6 halls) had none of those. Grilled Chicken was the closest available. Two weekend picks pulled the vector toward generic chicken; spicy dishes stopped surfacing even after weekdays returned. Score fell from 0.46 to 0.35. Score delta: **-0.112**, worst of all 15 users.
+
+**Results.**
+
+| Metric | Value |
+|--------|-------|
+| Avg score day 0 | 0.4676 |
+| Avg score day 9 | 0.4510 |
+| Overall improvement | -0.0166 |
+| Flat users (no change across 10 days) | 9 / 15 |
+
+9 users chose the same dish every single day ("Flavor Forward Legumes," "Craveable Grains," "Gluten-Free Waffles" — dining hall staples present on every menu). Once chosen, alpha=0.85 locks the vector in and nothing else surfaces.
+
+**Takeaways.**
+- Bad menu days (weekends, limited halls) corrupt the vector and recovery is slow at alpha=0.85.
+- Repeat staples cause immediate lock-in. Diversity in what is presented matters as much as ranking quality.
+- 10 days is insufficient for niche profiles (spicy, Korean, Ethiopian). More menu history needed.
+- Exp_01's apparent improvement was an artifact of cycling the same menu repeatedly.
+
+**Open question — LLM-as-user.** Current mock users choose by pure cosine similarity to a short hidden profile string. A richer approach: give an LLM a detailed persona (dietary history, flavor preferences, mood, context) and have it decide which dish to pick from the presented top 3. This would produce more realistic, noisy choices and stress-test the learning loop more honestly. To be evaluated in a future experiment.

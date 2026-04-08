@@ -1,0 +1,452 @@
+[
+  {
+    "user_id": "mock_user_01",
+    "round_scores": [
+      0.5122602659872831,
+      0.5122602659872831,
+      0.5122602659872831,
+      0.5122602659872831,
+      0.5122602659872831,
+      0.5122602659872831,
+      0.5122602659872831,
+      0.5122602659872831,
+      0.5122602659872831,
+      0.5122602659872831,
+      0.5122602659872831
+    ],
+    "chosen_dishes": [
+      null,
+      "Flavor Forward Legumes",
+      "Flavor Forward Legumes",
+      "Flavor Forward Legumes",
+      "Flavor Forward Legumes",
+      "Flavor Forward Legumes",
+      "Flavor Forward Legumes",
+      "Flavor Forward Legumes",
+      "Flavor Forward Legumes",
+      "Flavor Forward Legumes",
+      "Flavor Forward Legumes"
+    ],
+    "score_delta": 0.0
+  },
+  {
+    "user_id": "mock_user_02",
+    "round_scores": [
+      0.42706327604878896,
+      0.42706327604878896,
+      0.42706327604878896,
+      0.42706327604878896,
+      0.42706327604878896,
+      0.42706327604878896,
+      0.42706327604878896,
+      0.42706327604878896,
+      0.42706327604878896,
+      0.42706327604878896,
+      0.42706327604878896
+    ],
+    "chosen_dishes": [
+      null,
+      "American Scalloped Potatoes",
+      "American Scalloped Potatoes",
+      "American Scalloped Potatoes",
+      "American Scalloped Potatoes",
+      "American Scalloped Potatoes",
+      "American Scalloped Potatoes",
+      "American Scalloped Potatoes",
+      "American Scalloped Potatoes",
+      "American Scalloped Potatoes",
+      "American Scalloped Potatoes"
+    ],
+    "score_delta": 0.0
+  },
+  {
+    "user_id": "mock_user_03",
+    "round_scores": [
+      0.5231002499126967,
+      0.5231002499126967,
+      0.5231002499126967,
+      0.5231002499126967,
+      0.5231002499126967,
+      0.5231002499126967,
+      0.5231002499126967,
+      0.5231002499126967,
+      0.5231002499126967,
+      0.5231002499126967,
+      0.5231002499126967
+    ],
+    "chosen_dishes": [
+      null,
+      "Flavor Forward Legumes",
+      "Flavor Forward Legumes",
+      "Flavor Forward Legumes",
+      "Flavor Forward Legumes",
+      "Flavor Forward Legumes",
+      "Flavor Forward Legumes",
+      "Flavor Forward Legumes",
+      "Flavor Forward Legumes",
+      "Flavor Forward Legumes",
+      "Flavor Forward Legumes"
+    ],
+    "score_delta": 0.0
+  },
+  {
+    "user_id": "mock_user_04",
+    "round_scores": [
+      0.47173482173746945,
+      0.47173482173746945,
+      0.47173482173746945,
+      0.47173482173746945,
+      0.47173482173746945,
+      0.4678581400902646,
+      0.4678581400902646,
+      0.4678581400902646,
+      0.4678581400902646,
+      0.4678581400902646,
+      0.4678581400902646
+    ],
+    "chosen_dishes": [
+      null,
+      "Antipasto Platter",
+      "Antipasto Platter",
+      "Antipasto Platter",
+      "Antipasto Platter",
+      "Antipasto Platter",
+      "Antipasto Platter",
+      "Antipasto Platter",
+      "Antipasto Platter",
+      "Antipasto Platter",
+      "Antipasto Platter"
+    ],
+    "score_delta": -0.003876681647204838
+  },
+  {
+    "user_id": "mock_user_05",
+    "round_scores": [
+      0.42242705544047104,
+      0.42242705544047104,
+      0.43336861468960725,
+      0.43932172907506856,
+      0.43932172907506856,
+      0.4340242147384208,
+      0.4340242147384208,
+      0.4340242147384208,
+      0.4340242147384208,
+      0.4340242147384208,
+      0.43429931919406956
+    ],
+    "chosen_dishes": [
+      null,
+      "Pork Vindaloo",
+      "Tandoori Chicken",
+      "Tandoori Chicken",
+      "Tandoori Chicken",
+      "Tandoori Chicken",
+      "Tandoori Chicken",
+      "Tandoori Chicken",
+      "Tandoori Chicken",
+      "Tandoori Chicken",
+      "Tandoori Chicken"
+    ],
+    "score_delta": 0.011872263753598511
+  },
+  {
+    "user_id": "mock_user_06",
+    "round_scores": [
+      0.49949416074465564,
+      0.49949416074465564,
+      0.49949416074465564,
+      0.5124249570810501,
+      0.5124249570810501,
+      0.5105513754960204,
+      0.5085717000584332,
+      0.5085717000584332,
+      0.5085717000584332,
+      0.5085717000584332,
+      0.5085717000584332
+    ],
+    "chosen_dishes": [
+      null,
+      "Biriyani",
+      "Biriyani",
+      "Biriyani",
+      "Biriyani",
+      "Biriyani",
+      "Biriyani",
+      "Biriyani",
+      "Biriyani",
+      "Biriyani",
+      "Biriyani"
+    ],
+    "score_delta": 0.009077539313777583
+  },
+  {
+    "user_id": "mock_user_07",
+    "round_scores": [
+      0.46521800790696805,
+      0.46521800790696805,
+      0.46521800790696805,
+      0.46521800790696805,
+      0.43827683610122853,
+      0.43827683610122853,
+      0.43827683610122853,
+      0.43827683610122853,
+      0.43827683610122853,
+      0.43827683610122853,
+      0.43827683610122853
+    ],
+    "chosen_dishes": [
+      null,
+      "Chick'n Strips",
+      "Chick'n Strips",
+      "Chick'n Strips",
+      "Chick'n Strips",
+      "Chick'n Strips",
+      "Chick'n Strips",
+      "Chick'n Strips",
+      "Chick'n Strips",
+      "Chick'n Strips",
+      "Chick'n Strips"
+    ],
+    "score_delta": -0.026941171805739517
+  },
+  {
+    "user_id": "mock_user_08",
+    "round_scores": [
+      0.4787269026517372,
+      0.4787269026517372,
+      0.4787269026517372,
+      0.4787269026517372,
+      0.4787269026517372,
+      0.4787269026517372,
+      0.4221497375037082,
+      0.4221497375037082,
+      0.4221497375037082,
+      0.4221497375037082,
+      0.4221497375037082
+    ],
+    "chosen_dishes": [
+      null,
+      "Smoked Salmon",
+      "Smoked Salmon",
+      "Smoked Salmon",
+      "Smoked Salmon",
+      "Smoked Salmon",
+      "Smoked Salmon",
+      "Smoked Salmon",
+      "Smoked Salmon",
+      "Smoked Salmon",
+      "Smoked Salmon"
+    ],
+    "score_delta": -0.05657716514802896
+  },
+  {
+    "user_id": "mock_user_09",
+    "round_scores": [
+      0.48241556385084583,
+      0.48241556385084583,
+      0.48241556385084583,
+      0.48241556385084583,
+      0.48241556385084583,
+      0.48241556385084583,
+      0.48241556385084583,
+      0.48241556385084583,
+      0.48241556385084583,
+      0.48241556385084583,
+      0.48241556385084583
+    ],
+    "chosen_dishes": [
+      null,
+      "Vermicelli Noodles",
+      "Vermicelli Noodles",
+      "Vermicelli Noodles",
+      "Vermicelli Noodles",
+      "Vermicelli Noodles",
+      "Vermicelli Noodles",
+      "Vermicelli Noodles",
+      "Vermicelli Noodles",
+      "Vermicelli Noodles",
+      "Vermicelli Noodles"
+    ],
+    "score_delta": 0.0
+  },
+  {
+    "user_id": "mock_user_10",
+    "round_scores": [
+      0.4484229519669413,
+      0.4484229519669413,
+      0.4484229519669413,
+      0.4484229519669413,
+      0.4480965701130348,
+      0.4244041239220942,
+      0.4244041239220942,
+      0.4244041239220942,
+      0.401364572471354,
+      0.401364572471354,
+      0.401364572471354
+    ],
+    "chosen_dishes": [
+      null,
+      "Cheese Quesadilla",
+      "Cheese Quesadilla",
+      "Cheese Quesadilla",
+      "Cheese Quesadilla",
+      "Cheese Quesadilla",
+      "Cheese Quesadilla",
+      "Cheese Quesadilla",
+      "Cheese Quesadilla",
+      "Cheese Quesadilla",
+      "Cheese Quesadilla"
+    ],
+    "score_delta": -0.04705837949558733
+  },
+  {
+    "user_id": "mock_user_11",
+    "round_scores": [
+      0.3979852621576852,
+      0.3979852621576852,
+      0.3979852621576852,
+      0.3979852621576852,
+      0.3979852621576852,
+      0.3979852621576852,
+      0.3979852621576852,
+      0.3979852621576852,
+      0.3979852621576852,
+      0.3979852621576852,
+      0.3979852621576852
+    ],
+    "chosen_dishes": [
+      null,
+      "Gluten-Free Waffles",
+      "Gluten-Free Waffles",
+      "Gluten-Free Waffles",
+      "Gluten-Free Waffles",
+      "Gluten-Free Waffles",
+      "Gluten-Free Waffles",
+      "Gluten-Free Waffles",
+      "Gluten-Free Waffles",
+      "Gluten-Free Waffles",
+      "Gluten-Free Waffles"
+    ],
+    "score_delta": 0.0
+  },
+  {
+    "user_id": "mock_user_12",
+    "round_scores": [
+      0.43323393711408276,
+      0.43323393711408276,
+      0.43323393711408276,
+      0.43323393711408276,
+      0.43323393711408276,
+      0.43323393711408276,
+      0.43323393711408276,
+      0.43323393711408276,
+      0.43323393711408276,
+      0.43323393711408276,
+      0.43323393711408276
+    ],
+    "chosen_dishes": [
+      null,
+      "Flavor Forward Legumes",
+      "Flavor Forward Legumes",
+      "Flavor Forward Legumes",
+      "Flavor Forward Legumes",
+      "Flavor Forward Legumes",
+      "Flavor Forward Legumes",
+      "Flavor Forward Legumes",
+      "Flavor Forward Legumes",
+      "Flavor Forward Legumes",
+      "Flavor Forward Legumes"
+    ],
+    "score_delta": 0.0
+  },
+  {
+    "user_id": "mock_user_13",
+    "round_scores": [
+      0.443291248235165,
+      0.443291248235165,
+      0.443291248235165,
+      0.4656822393875484,
+      0.45539376828004224,
+      0.47150848052161654,
+      0.47150848052161654,
+      0.47150848052161654,
+      0.47150848052161654,
+      0.47150848052161654,
+      0.47150848052161654
+    ],
+    "chosen_dishes": [
+      null,
+      "Vegetable Jhalfrezi",
+      "Vegetable Jhalfrezi",
+      "Vegetable Jhalfrezi",
+      "Vegetable Jhalfrezi",
+      "Vegetable Jhalfrezi",
+      "Vegetable Jhalfrezi",
+      "Vegetable Jhalfrezi",
+      "Vegetable Jhalfrezi",
+      "Vegetable Jhalfrezi",
+      "Vegetable Jhalfrezi"
+    ],
+    "score_delta": 0.02821723228645151
+  },
+  {
+    "user_id": "mock_user_14",
+    "round_scores": [
+      0.5567341359278478,
+      0.5567341359278478,
+      0.5567341359278478,
+      0.5567341359278478,
+      0.5567341359278478,
+      0.5567341359278478,
+      0.5567341359278478,
+      0.5567341359278478,
+      0.5567341359278478,
+      0.5567341359278478,
+      0.5567341359278478
+    ],
+    "chosen_dishes": [
+      null,
+      "Biriyani",
+      "Biriyani",
+      "Biriyani",
+      "Biriyani",
+      "Biriyani",
+      "Biriyani",
+      "Biriyani",
+      "Biriyani",
+      "Biriyani",
+      "Biriyani"
+    ],
+    "score_delta": 0.0
+  },
+  {
+    "user_id": "mock_user_15",
+    "round_scores": [
+      0.4913247772874822,
+      0.4913247772874822,
+      0.4966802457970652,
+      0.4966802457970652,
+      0.4966802457970652,
+      0.4966802457970652,
+      0.4966802457970652,
+      0.4966802457970652,
+      0.4966802457970652,
+      0.4966802457970652,
+      0.4966802457970652
+    ],
+    "chosen_dishes": [
+      null,
+      "Pasta Alfredo",
+      "Pasta Alfredo",
+      "Pasta Alfredo",
+      "Pasta Alfredo",
+      "Pasta Alfredo",
+      "Pasta Alfredo",
+      "Pasta Alfredo",
+      "Pasta Alfredo",
+      "Pasta Alfredo",
+      "Pasta Alfredo"
+    ],
+    "score_delta": 0.005355468509583017
+  }
+]

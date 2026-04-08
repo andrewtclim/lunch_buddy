@@ -1,0 +1,167 @@
+[
+  {
+    "user_id": "mock_user_01",
+    "recommendation": "Of course! Based on your preference for Asian and vegetarian food, here are my top 3 recommendations for you today:\n\n1.  **Flavor Forward Legumes (Arrillaga Family Dining Commons, Lunch):** This dish centers on legumes, which are a delicious staple in many Asian vegetarian cuisines like Indian dal or curried chickpeas.\n2.  **Grilled Vegan/Vegetarian (Arrillaga Family Dining Commons, Lunch):** This chef's choice guarantees you a vegetarian meal that could easily feature an Asian-inspired grilling sauce or seasoning.\n3.  **Grilled Vegan/Vegetarian (Wilbur Dining, Dinner):** Here's another great vegetarian option at a different location that might be prepared with tasty, Asian-style flavors.",
+    "avg_cosine_score": 0.4446632260409306,
+    "latency_sec": 14.378571033477783,
+    "dishes_shown": [
+      "Grilled Vegan/Vegetarian",
+      "Grilled Vegan/Vegetarian",
+      "Grilled Vegan/Vegetarian"
+    ]
+  },
+  {
+    "user_id": "mock_user_02",
+    "recommendation": "Of course! Based on your preference for hearty meals and American comfort food, here are your top 3 recommendations for lunch today:\n\n1.  **American Scalloped Potatoes at Stern Dining:** These cheesy, creamy potatoes are a classic, hearty dish that perfectly fits your love for American comfort food.\n2.  **American Scalloped Potatoes at Lakeside Dining:** This dish is a quintessential hearty meal, making it an excellent choice for someone who enjoys American comfort food.\n3.  **American Scalloped Potatoes at Ricker Dining:** As a rich and satisfying potato bake, this dish is a great example of the hearty American comfort food you enjoy.",
+    "avg_cosine_score": 0.42706327604878896,
+    "latency_sec": 11.668523073196411,
+    "dishes_shown": [
+      "American Scalloped Potatoes",
+      "American Scalloped Potatoes",
+      "American Scalloped Potatoes"
+    ]
+  },
+  {
+    "user_id": "mock_user_03",
+    "recommendation": "Of course! Based on your preference for vegan and whole-food options, here are your top recommendations for today:\n\n1.  **Flavor Forward Legumes (Stern Dining, Lunch):** This dish is centered around legumes, which are a fantastic whole-food option for plant-based protein.\n2.  **Chef's Choice Vegan Breakfast (Arrillaga Family Dining Commons, Breakfast):** This meal is guaranteed to be vegan, and you can talk to the chef to ensure it's made with the whole-food ingredients you enjoy.\n3.  **Chef's Choice Vegan Breakfast (Lakeside Dining, Breakfast):** This provides another great location option for a potentially wonderful whole-food breakfast to start your day.",
+    "avg_cosine_score": 0.46029109139473623,
+    "latency_sec": 14.425434112548828,
+    "dishes_shown": [
+      "Chef's Choice Vegan Breakfast",
+      "Chef's Choice Vegan Breakfast",
+      "Chef's Choice Vegan Breakfast"
+    ]
+  },
+  {
+    "user_id": "mock_user_04",
+    "recommendation": "Of course! Based on your preference for light, Mediterranean meals, here are your top three recommendations for today:\n\n1.  **Antipasto Platter (Arrillaga Family Dining Commons, Dinner):** This classic Italian platter is a fantastic Mediterranean choice, offering a light mix of cured meats, cheeses, olives, and fresh vegetables.\n2.  **Performance Bar (Florence Moore Dining, Lunch):** You can build the perfect light meal here by creating your own bowl with Mediterranean staples like hummus, fresh vegetables, beans, and whole grains.\n3.  **Performance Bar (Lakeside Dining, Dinner):** This option provides another great opportunity to customize a light Mediterranean salad or grain bowl for dinner.",
+    "avg_cosine_score": 0.4801462049978425,
+    "latency_sec": 19.341319799423218,
+    "dishes_shown": [
+      "Antipasto Platter",
+      "Performance Bar",
+      "Performance Bar"
+    ]
+  },
+  {
+    "user_id": "mock_user_05",
+    "recommendation": "Of course! Based on your love for spicy food, here are your top 3 recommendations for today:\n\n1.  **Pork Vindaloo (Florence Moore Dining, Dinner):** This is a famously fiery Indian curry that's sure to bring the heat you're looking for.\n2.  **Vegetable Jhalfrezi (Florence Moore Dining, Dinner):** This Indian vegetable stir-fry gets its kick from chili powder and a blend of masala spices.\n3.  **Chimichurri Sauce (Ricker Dining & Stern Dining, Lunch):** This zesty sauce is made with red pepper flakes to add a nice kick to your meal.",
+    "avg_cosine_score": 0.42242705544047104,
+    "latency_sec": 11.5172860622406,
+    "dishes_shown": [
+      "Pork Vindaloo",
+      "Vegetable Jhalfrezi",
+      "Chimichurri Sauce"
+    ]
+  },
+  {
+    "user_id": "mock_user_06",
+    "recommendation": "Of course! Based on your preferences for halal and Middle Eastern cuisine, here are my top three recommendations for you today:\n\n1.  **Biriyani:** This flavorful basmati rice dish is packed with spices like cumin and coriander that are staples in many Middle Eastern meals.\n2.  **Vegetable Jhalfrezi:** As a hearty, halal vegetable stew, its use of masala, ginger, and garlic will be very familiar and enjoyable for you.\n3.  **Plain Naan:** This classic flatbread is the perfect halal accompaniment, much like the breads served with dishes throughout the Middle East.",
+    "avg_cosine_score": 0.49949416074465564,
+    "latency_sec": 15.085596084594727,
+    "dishes_shown": [
+      "Biriyani",
+      "Plain Naan",
+      "Vegetable Jhalfrezi"
+    ]
+  },
+  {
+    "user_id": "mock_user_07",
+    "recommendation": "Of course! Here are your top 3 recommendations for today:\n\n1.  **Performance Bar (Arrillaga Family Dining Commons, Lunch):** You can build your own high-protein plate with baked chicken, hard-boiled eggs, and tofu while skipping the grains and beans to keep it low-carb.\n2.  **Performance Bar (Florence Moore Dining, Dinner):** This is a great dinner option that allows you to load up on protein from baked chicken and eggs and pair it with fresh vegetables and spinach.\n3.  **Chick'n Strips (Lakeside Dining, Dinner):** These strips are packed with plant-based protein from soy and wheat gluten to help you meet your goals.",
+    "avg_cosine_score": 0.4942132588068027,
+    "latency_sec": 11.66991400718689,
+    "dishes_shown": [
+      "Chick'n Strips",
+      "Performance Bar",
+      "Performance Bar"
+    ]
+  },
+  {
+    "user_id": "mock_user_08",
+    "recommendation": "Of course! Based on your love for seafood and coastal food, here are my top three recommendations for you today:\n\n1.  **Fish & Chips:** This classic coastal meal features battered cod, a perfect choice for any seafood lover.\n2.  **Smoked Salmon:** You can't go wrong with this delicious smoked salmon, a staple of coastal cuisine.\n3.  **Caper Truffle Butter:** The capers in this butter are a classic pairing for fish, bringing a taste of the sea to your meal.",
+    "avg_cosine_score": 0.4787269026517372,
+    "latency_sec": 15.487246751785278,
+    "dishes_shown": [
+      "Fish & Chips",
+      "Smoked Salmon",
+      "Caper Truffle Butter"
+    ]
+  },
+  {
+    "user_id": "mock_user_09",
+    "recommendation": "Of course! Based on your love for Japanese and Korean food, here are my top recommendations for you today:\n\n1.  **Fried Rice Bar (Lakeside Dining, Dinner):** You can customize your own bowl to create something similar to Japanese *chahan* or Korean *bokkeum-bap*.\n2.  **Garlic Rice (Arrillaga Family Dining Commons, Dinner):** This is a flavorful base that pairs perfectly with the savory profiles found in many Japanese and Korean dishes.\n3.  **Vermicelli Noodles (Multiple Locations, Dinner):** These versatile rice noodles are a staple ingredient in many Asian cuisines and serve as a great foundation for a meal.",
+    "avg_cosine_score": 0.48241556385084583,
+    "latency_sec": 11.687791109085083,
+    "dishes_shown": [
+      "Vermicelli Noodles",
+      "Vermicelli Noodles",
+      "Vermicelli Noodles"
+    ]
+  },
+  {
+    "user_id": "mock_user_10",
+    "recommendation": "Of course! Based on your love for Mexican and Latin food, here are your top three recommendations for today:\n\n1.  **Mojo Chicken (Wilbur Dining, Lunch):** This dish features a classic Cuban citrus and garlic marinade, perfect for lovers of Latin flavors.\n2.  **Cheese Quesadilla (Stern Dining, Dinner):** You can't go wrong with this staple of Mexican comfort food.\n3.  **Chimichurri Sauce (Stern Dining, Lunch):** This zesty Argentinian herb sauce is a fantastic way to add a burst of authentic Latin flavor to your meal.",
+    "avg_cosine_score": 0.4484229519669413,
+    "latency_sec": 10.422852039337158,
+    "dishes_shown": [
+      "Chimichurri Sauce",
+      "Cheese Quesadilla",
+      "Chimichurri Sauce"
+    ]
+  },
+  {
+    "user_id": "mock_user_11",
+    "recommendation": "Of course! Based on your preferences, here are your top 3 recommendations for today:\n\n1.  **Craveable Grains (Arrillaga Family Dining Commons, Lunch):** This dish is an excellent fit as it's specifically made with minimal ingredients for a simple, gluten-free meal.\n2.  **Gluten-Free Waffles (Lakeside Dining, Breakfast):** These waffles are a classic, simple breakfast that is guaranteed to be gluten-free.\n3.  **Gluten-Free Waffles (Arrillaga Family Dining Commons, Breakfast):** This is the same great waffle option, conveniently located where you can also find the Craveable Grains for lunch.",
+    "avg_cosine_score": 0.3979852621576852,
+    "latency_sec": 32.42887306213379,
+    "dishes_shown": [
+      "Gluten-Free Waffles",
+      "Gluten-Free Waffles",
+      "Gluten-Free Waffles"
+    ]
+  },
+  {
+    "user_id": "mock_user_12",
+    "recommendation": "Of course! Based on your preferences, here are your top 3 recommendations for today:\n\n1.  **Assorted Allergy-Friendly Items (Arrillaga Family Dining Commons, Breakfast):** With items like vegan yogurt, alternative milk, and fresh chia seed puddings, this breakfast bar is perfectly suited to your lactose-free and fresh food preferences.\n2.  **Flavor Forward Legumes (Florence Moore Dining, Dinner):** This dish focuses on fresh legumes, which are naturally lactose-free and make for a healthy and satisfying dinner.\n3.  **Assorted Allergy-Friendly Items (Lakeside Dining, Breakfast):** This is another excellent lactose-free breakfast option, offering fresh overnight oats and granola that fit your preferences.",
+    "avg_cosine_score": 0.44700780821715563,
+    "latency_sec": 20.541343212127686,
+    "dishes_shown": [
+      "Assorted Allergy-Friendly Items",
+      "Assorted Allergy-Friendly Items",
+      "Assorted Allergy-Friendly Items"
+    ]
+  },
+  {
+    "user_id": "mock_user_13",
+    "recommendation": "Of course! Based on your interest in trying new foods from different cultures, here are your top 3 recommendations for today:\n\n1.  **Vegetable Jhalfrezi (Florence Moore Dining, Dinner):** This classic Indian stir-fry will give you an authentic taste of South Asian cuisine with its rich blend of masala, cumin, and coriander.\n2.  **Flavor Forward Legumes (Lakeside Dining, Lunch):** This dish offers a unique culinary experience, allowing you to see how creative flavors can be developed without common ingredients like onion or garlic.\n3.  **Flavor Forward Legumes (Arrillaga Family Dining Commons, Lunch):** You can try a different take on legumes with this dish, which showcases a minimalist approach to seasoning from a new perspective.",
+    "avg_cosine_score": 0.443291248235165,
+    "latency_sec": 16.464691877365112,
+    "dishes_shown": [
+      "Vegetable Jhalfrezi",
+      "Flavor Forward Legumes",
+      "Flavor Forward Legumes"
+    ]
+  },
+  {
+    "user_id": "mock_user_14",
+    "recommendation": "Of course! Based on your preferences, here are your top 3 dining recommendations for today:\n\n1.  **Vegetable Jhalfrezi (Florence Moore Dining, Dinner)**\n    This dish is a perfect match, as it's a flavorful Indian vegetarian stir-fry featuring classic spices like masala, cumin, and coriander.\n\n2.  **Grilled Vegan/Vegetarian (Arrillaga Family Dining Commons, Lunch)**\n    This is a great choice for a guaranteed vegetarian meal at lunchtime, even if the specific dish is the chef's surprise.\n\n3.  **Grilled Vegan/Vegetarian (Wilbur Dining, Dinner)**\n    If you're looking for a simple vegetarian dinner, this option at Wilbur ensures you'll have a dedicated grilled dish waiting for you.",
+    "avg_cosine_score": 0.49621142280941793,
+    "latency_sec": 12.09824013710022,
+    "dishes_shown": [
+      "Vegetable Jhalfrezi",
+      "Grilled Vegan/Vegetarian",
+      "Grilled Vegan/Vegetarian"
+    ]
+  },
+  {
+    "user_id": "mock_user_15",
+    "recommendation": "Of course! Based on your love for pasta and Italian food, here are your top 3 recommendations for today:\n\n1.  **Pasta Alfredo at Wilbur Dining (Lunch):** This classic, creamy Pasta Alfredo is a perfect choice for an Italian food lover like you.\n2.  **Pasta Alfredo at Lakeside Dining (Dinner):** If you're looking for a dinner option, Lakeside is serving the same rich and cheesy Pasta Alfredo.\n3.  **Pasta at Ricker Dining (Dinner):** This dish offers a simple and classic pasta base, directly satisfying your craving for pasta.",
+    "avg_cosine_score": 0.4913247772874822,
+    "latency_sec": 12.377056121826172,
+    "dishes_shown": [
+      "Pasta",
+      "Pasta Alfredo",
+      "Pasta Alfredo"
+    ]
+  }
+]

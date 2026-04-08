@@ -1,0 +1,422 @@
+[
+  {
+    "user_id": "mock_user_01",
+    "day_scores": [
+      0.5122602659872831,
+      0.5122602659872831,
+      0.5122602659872831,
+      0.5122602659872831,
+      0.5122602659872831,
+      0.5122602659872831,
+      0.5122602659872831,
+      0.5122602659872831,
+      0.5122602659872831,
+      0.5122602659872831
+    ],
+    "chosen_dishes": [
+      "Flavor Forward Legumes",
+      "Flavor Forward Legumes",
+      "Flavor Forward Legumes",
+      "Flavor Forward Legumes",
+      "Flavor Forward Legumes",
+      "Flavor Forward Legumes",
+      "Flavor Forward Legumes",
+      "Flavor Forward Legumes",
+      "Flavor Forward Legumes",
+      "Flavor Forward Legumes"
+    ],
+    "score_delta": 0.0
+  },
+  {
+    "user_id": "mock_user_02",
+    "day_scores": [
+      0.41731634165086257,
+      0.41731634165086257,
+      0.41731634165086257,
+      0.41731634165086257,
+      0.41731634165086257,
+      0.41731634165086257,
+      0.41731634165086257,
+      0.41731634165086257,
+      0.41731634165086257,
+      0.41731634165086257
+    ],
+    "chosen_dishes": [
+      "Craveable Grains",
+      "Craveable Grains",
+      "Craveable Grains",
+      "Craveable Grains",
+      "Craveable Grains",
+      "Craveable Grains",
+      "Craveable Grains",
+      "Craveable Grains",
+      "Craveable Grains",
+      "Craveable Grains"
+    ],
+    "score_delta": 0.0
+  },
+  {
+    "user_id": "mock_user_03",
+    "day_scores": [
+      0.5231002499126967,
+      0.5231002499126967,
+      0.5231002499126967,
+      0.5231002499126967,
+      0.5231002499126967,
+      0.5231002499126967,
+      0.5231002499126967,
+      0.5231002499126967,
+      0.5231002499126967,
+      0.5231002499126967
+    ],
+    "chosen_dishes": [
+      "Flavor Forward Legumes",
+      "Flavor Forward Legumes",
+      "Flavor Forward Legumes",
+      "Flavor Forward Legumes",
+      "Flavor Forward Legumes",
+      "Flavor Forward Legumes",
+      "Flavor Forward Legumes",
+      "Flavor Forward Legumes",
+      "Flavor Forward Legumes",
+      "Flavor Forward Legumes"
+    ],
+    "score_delta": 0.0
+  },
+  {
+    "user_id": "mock_user_04",
+    "day_scores": [
+      0.4819509749371026,
+      0.4856787248059178,
+      0.5248593661357979,
+      0.5215610533196148,
+      0.509254584677307,
+      0.511135331624706,
+      0.511135331624706,
+      0.511135331624706,
+      0.511135331624706,
+      0.511135331624706
+    ],
+    "chosen_dishes": [
+      "Antipasto Salad",
+      "Roasted Asparagus",
+      "Mediterranean Salad",
+      "Beef Gyro",
+      "Grilled Chicken",
+      "Grilled Chicken",
+      "Grilled Chicken",
+      "Grilled Chicken",
+      "Grilled Chicken",
+      "Grilled Chicken"
+    ],
+    "score_delta": 0.02918435668760344
+  },
+  {
+    "user_id": "mock_user_05",
+    "day_scores": [
+      0.4632312252789739,
+      0.4379624064646029,
+      0.44754010327937843,
+      0.4870732342519286,
+      0.4550949931811079,
+      0.43729399733711866,
+      0.35182643919243733,
+      0.3852230383317246,
+      0.35182643919243733,
+      0.35182643919243733
+    ],
+    "chosen_dishes": [
+      "Chicken Guajillo",
+      "Butter Chicken",
+      "Butter Chicken",
+      "Gochujang Spiced Chicken",
+      "Butter Chicken",
+      "Butter Chicken",
+      "Grilled Chicken",
+      "Tandoori Chicken",
+      "Grilled Chicken",
+      "Grilled Chicken"
+    ],
+    "score_delta": -0.11140478608653659
+  },
+  {
+    "user_id": "mock_user_06",
+    "day_scores": [
+      0.5022744470046931,
+      0.5500349679232092,
+      0.4572866273813321,
+      0.49437425322449774,
+      0.46631727898190783,
+      0.4480817925935287,
+      0.4233583310856995,
+      0.4934406315418192,
+      0.4677596741657495,
+      0.46185103210613637
+    ],
+    "chosen_dishes": [
+      "Cumin Spiced Rice Pilaf",
+      "Dill Rice Pilaf",
+      "Basmati Rice",
+      "Saffron Rice",
+      "Jasmine Rice",
+      "Basmati Rice",
+      "Steamed Rice",
+      "Biriyani",
+      "Fava Bean Basmati Rice",
+      "Citrus Scented Basmati Rice"
+    ],
+    "score_delta": -0.040423414898556775
+  },
+  {
+    "user_id": "mock_user_07",
+    "day_scores": [
+      0.47106912993502414,
+      0.4737526043215212,
+      0.4799688300068851,
+      0.493484413852139,
+      0.4682118407638147,
+      0.4601595558000883,
+      0.3929747994478639,
+      0.3973582645136405,
+      0.383974385033023,
+      0.3929747994478639
+    ],
+    "chosen_dishes": [
+      "Antipasto Salad",
+      "BLT Pasta Salad",
+      "Mediterranean Salad",
+      "Barley, Arugula & Goat Cheese Salad",
+      "BLT Pasta Salad",
+      "BLT Pasta Salad",
+      "Pasta Pesto",
+      "Pesto Tortellini Verdura",
+      "Pesto Sauce",
+      "Pasta Pesto"
+    ],
+    "score_delta": -0.07809433048716025
+  },
+  {
+    "user_id": "mock_user_08",
+    "day_scores": [
+      0.472817618192453,
+      0.472817618192453,
+      0.472817618192453,
+      0.472817618192453,
+      0.472817618192453,
+      0.472817618192453,
+      0.472817618192453,
+      0.472817618192453,
+      0.472817618192453,
+      0.472817618192453
+    ],
+    "chosen_dishes": [
+      "Seasonal Steamed Vegetables",
+      "Seasonal Steamed Vegetables",
+      "Seasonal Steamed Vegetables",
+      "Seasonal Steamed Vegetables",
+      "Seasonal Steamed Vegetables",
+      "Seasonal Steamed Vegetables",
+      "Seasonal Steamed Vegetables",
+      "Seasonal Steamed Vegetables",
+      "Seasonal Steamed Vegetables",
+      "Seasonal Steamed Vegetables"
+    ],
+    "score_delta": 0.0
+  },
+  {
+    "user_id": "mock_user_09",
+    "day_scores": [
+      0.3805947048213629,
+      0.43186424806195944,
+      0.4743736004704698,
+      0.557592021249495,
+      0.4845668287056661,
+      0.42713532007262,
+      0.45991048381304717,
+      0.48241556385084583,
+      0.43514529425241727,
+      0.4657874349939693
+    ],
+    "chosen_dishes": [
+      "Spanish Rice",
+      "Pancit Noodles",
+      "Yakisoba Noodles",
+      "Yakisoba Noodles",
+      "Red Chili & Sesame Vermicelli Noodles",
+      "Chayote Squash & Greens in Ginger Garlic Sauce",
+      "Gochujang Spicy Sauce",
+      "Vermicelli Noodles",
+      "Jasmine Rice",
+      "Jasmine Rice"
+    ],
+    "score_delta": 0.08519273017260642
+  },
+  {
+    "user_id": "mock_user_10",
+    "day_scores": [
+      0.5423546781490048,
+      0.4889466589692332,
+      0.5046670599834874,
+      0.4797090982550469,
+      0.5111110212029829,
+      0.4877609133434992,
+      0.5051087011007789,
+      0.44901753897442137,
+      0.5085609201227365,
+      0.5080148853324188
+    ],
+    "chosen_dishes": [
+      "Chicken Guajillo",
+      "Mexican Street Corn",
+      "Cauliflower Taco with Chilies",
+      "Frijoles Negros con Epazote",
+      "Enchiladas de Pollo en Salsa Rojo",
+      "Arroz Con Elote",
+      "Mexican Street Corn",
+      "Cheese Quesadilla",
+      "Chilaquiles with Roasted Tomato Salsa",
+      "Salsa Bar with Tortilla Chips"
+    ],
+    "score_delta": -0.03433979281658606
+  },
+  {
+    "user_id": "mock_user_11",
+    "day_scores": [
+      0.3979852621576852,
+      0.3979852621576852,
+      0.3979852621576852,
+      0.3979852621576852,
+      0.3979852621576852,
+      0.3979852621576852,
+      0.3979852621576852,
+      0.3979852621576852,
+      0.3979852621576852,
+      0.3979852621576852
+    ],
+    "chosen_dishes": [
+      "Gluten-Free Waffles",
+      "Gluten-Free Waffles",
+      "Gluten-Free Waffles",
+      "Gluten-Free Waffles",
+      "Gluten-Free Waffles",
+      "Gluten-Free Waffles",
+      "Gluten-Free Waffles",
+      "Gluten-Free Waffles",
+      "Gluten-Free Waffles",
+      "Gluten-Free Waffles"
+    ],
+    "score_delta": 0.0
+  },
+  {
+    "user_id": "mock_user_12",
+    "day_scores": [
+      0.43323393711408276,
+      0.43323393711408276,
+      0.43323393711408276,
+      0.43323393711408276,
+      0.43323393711408276,
+      0.43323393711408276,
+      0.43323393711408276,
+      0.43323393711408276,
+      0.43323393711408276,
+      0.43323393711408276
+    ],
+    "chosen_dishes": [
+      "Flavor Forward Legumes",
+      "Flavor Forward Legumes",
+      "Flavor Forward Legumes",
+      "Flavor Forward Legumes",
+      "Flavor Forward Legumes",
+      "Flavor Forward Legumes",
+      "Flavor Forward Legumes",
+      "Flavor Forward Legumes",
+      "Flavor Forward Legumes",
+      "Flavor Forward Legumes"
+    ],
+    "score_delta": 0.0
+  },
+  {
+    "user_id": "mock_user_13",
+    "day_scores": [
+      0.41876205191704624,
+      0.41876205191704624,
+      0.41876205191704624,
+      0.41876205191704624,
+      0.41876205191704624,
+      0.41876205191704624,
+      0.41876205191704624,
+      0.41876205191704624,
+      0.41876205191704624,
+      0.41876205191704624
+    ],
+    "chosen_dishes": [
+      "Flavor Forward Legumes",
+      "Flavor Forward Legumes",
+      "Flavor Forward Legumes",
+      "Flavor Forward Legumes",
+      "Flavor Forward Legumes",
+      "Flavor Forward Legumes",
+      "Flavor Forward Legumes",
+      "Flavor Forward Legumes",
+      "Flavor Forward Legumes",
+      "Flavor Forward Legumes"
+    ],
+    "score_delta": 0.0
+  },
+  {
+    "user_id": "mock_user_14",
+    "day_scores": [
+      0.5008970766295657,
+      0.5061403661023786,
+      0.49808578271835824,
+      0.5108809982898316,
+      0.4931070880753186,
+      0.48401117306325747,
+      0.45582101152455506,
+      0.45582101152455506,
+      0.45582101152455506,
+      0.45582101152455506
+    ],
+    "chosen_dishes": [
+      "Curried Vegetables",
+      "Butter Vegetables",
+      "Butter Vegetables",
+      "Spinach, Potato & Chickpea Curry",
+      "Butter Vegetables",
+      "Butter Vegetables",
+      "Seasonal Steamed Vegetables",
+      "Seasonal Steamed Vegetables",
+      "Seasonal Steamed Vegetables",
+      "Seasonal Steamed Vegetables"
+    ],
+    "score_delta": -0.045076065105010665
+  },
+  {
+    "user_id": "mock_user_15",
+    "day_scores": [
+      0.4966802457970652,
+      0.4966802457970652,
+      0.45736257670722386,
+      0.4913247772874822,
+      0.4966802457970652,
+      0.4966802457970652,
+      0.4966802457970652,
+      0.4966802457970652,
+      0.5086112362582941,
+      0.4426893632927736
+    ],
+    "chosen_dishes": [
+      "Pasta Alfredo",
+      "Pasta Alfredo",
+      "Pasta",
+      "Pasta Alfredo",
+      "Pasta Alfredo",
+      "Pasta Alfredo",
+      "Pasta Alfredo",
+      "Pasta Alfredo",
+      "Marinara Cheese Ravioli",
+      "Pasta Marinara"
+    ],
+    "score_delta": -0.053990882504291626
+  }
+]

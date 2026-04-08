@@ -14,7 +14,7 @@ from dotenv import load_dotenv
 from google import genai
 
 # load env vars from fastapi/.env
-load_dotenv(Path(__file__).resolve().parents[2] / "fastapi" / ".env")
+load_dotenv(Path(__file__).resolve().parents[3] / "fastapi" / ".env")
 
 DATABASE_URL    = os.getenv("DATABASE_URL")
 PROJECT_ID      = os.getenv("PROJECT_ID")
