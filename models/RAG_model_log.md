@@ -2,6 +2,22 @@
 
 ---
 
+## Running the Demo
+
+**Use the right script depending on your network:**
+
+| Where you are | Script to run | Env var used |
+|---|---|---|
+| Home / IPv6 network | `interactive_demo.py` | `DATABASE_URL` |
+| Campus / IPv4 network (USF, Stanford, etc.) | `CAMPUS_interactive_demo.py` | `DATABASE_URL_IPV4` |
+
+Both vars live in `fastapi/.env`. Campus networks are IPv4-only -- Supabase's direct
+connection hostname (`db.wthzvpjnxpldewhzaqzn.supabase.co`) is IPv6-only and won't
+resolve on campus. `DATABASE_URL_IPV4` points to the Supabase shared pooler
+(`aws-1-us-east-2.pooler.supabase.com`), which is free and IPv4-compatible.
+
+---
+
 ## Overview
 
 A conversational RAG pipeline where a user sends a natural language query and the system retrieves semantically matching dishes from Supabase, then passes them to Gemini to generate a top-3 recommendation with explanation.

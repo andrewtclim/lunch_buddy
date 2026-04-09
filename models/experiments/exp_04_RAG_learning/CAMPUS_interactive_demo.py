@@ -1,19 +1,20 @@
-# models/experiments/exp_04_RAG_learning/interactive_demo.py
+# models/experiments/exp_04_RAG_learning/CAMPUS_interactive_demo.py
 # Interactive learning demo: user describes their tastes, picks dishes over 10 days,
 # and their preference vector evolves with each pick (EMA update, alpha=0.3).
 # Gemini re-summarizes preferences after each pick so its prompt stays in sync.
 # At the end, user reveals true hidden preferences -- we score how well we converged.
 #
 # WHICH SCRIPT TO USE:
-#   - At home / IPv6 network  --> use this file (interactive_demo.py)
-#                                  uses DATABASE_URL in fastapi/.env
-#   - On campus / IPv4 network --> use CAMPUS_interactive_demo.py instead
+#   - On campus / IPv4 network --> use this file (CAMPUS_interactive_demo.py)
 #                                  uses DATABASE_URL_IPV4 in fastapi/.env
+#                                  points to Supabase shared pooler (IPv4-compatible)
+#   - At home / IPv6 network   --> use interactive_demo.py instead
+#                                  uses DATABASE_URL in fastapi/.env
 #
 # WHY: Campus networks (USF, Stanford, etc.) are IPv4-only. Supabase's direct
 # connection hostname (db.wthzvpjnxpldewhzaqzn.supabase.co) is IPv6-only and
-# won't resolve on campus. CAMPUS_interactive_demo.py points to the Supabase
-# shared pooler (aws-1-us-east-2.pooler.supabase.com) which is IPv4-compatible.
+# won't resolve on campus. This file uses the shared pooler instead:
+# aws-1-us-east-2.pooler.supabase.com -- free, no add-on required.
 #
 # STEPS:
 #   1. ONBOARDING - User types their food preferences in plain English. That text
@@ -60,16 +61,14 @@ from google import genai
 # load env vars -- parents[3] because we are 3 levels deep from project root
 load_dotenv(Path(__file__).resolve().parents[3] / "fastapi" / ".env")
 
-DATABASE_URL = os.getenv("DATABASE_URL")   # Supabase connection string
-PROJECT_ID = os.getenv("PROJECT_ID")    # GCP project for Vertex AI
-LOCATION = "us-central1"
-EMBED_MODEL = "text-embedding-004"       # must match model used to embed dishes
-# model for recommendations and summarization
-GEN_MODEL = "gemini-2.5-flash"
-ALPHA = 0.3                        # how strongly each pick pulls the preference vector
+DATABASE_URL = os.getenv("DATABASE_URL_IPV4")   # Supabase shared pooler -- IPv4-compatible for campus networks
+PROJECT_ID   = os.getenv("PROJECT_ID")    # GCP project for Vertex AI
+LOCATION     = "us-central1"
+EMBED_MODEL  = "text-embedding-004"       # must match model used to embed dishes
+GEN_MODEL    = "gemini-2.5-flash"         # model for recommendations and summarization
+ALPHA        = 0.3                        # how strongly each pick pulls the preference vector
 
-MOCK_USERS_PATH = Path(__file__).parent.parent / \
-    "exp_01_single_day" / "mock_users.json"
+MOCK_USERS_PATH = Path(__file__).parent.parent / "exp_01_single_day" / "mock_users.json"
 
 # generic station labels to exclude -- same set used across all experiments
 PLACEHOLDER_DISHES = {
@@ -113,7 +112,7 @@ def update_preference_vector(pref_vec: np.ndarray, dish_vec: np.ndarray) -> np.n
 def get_available_dates() -> list[str]:
     # pull all distinct dates from backfill_menu, sorted oldest to newest
     conn = psycopg2.connect(DATABASE_URL)
-    cur = conn.cursor()
+    cur  = conn.cursor()
     cur.execute("""
         SELECT DISTINCT date_served
         FROM backfill_menu
@@ -122,14 +121,13 @@ def get_available_dates() -> list[str]:
     rows = cur.fetchall()
     cur.close()
     conn.close()
-    # convert date objects to "YYYY-MM-DD" strings
-    return [str(row[0]) for row in rows]
+    return [str(row[0]) for row in rows]   # convert date objects to "YYYY-MM-DD" strings
 
 
 def retrieve_dishes(query_vector: np.ndarray, date_str: str, limit: int = 20) -> list[dict]:
     # cosine search backfill_menu for the given date, ranked by similarity to the query vector
     conn = psycopg2.connect(DATABASE_URL)
-    cur = conn.cursor()
+    cur  = conn.cursor()
     cur.execute("""
         SELECT dish_name, dining_hall, meal_time, allergens, ingredients
         FROM backfill_menu
@@ -157,7 +155,7 @@ def fetch_dish_embedding(dish_name: str, date_str: str) -> np.ndarray | None:
     # uses ILIKE for case-insensitive match -- Gemini sometimes tweaks capitalization
     # returns None if the dish isn't found (e.g. Gemini hallucinated a name)
     conn = psycopg2.connect(DATABASE_URL)
-    cur = conn.cursor()
+    cur  = conn.cursor()
     cur.execute("""
         SELECT embedding
         FROM backfill_menu
@@ -188,7 +186,7 @@ def filter_allergens(dishes: list[dict], user_allergens: list[str]) -> list[dict
 
 def deduplicate(dishes: list[dict]) -> list[dict]:
     # keep only the first occurrence of each dish name -- first = highest cosine rank
-    seen = set()
+    seen   = set()
     unique = []
     for d in dishes:
         if d["dish_name"] not in seen:
@@ -226,8 +224,7 @@ Only output the sentence -- no preamble, no quotes."""
             )
             return response.text.strip()   # plain text, no JSON needed here
         except Exception as e:
-            print(
-                f"  [summarize attempt {attempt + 1} failed: {e}]", flush=True)
+            print(f"  [summarize attempt {attempt + 1} failed: {e}]", flush=True)
             if attempt == 2:
                 # fallback: just return the original signup text so the loop can continue
                 return signup_text
@@ -272,14 +269,12 @@ Respond in this exact JSON format:
             )
             result = json.loads(response.text)
             # drop any "N/A" entries Gemini returns when it can't find a good match
-            recs = [r for r in result["recommendations"] if r.get(
-                "dish_name") and r["dish_name"].strip().upper() != "N/A"]
+            recs = [r for r in result["recommendations"] if r.get("dish_name") and r["dish_name"].strip().upper() != "N/A"]
             return recs
         except Exception as e:
             print(f"  [gemini attempt {attempt + 1} failed: {e}]", flush=True)
             if attempt == 2:
-                print(
-                    f"  Warning: giving up after 3 attempts, skipping day.", flush=True)
+                print(f"  Warning: giving up after 3 attempts, skipping day.", flush=True)
                 return []
             time.sleep(2)
 
@@ -288,26 +283,22 @@ def main():
     print("\n=== Lunch Buddy -- Learning Demo ===\n", flush=True)
 
     # --- onboarding ---
-    signup_text = input(
-        "What kind of food do you enjoy? Describe your tastes:\n> ").strip()
-    allergens_raw = input(
-        "\nAny allergens to avoid? (comma-separated, or press Enter to skip):\n> ").strip()
+    signup_text = input("What kind of food do you enjoy? Describe your tastes:\n> ").strip()
+    allergens_raw = input("\nAny allergens to avoid? (comma-separated, or press Enter to skip):\n> ").strip()
     # parse allergens into a list -- empty string becomes an empty list
     allergens = [a.strip() for a in allergens_raw.split(",") if a.strip()]
 
     # embed the signup text -- this is the starting preference vector
     print("\nEmbedding your preferences...", flush=True)
-    initial_pref_vec = get_embedding(
-        signup_text)   # saved for final comparison
-    pref_vec = initial_pref_vec.copy()       # this one evolves each day
+    initial_pref_vec = get_embedding(signup_text)   # saved for final comparison
+    pref_vec         = initial_pref_vec.copy()       # this one evolves each day
 
     # the natural language summary Gemini uses as its prompt -- starts as the raw signup text
     preference_summary = signup_text
 
     # pull the 10 available dates from the DB
     dates = get_available_dates()
-    print(
-        f"\nDates available: {dates[0]} -> {dates[-1]} ({len(dates)} days)\n", flush=True)
+    print(f"\nDates available: {dates[0]} -> {dates[-1]} ({len(dates)} days)\n", flush=True)
 
     # log structure -- saved to JSON at the end
     log = {
@@ -321,8 +312,7 @@ def main():
     # --- day loop ---
     for day_num, date_str in enumerate(dates):
         print(f"--- Day {day_num + 1} ({date_str}) ---", flush=True)
-        print(
-            f"Current preference summary: \"{preference_summary}\"\n", flush=True)
+        print(f"Current preference summary: \"{preference_summary}\"\n", flush=True)
 
         # retrieve top 20 dishes by cosine distance to the evolving pref_vec
         candidates = retrieve_dishes(pref_vec, date_str, limit=20)
@@ -346,21 +336,17 @@ def main():
         # display Gemini's picks to the user
         print("Today's top recommendations:\n", flush=True)
         for i, rec in enumerate(recs):
-            print(
-                f"  {i+1}. {rec['dish_name']} at {rec['dining_hall']}", flush=True)
+            print(f"  {i+1}. {rec['dish_name']} at {rec['dining_hall']}", flush=True)
             print(f"     Why: {rec['reason']}\n", flush=True)
 
         # get the user's pick -- validate that input is 1, 2, or 3
         while True:
-            choice_raw = input(
-                "Which dish do you pick? (1 / 2 / 3):\n> ").strip()
+            choice_raw = input("Which dish do you pick? (1 / 2 / 3):\n> ").strip()
             if choice_raw in ("1", "2", "3") and int(choice_raw) <= len(recs):
                 break
-            print(
-                f"  Please enter a number between 1 and {len(recs)}.", flush=True)
+            print(f"  Please enter a number between 1 and {len(recs)}.", flush=True)
 
-        # the dict Gemini returned for this pick
-        chosen_rec = recs[int(choice_raw) - 1]
+        chosen_rec  = recs[int(choice_raw) - 1]   # the dict Gemini returned for this pick
         chosen_name = chosen_rec["dish_name"]
         chosen_dishes.append(chosen_name)
 
@@ -374,8 +360,7 @@ def main():
             pref_vec = update_preference_vector(pref_vec, dish_vec)
         else:
             # dish not found in DB (shouldn't happen) -- skip vector update for this day
-            print(
-                f"  Warning: embedding not found for '{chosen_name}', vector unchanged.", flush=True)
+            print(f"  Warning: embedding not found for '{chosen_name}', vector unchanged.", flush=True)
 
         # ask Gemini to re-summarize preferences based on all picks so far
         print("Updating your preference summary...", flush=True)
@@ -401,21 +386,18 @@ def main():
 
     # compare how close initial vs final preference vector is to the true preferences
     initial_score = cosine_similarity(initial_pref_vec, true_vec)
-    final_score = cosine_similarity(pref_vec, true_vec)
-    delta = final_score - initial_score
+    final_score   = cosine_similarity(pref_vec, true_vec)
+    delta         = final_score - initial_score
 
     print(f"\n--- Results ---", flush=True)
-    print(
-        f"Initial preference vector similarity to true preferences: {initial_score:.4f}", flush=True)
-    print(
-        f"Final preference vector similarity to true preferences:   {final_score:.4f}", flush=True)
-    print(
-        f"Improvement after 10 days of learning:                   {delta:+.4f}", flush=True)
+    print(f"Initial preference vector similarity to true preferences: {initial_score:.4f}", flush=True)
+    print(f"Final preference vector similarity to true preferences:   {final_score:.4f}", flush=True)
+    print(f"Improvement after 10 days of learning:                   {delta:+.4f}", flush=True)
 
     # save everything to JSON
-    log["true_preferences"] = true_preferences
-    log["initial_score"] = initial_score
-    log["final_score"] = final_score
+    log["true_preferences"]  = true_preferences
+    log["initial_score"]     = initial_score
+    log["final_score"]       = final_score
     log["score_improvement"] = delta
 
     results_path = Path(__file__).parent / "demo_results.json"
