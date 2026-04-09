@@ -1,4 +1,4 @@
-# 🥗 Lunch Buddy
+# Lunch Buddy
 
 > AI-powered lunch recommendations for Stanford students — right place, right meal, right now.
 
@@ -91,10 +91,10 @@ pip install -r requirements.txt
    From `fastapi/`:
 
    ```bash
-   cp .env.example .env
+   touch .env
    ```
 
-   Then open **`fastapi/.env`** (a single file in the `fastapi/` folder — not a directory) and paste the following, or merge these lines with your own values:
+   Then open **`fastapi/.env`** and paste the following, or merge these lines with your own values:
 
    ```env
    MLFLOW_TRACKING_URI=http://35.232.122.64:5000
@@ -128,21 +128,31 @@ pip install -r requirements.txt
 
 ### Build and run with Docker
 
-Build from the **`fastapi/`** directory (where the `Dockerfile` lives):
+1. **Start Docker and stay signed in**  
+   - **Open Docker Desktop** (macOS / Windows) or ensure the Docker daemon is running (Linux). Wait until the UI shows the engine is **running** — `docker build` and `docker run` need this.  
+   - **Sign in to Docker Hub** from a terminal (required for **`docker push`**; optional if you only build and run locally):
+
+     ```bash
+     docker login
+     ```
+
+   - Use your existing Docker Hub username and password (or access token). You should see “Login Succeeded”.
+
+2. **Build the image** from the **`fastapi/`** directory (where the `Dockerfile` lives):
 
 ```bash
 cd fastapi
 docker build -t lunch-buddy-api:latest .
 ```
 
-**Tag and push** to Docker Hub using **your** Docker Hub username (must match the image name you submit and screenshot for grading):
+3. **Tag and push** to Docker Hub using **your** Docker Hub username (must match the image name you submit and screenshot for grading). You must be logged in (`docker login`) for `docker push`:
 
 ```bash
 docker tag lunch-buddy-api:latest YOUR_DOCKERHUB_USERNAME/lunch-buddy-api:latest
 docker push YOUR_DOCKERHUB_USERNAME/lunch-buddy-api:latest
 ```
 
-Run the container. Values below match **`fastapi/.env`** / local setup: MLflow at `http://35.232.122.64:5000`, model `models:/dummy_model/1`, and GCP project `lunch-buddy-491800` (same as `GOOGLE_CLOUD_PROJECT` in the local steps). Replace **`YOUR_DOCKERHUB_USERNAME`** with your Docker Hub name. This mounts **Application Default Credentials** and maps host **8000** → container **8080**:
+4. **Run the container.** Keep Docker running. Values below match **`fastapi/.env`** / local setup: MLflow at `http://35.232.122.64:5000`, model `models:/dummy_model/1`, and GCP project `lunch-buddy-491800` (same as `GOOGLE_CLOUD_PROJECT` in the local steps). Replace **`YOUR_DOCKERHUB_USERNAME`** with your Docker Hub name. This mounts **Application Default Credentials** and maps host **8000** → container **8080**:
 
 ```bash
 docker run --rm -p 8000:8080 \
@@ -207,6 +217,45 @@ curl -s -X POST "http://127.0.0.1:8000/predict" \
 *Broader Lunch Buddy app setup (database, scraper, LLM) — TBD.*
 
 ---
+# Phase 1: Automated Data Ingestion Pipeline
+
+**Overview:** An automated daily ETL (Extract, Transform, Load) pipeline that pulls scraped university dining menus from Google Cloud Storage, generates semantic vector embeddings using Vertex AI, and syncs the data to a Supabase PostgreSQL database for hybrid search.
+
+## Architectural Decisions
+
+* **Database Connection Pooling (Supabase):** * Configured via a **Transaction Pooler (Port 6543)** rather than a direct connection. This protects the database from connection exhaustion during spiky API traffic.
+  * Enabled **IPv4 Shared Pooling** to bypass silent IPv6 networking failures common in ephemeral CI/CD environments.
+* **Batch API Processing:** We hit the Vertex AI `text-embedding-004` model in batches of 50 to optimize network latency and strictly adhere to rate limits.
+* **Idempotent Database Uploads:**
+  * Data is pushed via `psycopg2.extras.execute_values` for high-performance bulk inserts (one database trip instead of hundreds).
+  * The database enforces a strict `UNIQUE (dish_name, dining_hall, meal_time, date_served)` constraint. 
+  * By using an `ON CONFLICT DO UPDATE` clause, the pipeline is fully **idempotent**. If the GitHub Action fails and restarts, or runs twice in one day, it will simply update existing records rather than duplicating data.
+* **CI/CD Automation (GitHub Actions):**
+  * Runs automatically on a daily cron schedule, with a manual `workflow_dispatch` trigger for testing.
+  * Utilizes Google's official `auth@v2` action for secure Service Account authentication (Vertex AI User role), keeping GCP keys safely in GitHub Secrets.
+
+---
+
+## The ETL Script (`menu_db_ingest.py`) Step-by-Step
+
+The Python ingestion script acts as the bridge between raw cloud storage and our vectorized database. Here is the exact lifecycle of the data during a single run:
+
+### 1. Extract (Fetch Raw Data)
+The script authenticates with Google Cloud Storage and downloads the scraped JSON file for the current day. It reads this raw, highly nested JSON directly into memory.
+
+### 2. Transform & Deduplicate (Flattening)
+Before touching any external APIs, the script processes the JSON into a flat structure.
+* **Search Text Generation:** It combines the dish name and ingredients into a single, clean `search_text` string. This is the exact text the AI will interpret.
+* **Application-Layer Deduplication:** Scraped menus frequently contain duplicate entries (e.g., the same pizza served for both Lunch and Dinner). The script creates a unique fingerprint for every item: `(dish_name, dining_hall, meal_time)`. If it detects duplicates within the daily JSON, it safely overwrites them, ensuring only one clean record remains.
+
+### 3. Enrich (Vector Embeddings)
+The script iterates through the flattened menu items in batches of 50. It sends the `search_text` for each batch to Google's Vertex AI (`text-embedding-004` model). Vertex AI returns a 768-dimensional mathematical array (a vector) for each item, which the script attaches to the respective Python dictionary.
+
+### 4. Format (Tuple Conversion)
+To maximize database insert speeds, the script uses the `psycopg2` library's `execute_values` function. This requires converting our list of Python dictionaries into a strict list of tuples that map perfectly to our Postgres database columns.
+
+### 5. Load (Database Upsert)
+The script opens a connection to the Supabase Transaction Pooler and executes a bulk `INSERT` query. It utilizes an `ON CONFLICT` clause tied to our database's unique constraint. If a menu item already exists for that day, meal, and hall, the script simply updates the vector embedding instead of crashing, guaranteeing data integrity.
 
 ## License
 

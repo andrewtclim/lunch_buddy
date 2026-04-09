@@ -13,6 +13,9 @@ venv/
 scraper/data/
 data/
 
+# Local Claude context — never commit
+CLAUDE.md
+
 # macOS
 .DS_Store
 
