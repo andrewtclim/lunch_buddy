@@ -160,9 +160,10 @@ docker run --rm -p 8000:8080 \
   -e MLFLOW_TRACKING_URI=http://35.232.122.64:5000 \
   -e MLFLOW_MODEL_URI=models:/dummy_model/1 \
   -e USE_STUB_MODEL=0 \
+  -e CORS_ORIGINS=http://localhost:5173,http://127.0.0.1:5173 \
   -e GOOGLE_APPLICATION_CREDENTIALS=/gcloud/adc.json \
   -v "$HOME/.config/gcloud/application_default_credentials.json:/gcloud/adc.json:ro" \
-  YOUR_DOCKERHUB_USERNAME/lunch-buddy-api:latest
+  lunch-buddy-api:local
 ```
 
 Then visit [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs).
