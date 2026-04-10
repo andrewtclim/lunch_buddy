@@ -126,48 +126,43 @@ pip install -r requirements.txt
 
 ---
 
-### Build and run with Docker
+### Build and run the API with Docker Compose
 
-1. **Start Docker and stay signed in**  
-   - **Open Docker Desktop** (macOS / Windows) or ensure the Docker daemon is running (Linux). Wait until the UI shows the engine is **running** — `docker build` and `docker run` need this.  
-   - **Sign in to Docker Hub** from a terminal (required for **`docker push`**; optional if you only build and run locally):
-
-     ```bash
-     docker login
-     ```
-
-   - Use your existing Docker Hub username and password (or access token). You should see “Login Succeeded”.
-
-2. **Build the image** from the **`fastapi/`** directory (where the `Dockerfile` lives):
+From the repo root:
 
 ```bash
 cd fastapi
-docker build -t lunch-buddy-api:latest .
+touch .env
 ```
 
-3. **Tag and push** to Docker Hub using **your** Docker Hub username (must match the image name you submit and screenshot for grading). You must be logged in (`docker login`) for `docker push`:
+Add the following variables to `fastapi/.env`:
+
+```env
+MLFLOW_TRACKING_URI=http://35.232.122.64:5000
+MLFLOW_MODEL_URI=models:/dummy_model/1
+USE_STUB_MODEL=0
+SUPABASE_URL=https://<your-project-ref>.supabase.co
+SUPABASE_JWT_AUDIENCE=authenticated
+GOOGLE_CLOUD_PROJECT=lunch-buddy-491800
+GOOGLE_APPLICATION_CREDENTIALS=/gcloud/adc.json
+```
+
+Then start the API:
 
 ```bash
-docker tag lunch-buddy-api:latest YOUR_DOCKERHUB_USERNAME/lunch-buddy-api:latest
-docker push YOUR_DOCKERHUB_USERNAME/lunch-buddy-api:latest
+docker compose up --build
 ```
 
-4. **Run the container.** Keep Docker running. Values below match **`fastapi/.env`** / local setup: MLflow at `http://35.232.122.64:5000`, model `models:/dummy_model/1`, and GCP project `lunch-buddy-491800` (same as `GOOGLE_CLOUD_PROJECT` in the local steps). Replace **`YOUR_DOCKERHUB_USERNAME`** with your Docker Hub name. This mounts **Application Default Credentials** and maps host **8000** → container **8080**:
+Open:
+
+- Docs: [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs)
+- Health: [http://127.0.0.1:8000/health](http://127.0.0.1:8000/health)
+
+Stop:
 
 ```bash
-docker run --rm -p 8000:8080 \
-  -e GOOGLE_CLOUD_PROJECT=lunch-buddy-491800 \
-  -e MLFLOW_TRACKING_URI=http://35.232.122.64:5000 \
-  -e MLFLOW_MODEL_URI=models:/dummy_model/1 \
-  -e USE_STUB_MODEL=0 \
-  -e GOOGLE_APPLICATION_CREDENTIALS=/gcloud/adc.json \
-  -v "$HOME/.config/gcloud/application_default_credentials.json:/gcloud/adc.json:ro" \
-  YOUR_DOCKERHUB_USERNAME/lunch-buddy-api:latest
+docker compose down
 ```
-
-Then visit [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs).
-
-**Docker image name for the rubric:** use the same name in README, `docker run`, and Docker Hub (e.g. `YOUR_DOCKERHUB_USERNAME/lunch-buddy-api:latest`). Replace `YOUR_DOCKERHUB_USERNAME` with your account name after `docker login`.
 
 ---
 
@@ -208,6 +203,41 @@ Example:
 curl -s -X POST "http://127.0.0.1:8000/predict" \
   -H "Content-Type: application/json" \
   -d '{"preferences": ["vegetarian"], "constraints": []}'
+```
+
+---
+
+## Frontend (Docker)
+
+### Start the frontend with Docker Compose
+
+From the repo root:
+
+```bash
+cd frontend
+touch .env
+```
+
+Add the following variables to `frontend/.env`:
+
+```env
+VITE_API_URL=http://127.0.0.1:8000
+VITE_SUPABASE_URL=https://<your-project-ref>.supabase.co
+VITE_SUPABASE_PUBLISHABLE_KEY=<your-key>
+```
+
+Then start the frontend:
+
+```bash
+docker compose up --build
+```
+
+Open: [http://127.0.0.1:5173](http://127.0.0.1:5173)
+
+Stop:
+
+```bash
+docker compose down
 ```
 
 ---

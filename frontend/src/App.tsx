@@ -1,6 +1,9 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import type { Session } from "@supabase/supabase-js";
 import { predict } from "./api";
 import { ALLERGEN_OPTIONS, RESTRICTION_OPTIONS } from "./options";
+import AuthPage from "./AuthPage";
+import { supabase } from "./supabaseClient";
 import "./App.css";
 
 function toggleInSet(set: Set<string>, value: string): Set<string> {
@@ -11,7 +14,8 @@ function toggleInSet(set: Set<string>, value: string): Set<string> {
 }
 
 export default function App() {
-  const [userId, setUserId] = useState("");
+  const [session, setSession] = useState<Session | null>(null);
+  const [authReady, setAuthReady] = useState(false);
   const [allergens, setAllergens] = useState<Set<string>>(() => new Set());
   const [restrictions, setRestrictions] = useState<Set<string>>(() => new Set());
   const [preferencesText, setPreferencesText] = useState("");
@@ -25,6 +29,27 @@ export default function App() {
     () => [...allergens, ...restrictions],
     [allergens, restrictions],
   );
+  const userId = session?.user?.id ?? null;
+
+  useEffect(() => {
+    let mounted = true;
+
+    supabase.auth.getSession().then(({ data }) => {
+      if (!mounted) return;
+      setSession(data.session ?? null);
+      setAuthReady(true);
+    });
+
+    const { data } = supabase.auth.onAuthStateChange((_event, nextSession) => {
+      setSession(nextSession);
+      setAuthReady(true);
+    });
+
+    return () => {
+      mounted = false;
+      data.subscription.unsubscribe();
+    };
+  }, []);
 
   async function onRecommend(e: React.FormEvent) {
     e.preventDefault();
@@ -33,12 +58,12 @@ export default function App() {
     setLoading(true);
     const preferences = preferencesText.trim() ? [preferencesText.trim()] : [];
     const body = {
-      user_id: userId.trim() || null,
+      user_id: userId,
       preferences,
       constraints,
     };
     try {
-      const data = await predict(body);
+      const data = await predict(body, session?.access_token);
       setResult(data);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Request failed");
@@ -47,11 +72,35 @@ export default function App() {
     }
   }
 
+  async function onSignOut() {
+    await supabase.auth.signOut();
+  }
+
+  if (!authReady) {
+    return (
+      <div className="app">
+        <div className="card message">
+          <p>Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!session) {
+    return <AuthPage onAuthSuccess={() => undefined} />;
+  }
+
   return (
     <div className="app">
       <header className="header">
         <h1>Lunch Buddy</h1>
         <p className="tagline">Set allergens, restrictions, and preferences — then get a recommendation.</p>
+        <div className="auth-row">
+          <span className="auth-user">{session.user.email}</span>
+          <button type="button" className="secondary" onClick={onSignOut}>
+            Sign Out
+          </button>
+        </div>
       </header>
 
       <form className="card" onSubmit={onRecommend}>
@@ -60,10 +109,8 @@ export default function App() {
           <input
             type="text"
             name="user_id"
-            autoComplete="username"
-            placeholder="e.g. demo-user-1"
-            value={userId}
-            onChange={(e) => setUserId(e.target.value)}
+            value={userId ?? ""}
+            readOnly
           />
         </label>
 

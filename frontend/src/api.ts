@@ -11,10 +11,18 @@ export type PredictResponseBody = {
   rationale?: string | null;
 };
 
-export async function predict(body: PredictRequestBody): Promise<PredictResponseBody> {
+export async function predict(
+  body: PredictRequestBody,
+  accessToken?: string | null,
+): Promise<PredictResponseBody> {
+  const headers: Record<string, string> = { "Content-Type": "application/json" };
+  if (accessToken) {
+    headers.Authorization = `Bearer ${accessToken}`;
+  }
+
   const res = await fetch(`${base}/predict`, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers,
     body: JSON.stringify(body),
   });
   const text = await res.text();
