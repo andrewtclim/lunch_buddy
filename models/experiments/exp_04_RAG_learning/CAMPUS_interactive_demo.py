@@ -59,11 +59,11 @@ from dotenv import load_dotenv
 from google import genai
 
 # load env vars -- parents[3] because we are 3 levels deep from project root
-load_dotenv(Path(__file__).resolve().parents[3] / "fastapi" / ".env")
+load_dotenv(Path(__file__).resolve().parents[2] / ".env")
 
 DATABASE_URL = os.getenv("DATABASE_URL_IPV4")   # Supabase shared pooler -- IPv4-compatible for campus networks
 PROJECT_ID   = os.getenv("PROJECT_ID")    # GCP project for Vertex AI
-LOCATION     = "us-central1"
+LOCATION     = os.getenv("LOCATION", "us-central1")  # Vertex AI region
 EMBED_MODEL  = "text-embedding-004"       # must match model used to embed dishes
 GEN_MODEL    = "gemini-2.5-flash"         # model for recommendations and summarization
 ALPHA        = 0.3                        # how strongly each pick pulls the preference vector
