@@ -36,7 +36,9 @@ from google.genai import types as genai_types
 # load env vars from models/.env (two levels up from gemini_flash_rag/)
 load_dotenv(Path(__file__).resolve().parents[1] / ".env")
 
-# Supabase direct connection
+# If on IPv4 URLs use the url below for Supabase connection (when direct hostname doesn't resolve on this network)
+# DATABASE_URL = os.getenv("DATABASE_URL_IPV4")
+
 DATABASE_URL = os.getenv("DATABASE_URL")
 PROJECT_ID = os.getenv("PROJECT_ID")                # GCP project for Vertex AI
 LOCATION = os.getenv("LOCATION", "us-central1")   # Vertex AI region
@@ -45,8 +47,9 @@ EMBED_MODEL = "text-embedding-004"   # must match the model used to embed dishes
 GEN_MODEL = "gemini-2.5-flash"     # generator LLM
 
 ALPHA = 0.3    # how strongly each dish pick nudges the stored preference vector
-BETA_WITH_MOOD = 0.5   # how strongly a daily mood nudges the query vector (when mood given)
-BETA_NO_MOOD   = 0.0   # no mood means query_vec = pref_vec directly
+# how strongly a daily mood nudges the query vector (when mood given)
+BETA_WITH_MOOD = 0.5
+BETA_NO_MOOD = 0.0   # no mood means query_vec = pref_vec directly
 # alpha and beta are independent:
 #   alpha updates pref_vec permanently after a pick
 #   beta shifts query_vec temporarily for today's search only
@@ -240,7 +243,7 @@ def call_gemini(preference_summary: str, candidates: list[dict],
     #   - thinking_budget=0 disables the extended reasoning step in 2.5 Flash.
     #     Benchmark showed identical dish picks to default thinking at 7x lower
     #     latency (~2s vs ~13s) with higher JSON reliability (100% vs 33-67%).
- 
+
     # build the numbered dish list Gemini reads
     dish_lines = "\n".join([
         f"{i+1}. {d['dish_name']} at {d['dining_hall']} ({d['meal_time']})"
@@ -255,7 +258,7 @@ def call_gemini(preference_summary: str, candidates: list[dict],
         "For dish_name use ONLY the dish name "
         '(e.g. "Gochujang Spiced Chicken"), not the dining hall or meal time.'
     )
- 
+
     json_schema = """\
 Respond in this exact JSON format:
 {{
@@ -269,7 +272,7 @@ Respond in this exact JSON format:
     {{"dish_name": "...", "dining_hall": "...", "reason": "..."}}
   ]
 }}"""
- 
+
     if daily_mood:
         # mood-primary prompt: mood leads, profile is tiebreaker
         prompt = f"""You are a Stanford dining hall recommender.
@@ -347,7 +350,7 @@ For each include: dish name, dining hall, and one concise reason it's worth tryi
                     r["dish_name"] = name
                     cleaned.append(r)
                 return cleaned
-            
+
             recs = clean(result.get("recommendations", []))
             alts = clean(result.get("alternatives", []))
             return recs, alts
@@ -429,7 +432,8 @@ def recommend(
     # step 1 -- if mood was provided, embed it and blend into a temporary query vector
     if daily_mood:
         mood_vec = get_embedding(daily_mood)   # embed the mood string
-        query_vec = blend_mood(pref_vec, mood_vec)  # 50/50 profile/mood (BETA_WITH_MOOD)
+        # 50/50 profile/mood (BETA_WITH_MOOD)
+        query_vec = blend_mood(pref_vec, mood_vec)
     else:
         query_vec = pref_vec                    # no mood -- use profile directly
 

@@ -127,6 +127,31 @@ Gemini 2.5 Flash), FastAPI, Python, Docker, MLflow (experiment tracking).
   log results to MLflow.
 - **Files.** `experiments/exp_04_RAG_learning/`
 
+### exp_06 — thinking_budget benchmark + prompt v2 — Apr 12 2026 — done
+
+- **What we tried.** Benchmarked `thinking_budget=0` (disables extended reasoning in
+  Gemini 2.5 Flash) against default thinking for the re-ranking task. Also tested a
+  revised "mood-primary" prompt where the user's daily mood leads as the primary
+  constraint and the taste profile is demoted to a tiebreaker.
+- **Results.**
+  - `thinking_budget=0` produced identical dish picks to default thinking at 7x lower
+    latency (~2s vs ~13s) and 100% JSON reliability vs 33-67% with default thinking.
+  - Mood-primary prompt (v2): 1/3 overlap with the old profile-dominant prompt on the
+    same candidates. The v2 picks were meaningfully more mood-aligned.
+  - Dynamic beta: raising beta from 0.3 to 0.5 when mood is given aligns retrieval with
+    the new prompt priority. When no mood, beta=0.0 so query_vec = pref_vec directly.
+- **Decisions.**
+  - `thinking_budget=0` adopted for all Gemini calls (re-ranking + summary generation).
+    Re-ranking 10 dishes is pattern matching, not multi-step reasoning.
+  - Prompt v2 (mood-primary) adopted. Profile-only prompt retained for the no-mood path.
+  - `beta_with_mood=0.5`, `beta_no_mood=0.0` (was fixed 0.3 for both cases).
+  - `top_k_gemini` raised from 5 to 10 -- gives Gemini more room, especially on days
+    with aggressive allergen filtering.
+  - Defensive `dish_name` cleanup added: strips `" at DiningHall (MealTime)"` suffix
+    if Gemini copies the full candidate line into the dish_name field.
+- **Registered.** `gemini_flash_rag_v2` in MLflow Model Registry.
+- **Files.** `gemini_flash_rag/recommend.py`, `gemini_flash_rag/register.py`
+
 ### exp_05 — FastAPI deploy scaffold — Apr 10 2026 — scaffold only
 
 - **What we tried.** Set up a FastAPI + Docker scaffold for serving recommendations
@@ -261,3 +286,54 @@ for the experiment scripts. Three files:
 - `python-jose` missing from `fastapi/requirements.txt` -- Patrick fix needed.
 - Retrieval pool size -- consider raising limit or restructuring to filter-then-rank.
 - Judge LLM -- wire Gemini Pro as a second evaluation pass after Flash generates recs.
+
+---
+
+## Session log — Apr 12 2026
+
+### gemini_flash_rag v2 (teammate changes, pulled from `atl_model_exploration`)
+
+Applied benchmark findings from exp_06. Four files changed:
+
+**`recommend.py`**
+- `thinking_budget=0` added to both `call_gemini()` and `generate_preference_summary()`.
+  Disables extended reasoning in Gemini 2.5 Flash -- confirmed identical picks at 7x
+  lower latency with higher JSON reliability.
+- Dynamic beta: `BETA_WITH_MOOD=0.5` / `BETA_NO_MOOD=0.0` replacing fixed `BETA=0.3`.
+  When no mood is given, `query_vec = pref_vec` directly (blend_mood not called).
+- Prompt v2: two separate prompt branches. When `daily_mood` is provided, mood leads
+  as the primary constraint and the profile is a tiebreaker. When no mood, profile-only
+  prompt (mood section omitted entirely).
+- `top_k_gemini` slice raised from `[:5]` to `[:10]` (line 444).
+- Defensive `dish_name` cleanup: strips `" at DiningHall (MealTime)"` suffix in `clean()`.
+- `format_rules` and `json_schema` extracted as shared strings to avoid duplication
+  across the two prompt branches.
+- Imported `google.genai.types` as `genai_types` (needed for `ThinkingConfig`).
+
+**`register.py`**
+- Model name changed to `gemini_flash_rag_v2`.
+- PARAMS updated: `thinking_budget=0`, `prompt_version="v2"`, `beta_with_mood=0.5`,
+  `beta_no_mood=0.0`, `top_k_gemini=10`.
+- Sample I/O updated to illustrate mood-primary behavior (light dishes surface over
+  spicy Korean when mood = "something light today").
+
+**`sample_io.json`**
+- Regenerated to match v2 sample output.
+
+**`user_prefs.py`**
+- `DATABASE_URL` switched to `DATABASE_URL_IPV4` for Supabase connection.
+  Confirm `DATABASE_URL_IPV4` is set in `models/.env` -- missing key silently returns
+  None and causes runtime failure in `load_user_pref` / `save_user_pref`.
+
+### MLflow registration
+
+- `gemini_flash_rag_v2` registered in MLflow Model Registry by teammate.
+- Load: `mlflow.pyfunc.load_model("models:/gemini_flash_rag_v2/1")`
+
+### Pending
+
+- FastAPI `/predict` still not wired -- primary next milestone (Patrick coordinates).
+- `python-jose` still missing from `fastapi/requirements.txt` -- Patrick fix needed.
+- Confirm `DATABASE_URL_IPV4` is present in `models/.env` after `user_prefs.py` change.
+- Judge LLM -- Gemini Pro evaluation pass still not wired [WIP].
+- Retrieval pool size -- fetch 100-150 then filter-then-rank still a future fix.
