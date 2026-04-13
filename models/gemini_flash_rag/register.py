@@ -7,10 +7,17 @@
 #   - A sample input/output JSON artifact for documentation and schema reference
 #
 # Run this script once to register. After registration, FastAPI can load the model via:
-#   mlflow.pyfunc.load_model("models:/gemini_flash_rag_v1/1")
+#   mlflow.pyfunc.load_model("models:/gemini_flash_rag_v2/1")
 #
 # The pyfunc wrapper imports recommend.py and user_prefs.py at predict() time,
 # so those files must be present wherever the model is loaded.
+#
+# Changes from v1 (validated in exp_06, Apr 12 2026):
+#   - thinking_budget=0: 7x faster Gemini calls, identical dish picks, 100% JSON reliability
+#   - prompt v2: mood-primary prompt when daily_mood is given (profile as tiebreaker)
+#   - beta_with_mood=0.5: retrieval aligns with prompt priority (was fixed 0.3)
+#   - top_k_gemini=10: more candidates for Gemini to pick from (was 5)
+#   - dish_name cleanup: defensive strip of "at DiningHall (MealTime)" suffixes
 
 import os
 import json
@@ -25,17 +32,20 @@ load_dotenv(Path(__file__).resolve().parents[1] / ".env")
 
 MLFLOW_TRACKING_URI = os.getenv("MLFLOW_TRACKING_URI", "http://35.232.122.64:5000")
 EXPERIMENT_NAME     = "lunch-buddy-rag"
-MODEL_NAME          = "gemini_flash_rag_v1"   # name in the MLflow Model Registry
+MODEL_NAME          = "gemini_flash_rag_v2"   # name in the MLflow Model Registry
 
 # pipeline parameters -- these are what distinguish v1 from future versions
 PARAMS = {
     "embed_model":     "text-embedding-004",  # Vertex AI embedding model
     "gen_model":       "gemini-2.5-flash",    # Gemini model for recommendations
-    "alpha":           0.3,    # EMA weight -- how strongly each pick shifts pref_vec
-    "beta":            0.3,    # mood blend weight -- how strongly mood shifts query_vec
-    "similarity_metric": "cosine",            # distance function used in pgvector
-    "top_k_retrieval": 40,     # dishes fetched from Supabase before filtering
-    "top_k_gemini":    5,      # candidates passed to Gemini after filtering
+    "thinking_budget":   0,       # disables extended reasoning (exp_06: 7x faster, same picks)
+    "prompt_version":    "v2",    # mood-primary when mood given, profile-only otherwise
+    "alpha":             0.3,     # EMA weight -- how strongly each pick shifts pref_vec
+    "beta_with_mood":    0.5,     # mood blend weight when mood is given (was 0.3 in v1)
+    "beta_no_mood":      0.0,     # no blend when no mood -- query_vec = pref_vec directly
+    "similarity_metric": "cosine",              # distance function used in pgvector
+    "top_k_retrieval":   40,      # dishes fetched from Supabase before filtering
+    "top_k_gemini":      10,      # candidates passed to Gemini after filtering (was 5 in v1)
 }
 
 
@@ -94,6 +104,11 @@ class GeminiFlashRAG(mlflow.pyfunc.PythonModel):
 def build_sample_io() -> dict:
     # a concrete example of what goes into predict() and what comes back out
     # saved as an artifact so anyone reading the MLflow run knows the exact schema
+    #
+    # v2 note: with mood "something light today", recommendations prioritize
+    # lightness (the mood) over the user's spicy Korean profile. The profile
+    # influences tie-breaking -- Cilantro Jasmine Rice surfaces because it's
+    # both light AND Asian, satisfying both signals.
     return {
         "input": {
             "pref_vec":           [0.0] * 768,   # placeholder -- 768 zeros, real vec is private
@@ -106,31 +121,31 @@ def build_sample_io() -> dict:
         "output": {
             "recommendations": [
                 {
-                    "dish_name":   "Gochujang Pork",
-                    "dining_hall": "Lakeside",
-                    "reason":      "Matches your Korean spice preference; lighter than a full rice bowl.",
-                },
-                {
-                    "dish_name":   "Grilled Chicken Salad",
+                    "dish_name":   "Cilantro Jasmine Rice",
                     "dining_hall": "Wilbur",
-                    "reason":      "High protein chicken in a light format -- fits today's mood.",
+                    "reason":      "Light rice dish with Asian flavors -- fits today's mood and your profile.",
                 },
                 {
-                    "dish_name":   "Kimchi Fried Rice",
+                    "dish_name":   "Seasonal Steamed Vegetables",
                     "dining_hall": "Arrillaga",
-                    "reason":      "Bold Korean flavors; portion is moderate.",
+                    "reason":      "Light and fresh -- directly matches your craving for something light.",
+                },
+                {
+                    "dish_name":   "Seasonal Rice Noodle Stir Fry",
+                    "dining_hall": "Gerhard Casper",
+                    "reason":      "Asian noodles in a lighter stir fry format -- balances mood and taste.",
                 },
             ],
             "alternatives": [
                 {
-                    "dish_name":   "Butter Chicken",
-                    "dining_hall": "Wilbur",
-                    "reason":      "Indian spiced, milder -- different cuisine worth exploring.",
+                    "dish_name":   "Gochujang Spiced Chicken",
+                    "dining_hall": "Lakeside",
+                    "reason":      "Matches your Korean spice profile if you want something heartier.",
                 },
                 {
-                    "dish_name":   "Grilled Salmon",
-                    "dining_hall": "Florence Moore",
-                    "reason":      "Lighter protein, completely different style from usual picks.",
+                    "dish_name":   "Buffalo Cauliflower Wrap",
+                    "dining_hall": "Gerhard Casper",
+                    "reason":      "Different cuisine, lighter format -- worth trying.",
                 },
             ],
         },

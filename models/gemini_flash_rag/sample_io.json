@@ -781,31 +781,31 @@
   "output": {
     "recommendations": [
       {
-        "dish_name": "Gochujang Pork",
-        "dining_hall": "Lakeside",
-        "reason": "Matches your Korean spice preference; lighter than a full rice bowl."
-      },
-      {
-        "dish_name": "Grilled Chicken Salad",
+        "dish_name": "Cilantro Jasmine Rice",
         "dining_hall": "Wilbur",
-        "reason": "High protein chicken in a light format -- fits today's mood."
+        "reason": "Light rice dish with Asian flavors -- fits today's mood and your profile."
       },
       {
-        "dish_name": "Kimchi Fried Rice",
+        "dish_name": "Seasonal Steamed Vegetables",
         "dining_hall": "Arrillaga",
-        "reason": "Bold Korean flavors; portion is moderate."
+        "reason": "Light and fresh -- directly matches your craving for something light."
+      },
+      {
+        "dish_name": "Seasonal Rice Noodle Stir Fry",
+        "dining_hall": "Gerhard Casper",
+        "reason": "Asian noodles in a lighter stir fry format -- balances mood and taste."
       }
     ],
     "alternatives": [
       {
-        "dish_name": "Butter Chicken",
-        "dining_hall": "Wilbur",
-        "reason": "Indian spiced, milder -- different cuisine worth exploring."
+        "dish_name": "Gochujang Spiced Chicken",
+        "dining_hall": "Lakeside",
+        "reason": "Matches your Korean spice profile if you want something heartier."
       },
       {
-        "dish_name": "Grilled Salmon",
-        "dining_hall": "Florence Moore",
-        "reason": "Lighter protein, completely different style from usual picks."
+        "dish_name": "Buffalo Cauliflower Wrap",
+        "dining_hall": "Gerhard Casper",
+        "reason": "Different cuisine, lighter format -- worth trying."
       }
     ]
   }

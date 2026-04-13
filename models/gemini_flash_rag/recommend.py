@@ -7,11 +7,21 @@
 # Flow:
 #   1. Load user's stored preference vector (pref_vec) from Supabase
 #   2. If user provided a daily mood string, embed it and blend into a query_vec
+#       (beta=0.5 so mood meaningfully shifts retrieval)
 #   3. Cosine search backfill_menu / daily_menu using query_vec
 #   4. Filter placeholders, allergens, duplicates -> top 5 candidates
 #   5. Call Gemini with candidates + preference summary + mood string
 #   6. User picks one; fetch that dish's embedding and EMA-update pref_vec
 #   7. Save updated pref_vec back to Supabase
+#
+# Key changes from exp_06 benchmark (Apr 12 2026):
+#   - thinking_budget=0: identical picks to default thinking, 7x faster (~2s vs ~13s),
+#     100% JSON reliability vs 33-67% with default thinking
+#   - mood-primary prompt (v2): when mood given, it leads as the primary constraint
+#     and profile becomes a tiebreaker. Produces meaningfully different (mood-aligned)
+#     picks vs the old profile-dominant prompt (1/3 overlap in benchmark)
+#   - dynamic beta: 0.5 when mood present (was fixed 0.3) so retrieval and prompt
+#     are aligned in prioritizing the user's explicit request
 
 import os
 import json
@@ -21,6 +31,7 @@ import numpy as np
 from pathlib import Path
 from dotenv import load_dotenv
 from google import genai
+from google.genai import types as genai_types
 
 # load env vars from models/.env (two levels up from gemini_flash_rag/)
 load_dotenv(Path(__file__).resolve().parents[1] / ".env")
@@ -34,10 +45,13 @@ EMBED_MODEL = "text-embedding-004"   # must match the model used to embed dishes
 GEN_MODEL = "gemini-2.5-flash"     # generator LLM
 
 ALPHA = 0.3    # how strongly each dish pick nudges the stored preference vector
-BETA = 0.3    # how strongly a daily mood nudges the query vector at retrieval time
+BETA_WITH_MOOD = 0.5   # how strongly a daily mood nudges the query vector (when mood given)
+BETA_NO_MOOD   = 0.0   # no mood means query_vec = pref_vec directly
 # alpha and beta are independent:
 #   alpha updates pref_vec permanently after a pick
 #   beta shifts query_vec temporarily for today's search only
+# beta=0.5 when mood is given so the user's explicit request meaningfully
+# shifts what surfaces -- validated in exp_06 benchmark
 
 # initialize the Vertex AI client once -- reused for all API calls in this session
 client = genai.Client(vertexai=True, project=PROJECT_ID, location=LOCATION)
@@ -75,13 +89,14 @@ def normalize(vec: np.ndarray) -> np.ndarray:
     return vec / norm if norm > 0 else vec
 
 
-def blend_mood(pref_vec: np.ndarray, mood_vec: np.ndarray, beta: float = BETA) -> np.ndarray:
+def blend_mood(pref_vec: np.ndarray, mood_vec: np.ndarray, beta: float = BETA_WITH_MOOD) -> np.ndarray:
     # blend the user's stored preference vector with a daily mood embedding
     # result is a temporary query vector used only for today's retrieval --
     # the stored pref_vec is never modified here
     #
-    # beta=0.3 means: 70% learned profile, 30% today's mood
-    # this shifts what surfaces in the search without overriding the user's taste
+    # beta=0.5 means: 50% learned profile, 50% today's mood
+    # when the user explicitly says what they want, that signal should
+    # meaningfully shift what surfaces in the search
     blended = (1 - beta) * pref_vec + beta * mood_vec
     # normalize so cosine search treats both users equally
     return normalize(blended)
@@ -208,15 +223,24 @@ def deduplicate(dishes: list[dict]) -> list[dict]:
 
 def call_gemini(preference_summary: str, candidates: list[dict],
                 daily_mood: str | None = None) -> list[dict]:
-    # ask Gemini to re-rank the 5 candidates and return the top 3 with reasons
+    # ask Gemini to re-rank the candidates and return the top 3 with reasons
     #
     # preference_summary -- one-sentence description of the user's learned taste
-    # candidates         -- top 5 dishes from the cosine search (already filtered)
+    # candidates         -- top 10 dishes from the cosine search (already filtered)
     # daily_mood         -- optional free-text mood string from the user today
     #                       e.g. "I want something light" or "craving sushi"
-    #                       passed as an extra line in the prompt so Gemini can
-    #                       factor it into the rationale alongside the taste profile
-
+    #
+    # Prompt strategy (validated in exp_06):
+    #   - when daily_mood is provided: mood leads as the primary constraint,
+    #     taste profile is framed as a tiebreaker. This prevents the profile
+    #     from overriding what the user explicitly asked for today.
+    #   - when no mood: profile-driven prompt (mood section omitted entirely).
+    #
+    # Model config (validated in exp_06):
+    #   - thinking_budget=0 disables the extended reasoning step in 2.5 Flash.
+    #     Benchmark showed identical dish picks to default thinking at 7x lower
+    #     latency (~2s vs ~13s) with higher JSON reliability (100% vs 33-67%).
+ 
     # build the numbered dish list Gemini reads
     dish_lines = "\n".join([
         f"{i+1}. {d['dish_name']} at {d['dining_hall']} ({d['meal_time']})"
@@ -224,29 +248,15 @@ def call_gemini(preference_summary: str, candidates: list[dict],
         for i, d in enumerate(candidates)
     ])
 
-    # mood line is only added to the prompt when the user provided one today
-    mood_line = f"\nToday's mood: {daily_mood}" if daily_mood else ""
-
-    prompt = f"""You are a Stanford dining hall recommender.
-
-User preference: {preference_summary}{mood_line}
-
-Available dishes today:
-{dish_lines}
-
-From the list above, return two things:
-
-1. "recommendations" -- the top 3 dishes that best match the user's preference\
-{ " and today's mood" if daily_mood else ""}. \
-For each include: dish name, dining hall, and one concise reason why it fits. \
-If the user provided a mood, acknowledge it briefly in the reason where relevant.
-
-2. "alternatives" -- 2 dishes from the remaining list that are meaningfully different \
-in cuisine or style from the top 3 (to broaden the user's options). \
-For each include: dish name, dining hall, and one concise reason it's worth trying.
-
-Only use dishes from the list above -- do not invent dishes.
-No dish should appear in both recommendations and alternatives.
+    # shared output format instructions
+    format_rules = (
+        "Only use dishes from the list above -- do not invent dishes.\n"
+        "No dish should appear in both recommendations and alternatives.\n"
+        "For dish_name use ONLY the dish name "
+        '(e.g. "Gochujang Spiced Chicken"), not the dining hall or meal time.'
+    )
+ 
+    json_schema = """\
 Respond in this exact JSON format:
 {{
   "recommendations": [
@@ -259,6 +269,52 @@ Respond in this exact JSON format:
     {{"dish_name": "...", "dining_hall": "...", "reason": "..."}}
   ]
 }}"""
+ 
+    if daily_mood:
+        # mood-primary prompt: mood leads, profile is tiebreaker
+        prompt = f"""You are a Stanford dining hall recommender.
+ 
+The user is specifically craving: "{daily_mood}"
+Prioritize this above their general taste profile.
+ 
+General taste profile (use for tie-breaking only): {preference_summary}
+ 
+Available dishes today:
+{dish_lines}
+ 
+From the list above, return two things:
+ 
+1. "recommendations" -- the top 3 dishes that best match today's craving. \
+Use the general taste profile to break ties between equally good matches, \
+but do not let the profile override what the user asked for today. \
+For each include: dish name, dining hall, and one concise reason it fits today's craving.
+ 
+2. "alternatives" -- 2 dishes from the remaining list that are meaningfully different \
+in cuisine or style from the top 3 (to broaden the user's options). \
+For each include: dish name, dining hall, and one concise reason it's worth trying.
+ 
+{format_rules}
+{json_schema}"""
+    else:
+        # profile-driven prompt: no mood to prioritize
+        prompt = f"""You are a Stanford dining hall recommender.
+ 
+User preference: {preference_summary}
+ 
+Available dishes today:
+{dish_lines}
+ 
+From the list above, return two things:
+ 
+1. "recommendations" -- the top 3 dishes that best match the user's preference. \
+For each include: dish name, dining hall, and one concise reason why it fits.
+ 
+2. "alternatives" -- 2 dishes from the remaining list that are meaningfully different \
+in cuisine or style from the top 3 (to broaden the user's options). \
+For each include: dish name, dining hall, and one concise reason it's worth trying.
+ 
+{format_rules}
+{json_schema}"""
 
     # retry up to 3 times -- covers transient network errors and malformed JSON
     for attempt in range(3):
@@ -266,14 +322,32 @@ Respond in this exact JSON format:
             response = client.models.generate_content(
                 model=GEN_MODEL,
                 contents=prompt,
-                # force JSON output
-                config={"response_mime_type": "application/json"},
+                config={
+                    "response_mime_type": "application/json",
+                    # disable extended thinking -- re-ranking 10 dishes is pattern
+                    # matching, not multi-step reasoning. exp_06 confirmed identical
+                    # picks at 7x lower latency with budget=0.
+                    "thinking_config": genai_types.ThinkingConfig(
+                        thinking_budget=0
+                    ),
+                },
             )
             result = json.loads(response.text)
-            # drop any "N/A" entries Gemini sometimes returns when it can't match
 
             def clean(lst):
-                return [r for r in lst if r.get("dish_name") and r["dish_name"].strip().upper() != "N/A"]
+                cleaned = []
+                for r in lst:
+                    name = (r.get("dish_name") or "").strip()
+                    if not name or name.upper() == "N/A":
+                        continue
+                    # strip trailing " at Dining Hall (Meal Time)" if the model
+                    # copied the full line from the candidate list into dish_name
+                    if " at " in name:
+                        name = name.split(" at ")[0].strip()
+                    r["dish_name"] = name
+                    cleaned.append(r)
+                return cleaned
+            
             recs = clean(result.get("recommendations", []))
             alts = clean(result.get("alternatives", []))
             return recs, alts
@@ -306,7 +380,13 @@ Only output the sentence -- no preamble, no quotes."""
     for attempt in range(3):
         try:
             response = client.models.generate_content(
-                model=GEN_MODEL, contents=prompt)
+                model=GEN_MODEL, contents=prompt,
+                config={
+                    "thinking_config": genai_types.ThinkingConfig(
+                        thinking_budget=0
+                    ),
+                },
+            )
             return response.text.strip()
         except Exception as e:
             print(
@@ -349,7 +429,7 @@ def recommend(
     # step 1 -- if mood was provided, embed it and blend into a temporary query vector
     if daily_mood:
         mood_vec = get_embedding(daily_mood)   # embed the mood string
-        query_vec = blend_mood(pref_vec, mood_vec)  # 70% profile, 30% mood
+        query_vec = blend_mood(pref_vec, mood_vec)  # 50/50 profile/mood (BETA_WITH_MOOD)
     else:
         query_vec = pref_vec                    # no mood -- use profile directly
 

@@ -17,7 +17,7 @@ from dotenv import load_dotenv
 # load env vars from models/.env (one level up from gemini_flash_rag/)
 load_dotenv(Path(__file__).resolve().parents[1] / ".env")
 
-DATABASE_URL = os.getenv("DATABASE_URL")   # Supabase direct connection string
+DATABASE_URL = os.getenv("DATABASE_URL_IPV4")   # Supabase direct connection string
 
 
 def load_user_pref(user_id: str) -> dict | None:
