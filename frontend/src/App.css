@@ -157,9 +157,111 @@ form.card {
 .auth-row {
   margin-top: 0.75rem;
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
-  justify-content: space-between;
-  gap: 0.75rem;
+  justify-content: flex-end;
+  gap: 0.5rem 0.75rem;
+}
+
+.link-inline {
+  margin-right: auto;
+  padding: 0.35rem 0;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #2b6cb0;
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.link-inline:hover {
+  color: #2c5282;
+}
+
+.home-prompt {
+  margin: 0 0 0.25rem;
+  font-size: 1.15rem;
+  font-weight: 650;
+  color: #2d3748;
+}
+
+.link-back {
+  display: inline-block;
+  margin-bottom: 0.75rem;
+  padding: 0;
+  font: inherit;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #2b6cb0;
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.link-back:hover {
+  color: #2c5282;
+}
+
+.section-title {
+  margin: 0 0 0.35rem;
+  font-size: 1.05rem;
+  font-weight: 650;
+  color: #2d3748;
+}
+
+.section-help {
+  margin: 0 0 1rem;
+  font-size: 0.875rem;
+  color: #718096;
+  line-height: 1.45;
+}
+
+.profile-section {
+  margin-bottom: 1rem;
+}
+
+.profile-section form.card,
+section.profile-section.card {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.chips-extended {
+  min-height: 2.5rem;
+}
+
+.muted {
+  color: #718096;
+}
+
+.saved-hint {
+  margin: 0;
+  font-size: 0.85rem;
+  color: #276749;
+}
+
+.placeholder-section .link-standalone {
+  align-self: flex-start;
+  margin-top: 0.25rem;
+  padding: 0;
+  font: inherit;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #2b6cb0;
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.placeholder-section .link-standalone:hover {
+  color: #2c5282;
 }
 
 .auth-user {

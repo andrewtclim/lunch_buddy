@@ -1,23 +1,23 @@
 import { useEffect, useMemo, useState } from "react";
 import type { Session } from "@supabase/supabase-js";
 import { predict } from "./api";
-import { ALLERGEN_OPTIONS, RESTRICTION_OPTIONS } from "./options";
 import AuthPage from "./AuthPage";
+import ProfilePage from "./ProfilePage";
+import TasteTuningPlaceholder from "./TasteTuningPlaceholder";
+import { loadProfile } from "./profileStorage";
+import type { ProfileState } from "./profileTypes";
 import { supabase } from "./supabaseClient";
 import "./App.css";
 
-function toggleInSet(set: Set<string>, value: string): Set<string> {
-  const next = new Set(set);
-  if (next.has(value)) next.delete(value);
-  else next.add(value);
-  return next;
-}
+type AppView = "home" | "profile" | "tuning";
+
+const emptyProfile: ProfileState = { displayName: "", allergens: [], diets: [] };
 
 export default function App() {
   const [session, setSession] = useState<Session | null>(null);
   const [authReady, setAuthReady] = useState(false);
-  const [allergens, setAllergens] = useState<Set<string>>(() => new Set());
-  const [restrictions, setRestrictions] = useState<Set<string>>(() => new Set());
+  const [view, setView] = useState<AppView>("home");
+  const [profile, setProfile] = useState<ProfileState>(emptyProfile);
   const [preferencesText, setPreferencesText] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -25,11 +25,12 @@ export default function App() {
     null,
   );
 
-  const constraints = useMemo(
-    () => [...allergens, ...restrictions],
-    [allergens, restrictions],
-  );
   const userId = session?.user?.id ?? null;
+
+  const constraints = useMemo(
+    () => [...profile.allergens, ...profile.diets],
+    [profile.allergens, profile.diets],
+  );
 
   useEffect(() => {
     let mounted = true;
@@ -50,6 +51,14 @@ export default function App() {
       data.subscription.unsubscribe();
     };
   }, []);
+
+  useEffect(() => {
+    if (!userId) {
+      setProfile(emptyProfile);
+      return;
+    }
+    setProfile(loadProfile(userId));
+  }, [userId]);
 
   async function onRecommend(e: React.FormEvent) {
     e.preventDefault();
@@ -74,6 +83,11 @@ export default function App() {
 
   async function onSignOut() {
     await supabase.auth.signOut();
+    setView("home");
+  }
+
+  function handleProfileSaved(next: ProfileState) {
+    setProfile(next);
   }
 
   if (!authReady) {
@@ -90,12 +104,46 @@ export default function App() {
     return <AuthPage onAuthSuccess={() => undefined} />;
   }
 
+  if (!userId) {
+    return (
+      <div className="app">
+        <div className="card message">
+          <p>Missing user session.</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (view === "profile") {
+    return (
+      <ProfilePage
+        userId={userId}
+        email={session.user.email}
+        onBack={() => setView("home")}
+        onOpenTasteTuning={() => setView("tuning")}
+        onProfileSaved={handleProfileSaved}
+      />
+    );
+  }
+
+  if (view === "tuning") {
+    return <TasteTuningPlaceholder onBack={() => setView("profile")} />;
+  }
+
+  const displayLabel =
+    profile.displayName.trim() ||
+    session.user.email?.split("@")[0] ||
+    "there";
+
   return (
     <div className="app">
       <header className="header">
         <h1>Lunch Buddy</h1>
-        <p className="tagline">Set allergens, restrictions, and preferences — then get a recommendation.</p>
+        <p className="tagline">Hi, {displayLabel} — what sounds good today?</p>
         <div className="auth-row">
+          <button type="button" className="link-inline" onClick={() => setView("profile")}>
+            Profile
+          </button>
           <span className="auth-user">{session.user.email}</span>
           <button type="button" className="secondary" onClick={onSignOut}>
             Sign Out
@@ -104,54 +152,13 @@ export default function App() {
       </header>
 
       <form className="card" onSubmit={onRecommend}>
+        <h2 className="home-prompt">What do you want for lunch?</h2>
         <label className="field">
-          <span className="label">User ID</span>
-          <input
-            type="text"
-            name="user_id"
-            value={userId ?? ""}
-            readOnly
-          />
-        </label>
-
-        <fieldset className="fieldset">
-          <legend className="legend">Allergens</legend>
-          <div className="chips">
-            {ALLERGEN_OPTIONS.map((opt) => (
-              <label key={opt} className="chip">
-                <input
-                  type="checkbox"
-                  checked={allergens.has(opt)}
-                  onChange={() => setAllergens((s) => toggleInSet(s, opt))}
-                />
-                <span>{opt}</span>
-              </label>
-            ))}
-          </div>
-        </fieldset>
-
-        <fieldset className="fieldset">
-          <legend className="legend">Restrictions</legend>
-          <div className="chips">
-            {RESTRICTION_OPTIONS.map((opt) => (
-              <label key={opt} className="chip">
-                <input
-                  type="checkbox"
-                  checked={restrictions.has(opt)}
-                  onChange={() => setRestrictions((s) => toggleInSet(s, opt))}
-                />
-                <span>{opt}</span>
-              </label>
-            ))}
-          </div>
-        </fieldset>
-
-        <label className="field">
-          <span className="label">Preferences</span>
+          <span className="label">Your mood or cravings</span>
           <textarea
             name="preferences"
-            rows={3}
-            placeholder="Anything else we should know (e.g. loves spicy food, quick lunch)…"
+            rows={4}
+            placeholder="e.g. something light and warm, near Stern Hall…"
             value={preferencesText}
             onChange={(e) => setPreferencesText(e.target.value)}
           />
