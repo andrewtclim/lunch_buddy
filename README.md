@@ -163,7 +163,7 @@ docker run --rm -p 8000:8080 \
   -e CORS_ORIGINS=http://localhost:5173,http://127.0.0.1:5173 \
   -e GOOGLE_APPLICATION_CREDENTIALS=/gcloud/adc.json \
   -v "$HOME/.config/gcloud/application_default_credentials.json:/gcloud/adc.json:ro" \
-  YOUR_DOCKERHUB_USERNAME/lunch-buddy-api:latest
+  lunch-buddy-api:local
 ```
 
 Then visit [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs).
