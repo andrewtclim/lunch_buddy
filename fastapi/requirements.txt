@@ -7,3 +7,4 @@ google-cloud-storage==3.10.1
 
 pydantic==2.12.5
 python-dotenv==1.0.1
+python-jose[cryptography]==3.3.0
