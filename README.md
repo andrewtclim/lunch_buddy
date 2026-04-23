@@ -37,6 +37,24 @@ An LLM agent surfaces a ranked top-3 recommendation, personalized to you and upd
 
 ---
 
+## Run the Model Demo (Terminal)
+
+Requires the `lunch_buddy` conda env and `models/.env` configured.
+
+```bash
+conda activate lunch_buddy
+cd models/gemini_flash_rag
+```
+
+| Command | What it does |
+|---|---|
+| `python demo.py` | One round with today's live menu |
+| `python demo.py --table backfill_menu` | 10-day EMA learning loop (safe for experiments) |
+| `python demo.py --mood "something light"` | Mood blending - mood leads as primary constraint |
+| `python demo.py --user_id <supabase-uuid>` | Loads your stored profile, saves after each pick |
+
+---
+
 ## Datasets
 
 - **Stanford dining hall menus** — scraped daily, stored progressively as training data
