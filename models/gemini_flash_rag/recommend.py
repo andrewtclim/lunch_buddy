@@ -66,11 +66,12 @@ def _resolve_database_url() -> str:
         # DNS lookup -- raises on failure
         socket.getaddrinfo(host, None)
         # resolved OK -- use the normal URL
+        print("  [db] Connecting via IPv6")
         return default_url
     except (IndexError, socket.gaierror):
         # DNS failed (gaierror) or URL couldn't be parsed (IndexError)
         if ipv4_url:
-            print("  [db] Hostname not reachable -- using DATABASE_URL_IPV4")
+            print("  [db] IPv6 unavailable on this network -- connecting via IPv4")
             return ipv4_url
         return default_url   # no IPv4 fallback configured -- return original and let psycopg2 raise
 
