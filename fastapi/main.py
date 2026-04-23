@@ -178,7 +178,7 @@ def health():
             "model_loaded": False,
             "detail": _load_error or "model not loaded",
         }
-    return {"status": "ok", "model_loaded": True, "model_uri": MODEL_URI}
+    return {"status": "healthy", "model_loaded": True, "model_uri": MODEL_URI}
 
 
 @app.post("/predict", response_model=PredictResponse)
