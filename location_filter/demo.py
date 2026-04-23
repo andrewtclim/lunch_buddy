@@ -30,6 +30,7 @@ Usage:
 import sys
 import argparse
 import json
+import requests                    # used by detect_location_from_ip()
 from datetime import date
 from pathlib import Path
 
@@ -113,6 +114,11 @@ parser.add_argument(
     action="store_true",           # flag only, no value -- sets args.no_location = True
     help="Skip location filter entirely and use the full dish pool",
 )
+parser.add_argument(
+    "--auto-location",
+    action="store_true",           # flag only -- sets args.auto_location = True
+    help="Auto-detect location from your IP address via ip-api.com",
+)
 
 args = parser.parse_args()
 
@@ -121,24 +127,34 @@ args = parser.parse_args()
 # Location helpers
 # ---------------------------------------------------------------------------
 
+
+# Default location used when the user skips the coordinate prompt.
+# Set to the center of Stanford's main quad area.
+_DEFAULT_LAT = 37.42814153152347
+_DEFAULT_LON = -122.16123757657968
+
+
 def prompt_for_location() -> tuple[float | None, float | None]:
     """
     Ask the user for their coordinates interactively.
 
     Called once at session start when --lat/--lon were not passed as CLI flags.
-    The user can press Enter to skip and use the full hall pool instead.
+    Pressing Enter uses the default Stanford coordinates (_DEFAULT_LAT/LON)
+    rather than disabling the filter entirely.
 
     Returns:
-        (lat, lon) as floats, or (None, None) if the user skips.
+        (lat, lon) as floats -- always returns valid coordinates (default or
+        user-supplied). Returns (None, None) only if parsing fails.
     """
     print("Enter your location to get recommendations from nearby halls.")
-    print("(Press Enter to skip and search all halls.)\n")
+    print(f"(Press Enter to use default: {_DEFAULT_LAT:.4f}, {_DEFAULT_LON:.4f})\n")
 
     raw = input("Your coordinates (lat,lon)  e.g. 37.4248,-122.1655:\n> ").strip()
 
     if not raw:
-        # user pressed Enter -- no location filter this session
-        return None, None
+        # user pressed Enter -- use the default Stanford location
+        print(f"  Using default location: ({_DEFAULT_LAT:.4f}, {_DEFAULT_LON:.4f})\n")
+        return _DEFAULT_LAT, _DEFAULT_LON
 
     try:
         # split on comma and parse both parts as floats
@@ -150,6 +166,44 @@ def prompt_for_location() -> tuple[float | None, float | None]:
         # bad format -- warn and skip rather than crashing
         print("  Could not parse coordinates -- skipping location filter.\n")
         return None, None
+
+
+def detect_location_from_ip() -> tuple[float | None, float | None]:
+    """
+    Call ip-api.com to estimate the user's coordinates from their public IP.
+
+    This is a best-effort fallback -- IP geolocation is accurate to the
+    city level (~1-5 km), which is enough for an 800m campus radius filter
+    but may not be precise enough if the user is using a VPN or proxy.
+
+    Returns:
+        (lat, lon) as floats if the call succeeds, or (None, None) on any
+        error (network failure, non-200 response, or 'fail' status from API).
+    """
+    url = "http://ip-api.com/json/?fields=status,lat,lon,city,regionName"
+
+    try:
+        # 5-second timeout so the demo doesn't hang on a slow network
+        resp = requests.get(url, timeout=5)
+        data = resp.json()                     # parse JSON response body
+    except Exception as exc:
+        # catch all network/parse errors and fall through to manual prompt
+        print(f"  Auto-location failed: {exc}")
+        return None, None
+
+    if data.get("status") != "success":
+        # ip-api returns {"status": "fail", ...} for private/reserved IPs
+        print(f"  Auto-location failed: API returned status '{data.get('status')}'")
+        return None, None
+
+    lat  = data["lat"]
+    lon  = data["lon"]
+    city = data.get("city", "unknown city")
+    region = data.get("regionName", "")
+
+    # Show the user what was detected so they can verify or override it
+    print(f"  Detected location: {city}, {region}  ({lat:.4f}, {lon:.4f})")
+    return lat, lon
 
 
 def fmt_location(lat: float | None, lon: float | None,
@@ -497,14 +551,23 @@ if __name__ == "__main__":
         user_lat, user_lon, restrict = None, None, False
         print("\nLocation filter: OFF (--no-location flag set)\n", flush=True)
     elif args.lat is not None and args.lon is not None:
-        # coordinates passed as CLI flags -- use them directly
+        # explicit coordinates take priority over --auto-location
         user_lat, user_lon, restrict = args.lat, args.lon, True
         print(f"\nLocation: ({user_lat:.4f}, {user_lon:.4f})  radius {args.radius:.0f}m\n", flush=True)
+    elif args.auto_location:
+        # --auto-location: detect from IP, fall back to manual prompt on failure
+        print("\nDetecting location from IP address...", flush=True)
+        user_lat, user_lon = detect_location_from_ip()
+        if user_lat is None:
+            # IP detection failed -- ask the user to type coordinates instead
+            print("  Falling back to manual entry.\n")
+            user_lat, user_lon = prompt_for_location()
+        restrict = user_lat is not None   # only restrict if we got valid coords
     else:
-        # no CLI flags -- prompt once interactively
+        # no location flags -- prompt once interactively (default coords used if Enter)
         print()
         user_lat, user_lon = prompt_for_location()
-        restrict = user_lat is not None   # only restrict if the user gave coordinates
+        restrict = user_lat is not None   # None only if parsing failed -- skip filter
 
     radius_m = args.radius
 
