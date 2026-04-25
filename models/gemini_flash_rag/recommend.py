@@ -26,6 +26,7 @@
 import os
 import json
 import time
+import socket                      # used to DNS-check the Supabase hostname
 import psycopg2
 import numpy as np
 from pathlib import Path
@@ -36,10 +37,46 @@ from google.genai import types as genai_types
 # load env vars from models/.env (two levels up from gemini_flash_rag/)
 load_dotenv(Path(__file__).resolve().parents[1] / ".env")
 
-# If on IPv4 URLs use the url below for Supabase connection (when direct hostname doesn't resolve on this network)
-# DATABASE_URL = os.getenv("DATABASE_URL_IPV4")
 
-DATABASE_URL = os.getenv("DATABASE_URL")
+def _resolve_database_url() -> str:
+    """
+    Auto-select the right Supabase connection string for the current network.
+
+    Some networks (e.g. USF campus) block IPv6 DNS resolution for the
+    Supabase hostname, causing a 'nodename nor servname provided' error.
+    DATABASE_URL_IPV4 uses a numeric IP to bypass that.
+
+    Strategy: try a quick DNS lookup on the hostname extracted from
+    DATABASE_URL. If it resolves, we're on a network that can reach
+    Supabase normally. If it fails, fall back to DATABASE_URL_IPV4.
+    """
+    default_url = os.getenv("DATABASE_URL")
+    ipv4_url = os.getenv("DATABASE_URL_IPV4")
+
+    if not default_url:
+        # no primary URL configured -- nothing to resolve
+        return ipv4_url or ""
+
+    # extract just the hostname from the postgres:// connection string
+    # e.g. "postgresql://user:pass@db.xxx.supabase.co:5432/postgres"
+    #   -> "db.xxx.supabase.co"
+    try:
+        # grab token after @ and before :
+        host = default_url.split("@")[1].split(":")[0]
+        # DNS lookup -- raises on failure
+        socket.getaddrinfo(host, None)
+        # resolved OK -- use the normal URL
+        print("  [db] Connecting via IPv6")
+        return default_url
+    except (IndexError, socket.gaierror):
+        # DNS failed (gaierror) or URL couldn't be parsed (IndexError)
+        if ipv4_url:
+            print("  [db] IPv6 unavailable on this network -- connecting via IPv4")
+            return ipv4_url
+        return default_url   # no IPv4 fallback configured -- return original and let psycopg2 raise
+
+
+DATABASE_URL = _resolve_database_url()
 PROJECT_ID = os.getenv("PROJECT_ID")                # GCP project for Vertex AI
 LOCATION = os.getenv("LOCATION", "us-central1")   # Vertex AI region
 
