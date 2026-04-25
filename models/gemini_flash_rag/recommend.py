@@ -26,8 +26,9 @@
 import os
 import json
 import time
-import socket                      # used to DNS-check the Supabase hostname
+import socket  # used to DNS-check the Supabase hostname
 import psycopg2
+import psycopg2.pool
 import numpy as np
 from pathlib import Path
 from dotenv import load_dotenv
@@ -73,20 +74,37 @@ def _resolve_database_url() -> str:
         if ipv4_url:
             print("  [db] IPv6 unavailable on this network -- connecting via IPv4")
             return ipv4_url
-        return default_url   # no IPv4 fallback configured -- return original and let psycopg2 raise
+        return default_url  # no IPv4 fallback configured -- return original and let psycopg2 raise
 
 
 DATABASE_URL = _resolve_database_url()
-PROJECT_ID = os.getenv("PROJECT_ID")                # GCP project for Vertex AI
-LOCATION = os.getenv("LOCATION", "us-central1")   # Vertex AI region
+PROJECT_ID = os.getenv("PROJECT_ID")  # GCP project for Vertex AI
+LOCATION = os.getenv("LOCATION", "us-central1")  # Vertex AI region
 
-EMBED_MODEL = "text-embedding-004"   # must match the model used to embed dishes
-GEN_MODEL = "gemini-2.5-flash"     # generator LLM
+# Connection pool: keeps 1-5 Supabase connections open and reuses them across calls
+# instead of opening a new one each time. Each new connection costs ~530ms (TLS+auth
+# handshake to Supabase); reusing one costs ~5ms. exp_07 measured 3.3x speedup.
+# Lazy-init via _get_pool() so importing this module doesn't try to connect (lets
+# tests + scripts without DATABASE_URL import safely).
+_pool: "psycopg2.pool.ThreadedConnectionPool | None" = None
 
-ALPHA = 0.3    # how strongly each dish pick nudges the stored preference vector
+
+def _get_pool() -> psycopg2.pool.ThreadedConnectionPool:
+    global _pool
+    if _pool is None:
+        _pool = psycopg2.pool.ThreadedConnectionPool(
+            minconn=1, maxconn=5, dsn=DATABASE_URL
+        )
+    return _pool
+
+
+EMBED_MODEL = "text-embedding-004"  # must match the model used to embed dishes
+GEN_MODEL = "gemini-2.5-flash"  # generator LLM
+
+ALPHA = 0.3  # how strongly each dish pick nudges the stored preference vector
 # how strongly a daily mood nudges the query vector (when mood given)
 BETA_WITH_MOOD = 0.5
-BETA_NO_MOOD = 0.0   # no mood means query_vec = pref_vec directly
+BETA_NO_MOOD = 0.0  # no mood means query_vec = pref_vec directly
 # alpha and beta are independent:
 #   alpha updates pref_vec permanently after a pick
 #   beta shifts query_vec temporarily for today's search only
@@ -117,6 +135,7 @@ PLACEHOLDER_DISHES = {
 # Core math helpers
 # ---------------------------------------------------------------------------
 
+
 def cosine_similarity(a: np.ndarray, b: np.ndarray) -> float:
     # cosine similarity between two vectors -- 1.0 = identical, 0.0 = unrelated
     return float(np.dot(a, b) / (np.linalg.norm(a) * np.linalg.norm(b)))
@@ -129,7 +148,9 @@ def normalize(vec: np.ndarray) -> np.ndarray:
     return vec / norm if norm > 0 else vec
 
 
-def blend_mood(pref_vec: np.ndarray, mood_vec: np.ndarray, beta: float = BETA_WITH_MOOD) -> np.ndarray:
+def blend_mood(
+    pref_vec: np.ndarray, mood_vec: np.ndarray, beta: float = BETA_WITH_MOOD
+) -> np.ndarray:
     # blend the user's stored preference vector with a daily mood embedding
     # result is a temporary query vector used only for today's retrieval --
     # the stored pref_vec is never modified here
@@ -146,6 +167,7 @@ def blend_mood(pref_vec: np.ndarray, mood_vec: np.ndarray, beta: float = BETA_WI
 # Embedding
 # ---------------------------------------------------------------------------
 
+
 def get_embedding(text: str) -> np.ndarray:
     # send a string to Vertex AI text-embedding-004 and get back a 768-dim vector
     # this is used for: signup text, daily mood strings, and the final reveal score
@@ -158,69 +180,89 @@ def get_embedding(text: str) -> np.ndarray:
 # Supabase retrieval
 # ---------------------------------------------------------------------------
 
+
 def get_available_dates(table: str = "backfill_menu") -> list[str]:
     # pull all distinct dates from the given table, sorted oldest to newest
     # used by the multi-day demo loop to know which dates to iterate over
-    conn = psycopg2.connect(DATABASE_URL)
-    cur = conn.cursor()
-    cur.execute(f"""
-        SELECT DISTINCT date_served
-        FROM {table}
-        ORDER BY date_served ASC;
-    """)
-    rows = cur.fetchall()
-    cur.close()
-    conn.close()
+    conn = _get_pool().getconn()
+    try:
+        cur = conn.cursor()
+        cur.execute(
+            f"""
+            SELECT DISTINCT date_served
+            FROM {table}
+            ORDER BY date_served ASC;
+        """
+        )
+        rows = cur.fetchall()
+        cur.close()
+    finally:
+        # always return the connection to the pool, even on exception, to prevent leaks
+        _get_pool().putconn(conn)
     # convert date objects to "YYYY-MM-DD" strings
     return [str(row[0]) for row in rows]
 
 
-def retrieve_dishes(query_vec: np.ndarray, date_str: str,
-                    table: str = "daily_menu", limit: int = 20) -> list[dict]:
+def retrieve_dishes(
+    query_vec: np.ndarray, date_str: str, table: str = "daily_menu", limit: int = 20
+) -> list[dict]:
     # cosine search the given table for today's dishes ranked by similarity to query_vec
     # table defaults to "daily_menu" (production) but can be set to "backfill_menu"
     # (experiment data) -- same schema, so the query works for both
-    conn = psycopg2.connect(DATABASE_URL)
-    cur = conn.cursor()
-    cur.execute(f"""
-        SELECT dish_name, dining_hall, meal_time, allergens, ingredients
-        FROM {table}
-        WHERE date_served = %s
-        ORDER BY embedding <=> %s::vector
-        LIMIT %s;
-    """, (date_str, query_vec.tolist(), limit))
-    rows = cur.fetchall()
-    cur.close()
-    conn.close()
+    conn = _get_pool().getconn()
+    try:
+        cur = conn.cursor()
+        cur.execute(
+            f"""
+            SELECT dish_name, dining_hall, meal_time, allergens, ingredients
+            FROM {table}
+            WHERE date_served = %s
+            ORDER BY embedding <=> %s::vector
+            LIMIT %s;
+        """,
+            (date_str, query_vec.tolist(), limit),
+        )
+        rows = cur.fetchall()
+        cur.close()
+    finally:
+        # always return the connection to the pool, even on exception, to prevent leaks
+        _get_pool().putconn(conn)
     # pack each row into a dict so the rest of the pipeline can use field names
     return [
         {
-            "dish_name":   row[0],
+            "dish_name": row[0],
             "dining_hall": row[1],
-            "meal_time":   row[2],
-            "allergens":   row[3] or [],   # NULL in DB becomes empty list
-            "ingredients": row[4] or "",   # NULL in DB becomes empty string
+            "meal_time": row[2],
+            "allergens": row[3] or [],  # NULL in DB becomes empty list
+            "ingredients": row[4] or "",  # NULL in DB becomes empty string
         }
         for row in rows
     ]
 
 
-def fetch_dish_embedding(dish_name: str, date_str: str,
-                         table: str = "daily_menu") -> np.ndarray | None:
+def fetch_dish_embedding(
+    dish_name: str, date_str: str, table: str = "daily_menu"
+) -> np.ndarray | None:
     # look up the stored embedding for a specific dish by name and date
     # returns None if not found (e.g. Gemini hallucinated a dish name)
     # uses ILIKE so a minor capitalization difference doesn't cause a miss
-    conn = psycopg2.connect(DATABASE_URL)
-    cur = conn.cursor()
-    cur.execute(f"""
-        SELECT embedding
-        FROM {table}
-        WHERE dish_name ILIKE %s AND date_served = %s
-        LIMIT 1;
-    """, (dish_name, date_str))
-    row = cur.fetchone()
-    cur.close()
-    conn.close()
+    conn = _get_pool().getconn()
+    try:
+        cur = conn.cursor()
+        cur.execute(
+            f"""
+            SELECT embedding
+            FROM {table}
+            WHERE dish_name ILIKE %s AND date_served = %s
+            LIMIT 1;
+        """,
+            (dish_name, date_str),
+        )
+        row = cur.fetchone()
+        cur.close()
+    finally:
+        # always return the connection to the pool, even on exception, to prevent leaks
+        _get_pool().putconn(conn)
     if row is None:
         return None
     # pgvector returns the embedding as a string "[0.1, 0.2, ...]" -- parse to floats
@@ -231,6 +273,7 @@ def fetch_dish_embedding(dish_name: str, date_str: str,
 # Filtering
 # ---------------------------------------------------------------------------
 
+
 def filter_placeholders(dishes: list[dict]) -> list[dict]:
     # remove generic station labels that appear in the HTML but aren't real dishes
     return [d for d in dishes if d["dish_name"] not in PLACEHOLDER_DISHES]
@@ -240,7 +283,7 @@ def filter_allergens(dishes: list[dict], user_allergens: list[str]) -> list[dict
     # hard block -- drop any dish that shares an allergen with the user
     # this runs before scoring; no similarity score can override an allergen conflict
     if not user_allergens:
-        return dishes                          # skip the check entirely if no allergens
+        return dishes  # skip the check entirely if no allergens
     user_set = set(user_allergens)
     return [d for d in dishes if set(d["allergens"]).isdisjoint(user_set)]
 
@@ -261,8 +304,10 @@ def deduplicate(dishes: list[dict]) -> list[dict]:
 # Gemini recommendation call
 # ---------------------------------------------------------------------------
 
-def call_gemini(preference_summary: str, candidates: list[dict],
-                daily_mood: str | None = None) -> list[dict]:
+
+def call_gemini(
+    preference_summary: str, candidates: list[dict], daily_mood: str | None = None
+) -> list[dict]:
     # ask Gemini to re-rank the candidates and return the top 3 with reasons
     #
     # preference_summary -- one-sentence description of the user's learned taste
@@ -282,11 +327,13 @@ def call_gemini(preference_summary: str, candidates: list[dict],
     #     latency (~2s vs ~13s) with higher JSON reliability (100% vs 33-67%).
 
     # build the numbered dish list Gemini reads
-    dish_lines = "\n".join([
-        f"{i+1}. {d['dish_name']} at {d['dining_hall']} ({d['meal_time']})"
-        f" -- Ingredients: {d['ingredients']}"
-        for i, d in enumerate(candidates)
-    ])
+    dish_lines = "\n".join(
+        [
+            f"{i+1}. {d['dish_name']} at {d['dining_hall']} ({d['meal_time']})"
+            f" -- Ingredients: {d['ingredients']}"
+            for i, d in enumerate(candidates)
+        ]
+    )
 
     # shared output format instructions
     format_rules = (
@@ -367,9 +414,7 @@ For each include: dish name, dining hall, and one concise reason it's worth tryi
                     # disable extended thinking -- re-ranking 10 dishes is pattern
                     # matching, not multi-step reasoning. exp_06 confirmed identical
                     # picks at 7x lower latency with budget=0.
-                    "thinking_config": genai_types.ThinkingConfig(
-                        thinking_budget=0
-                    ),
+                    "thinking_config": genai_types.ThinkingConfig(thinking_budget=0),
                 },
             )
             result = json.loads(response.text)
@@ -394,13 +439,14 @@ For each include: dish name, dining hall, and one concise reason it's worth tryi
         except Exception as e:
             print(f"  [gemini attempt {attempt + 1} failed: {e}]", flush=True)
             if attempt == 2:
-                return [], []   # give up after 3 failures
+                return [], []  # give up after 3 failures
             time.sleep(2)
 
 
 # ---------------------------------------------------------------------------
 # Preference vector update
 # ---------------------------------------------------------------------------
+
 
 def summarize_preferences(signup_text: str, chosen_dishes: list[str]) -> str:
     # ask Gemini to write a fresh one-sentence preference summary
@@ -420,24 +466,23 @@ Only output the sentence -- no preamble, no quotes."""
     for attempt in range(3):
         try:
             response = client.models.generate_content(
-                model=GEN_MODEL, contents=prompt,
+                model=GEN_MODEL,
+                contents=prompt,
                 config={
-                    "thinking_config": genai_types.ThinkingConfig(
-                        thinking_budget=0
-                    ),
+                    "thinking_config": genai_types.ThinkingConfig(thinking_budget=0),
                 },
             )
             return response.text.strip()
         except Exception as e:
-            print(
-                f"  [summarize attempt {attempt + 1} failed: {e}]", flush=True)
+            print(f"  [summarize attempt {attempt + 1} failed: {e}]", flush=True)
             if attempt == 2:
-                return signup_text   # fall back to original signup text
+                return signup_text  # fall back to original signup text
             time.sleep(2)
 
 
-def update_preference_vector(pref_vec: np.ndarray, dish_vec: np.ndarray,
-                             alpha: float = ALPHA) -> np.ndarray:
+def update_preference_vector(
+    pref_vec: np.ndarray, dish_vec: np.ndarray, alpha: float = ALPHA
+) -> np.ndarray:
     # EMA update: nudge pref_vec alpha% toward the chosen dish, then re-normalize
     # this is the only place pref_vec changes -- mood never touches it
     updated = (1 - alpha) * pref_vec + alpha * dish_vec
@@ -448,15 +493,16 @@ def update_preference_vector(pref_vec: np.ndarray, dish_vec: np.ndarray,
 # Top-level recommend() -- the single entry point for the full pipeline
 # ---------------------------------------------------------------------------
 
+
 def recommend(
     # user's current preference vector (768-dim)
     pref_vec: np.ndarray,
-    preference_summary: str,        # one-sentence description of user's taste
+    preference_summary: str,  # one-sentence description of user's taste
     # hard allergen exclusions (e.g. ["gluten"])
     user_allergens: list[str],
-    date_str: str,                  # date to pull dishes for, "YYYY-MM-DD"
+    date_str: str,  # date to pull dishes for, "YYYY-MM-DD"
     daily_mood: str | None = None,  # optional free-text mood for today
-    table: str = "daily_menu",      # which Supabase table to search
+    table: str = "daily_menu",  # which Supabase table to search
 ) -> tuple[list[dict], np.ndarray]:
     # runs the full pipeline and returns:
     #   - recs: list of up to 3 recommendation dicts from Gemini
@@ -468,11 +514,11 @@ def recommend(
 
     # step 1 -- if mood was provided, embed it and blend into a temporary query vector
     if daily_mood:
-        mood_vec = get_embedding(daily_mood)   # embed the mood string
+        mood_vec = get_embedding(daily_mood)  # embed the mood string
         # 50/50 profile/mood (BETA_WITH_MOOD)
         query_vec = blend_mood(pref_vec, mood_vec)
     else:
-        query_vec = pref_vec                    # no mood -- use profile directly
+        query_vec = pref_vec  # no mood -- use profile directly
 
     # step 2 -- cosine search: find today's top 40 dishes closest to query_vec
     # 40 gives the filter steps enough to work with on sparse days (weekends,
@@ -482,12 +528,11 @@ def recommend(
     # step 3 -- clean up: remove station labels, allergen conflicts, duplicates
     candidates = filter_placeholders(candidates)
     candidates = filter_allergens(candidates, user_allergens)
-    candidates = deduplicate(candidates)[:10]   # top 10 go to Gemini
+    candidates = deduplicate(candidates)[:10]  # top 10 go to Gemini
     # (was 5 -- extra 5 give Gemini room
     #  to pick 2 diverse alternatives)
 
     # step 4 -- ask Gemini to pick top 3 recommendations + 2 diverse alternatives
-    recs, alts = call_gemini(
-        preference_summary, candidates, daily_mood=daily_mood)
+    recs, alts = call_gemini(preference_summary, candidates, daily_mood=daily_mood)
 
     return recs, alts, query_vec
