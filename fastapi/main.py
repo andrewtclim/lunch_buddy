@@ -1,17 +1,27 @@
 # main.py — skeleton; adapt schemas and inference to your LLM wrapper
 
 import os
+import sys
 import time
+from datetime import date
 from urllib.error import URLError
 from urllib.request import urlopen
 from contextlib import asynccontextmanager
 from typing import Any, Optional
 
+# make models/gemini_flash_rag importable from fastapi/
+sys.path.insert(
+    0,
+    os.path.join(os.path.dirname(__file__), "..", "models", "gemini_flash_rag"),
+)
+from recommend import recommend  # noqa: E402
+from user_prefs import load_user_pref  # noqa: E402
+
 from fastapi import Depends, FastAPI, HTTPException
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from jose import JWTError, jwt
 from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
 
 from pathlib import Path
 from dotenv import load_dotenv
@@ -97,14 +107,20 @@ app.add_middleware(
 # --- Pydantic: change fields to match what your model expects/returns ---
 
 class PredictRequest(BaseModel):
-    user_id: Optional[str] = None
-    preferences: list[str] = Field(..., description="Free text or structured prefs")
-    constraints: list[str] = Field(default_factory=list)
+    mood: Optional[str] = None   # free-text mood for today, e.g. "something spicy"
+    date: Optional[str] = None   # "YYYY-MM-DD"; defaults to today server-side if omitted
+
+
+class DishCard(BaseModel):
+    dish_name: str       # e.g. "Gochujang Spiced Chicken"
+    dining_hall: str     # e.g. "Arrillaga"
+    reason: str          # one-sentence explanation from Gemini
 
 
 class PredictResponse(BaseModel):
-    suggestions: list[str]
-    rationale: Optional[str] = None
+    recommendations: list[DishCard]   # top 3 matches
+    alternatives: list[DishCard]      # 2 diverse alternatives
+    preference_summary: str           # user's current taste profile sentence
 
 
 def _fetch_jwks() -> dict[str, Any]:
@@ -186,28 +202,30 @@ def predict(
     body: PredictRequest,
     current_user: AuthenticatedUser = Depends(get_current_user),
 ) -> PredictResponse:
-    if _model is None:
+    # 1. load user profile from Supabase
+    profile = load_user_pref(current_user.user_id)
+    if profile is None:
         raise HTTPException(
-            status_code=503,
-            detail=_load_error or "Model not loaded; check /health and MLflow config",
+            status_code=422,
+            detail="No preference profile found. Please complete your taste profile to get recommendations.",
         )
-    # Build a dict or DataFrame in the shape your pyfunc model was trained with
-    payload = {
-        "preferences": body.preferences,
-        "constraints": body.constraints,
-        # Never trust client-supplied user_id for auth; use token subject.
-        "user_id": current_user.user_id,
-    }
-    raw = _model.predict(payload)  # or pd.DataFrame([payload]) for tabular pyfunc
-    # Normalize MLflow output into PredictResponse (depends on your model)
-    if isinstance(raw, list) and raw:
-        first = raw[0]
-    else:
-        first = raw
-    # Example mapping — replace with your real structure
-    if isinstance(first, dict):
-        return PredictResponse(
-            suggestions=first.get("suggestions", []),
-            rationale=first.get("rationale"),
-        )
-    return PredictResponse(suggestions=[str(first)])
+
+    # 2. default date to today if client didn't send one
+    date_str = body.date or date.today().isoformat()
+
+    # 3. call the real recommendation pipeline
+    recs, alts, _query_vec = recommend(
+        pref_vec=profile["preference_vector"],
+        preference_summary=profile["preference_summary"],
+        user_allergens=profile["allergens"],
+        date_str=date_str,
+        daily_mood=body.mood,
+        table="daily_menu",
+    )
+
+    # 4. return structured response -- no EMA update here (deferred to /pick)
+    return PredictResponse(
+        recommendations=[DishCard(**d) for d in recs],
+        alternatives=[DishCard(**d) for d in alts],
+        preference_summary=profile["preference_summary"],
+    )
