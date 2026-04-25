@@ -1,6 +1,7 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import type { Session } from "@supabase/supabase-js";
 import { predict } from "./api";
+import type { PredictResponseBody } from "./api";
 import AuthPage from "./AuthPage";
 import ProfilePage from "./ProfilePage";
 import TasteTuningPlaceholder from "./TasteTuningPlaceholder";
@@ -18,19 +19,12 @@ export default function App() {
   const [authReady, setAuthReady] = useState(false);
   const [view, setView] = useState<AppView>("home");
   const [profile, setProfile] = useState<ProfileState>(emptyProfile);
-  const [preferencesText, setPreferencesText] = useState("");
+  const [moodText, setMoodText] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [result, setResult] = useState<{ suggestions: string[]; rationale?: string | null } | null>(
-    null,
-  );
+  const [result, setResult] = useState<PredictResponseBody | null>(null);
 
   const userId = session?.user?.id ?? null;
-
-  const constraints = useMemo(
-    () => [...profile.allergens, ...profile.diets],
-    [profile.allergens, profile.diets],
-  );
 
   useEffect(() => {
     let mounted = true;
@@ -65,11 +59,8 @@ export default function App() {
     setError(null);
     setResult(null);
     setLoading(true);
-    const preferences = preferencesText.trim() ? [preferencesText.trim()] : [];
     const body = {
-      user_id: userId,
-      preferences,
-      constraints,
+      mood: moodText.trim() || undefined,
     };
     try {
       const data = await predict(body, session?.access_token);
@@ -79,6 +70,10 @@ export default function App() {
     } finally {
       setLoading(false);
     }
+  }
+
+  function onPick(dishName: string, diningHall: string) {
+    console.log("[pick]", { dishName, diningHall, userId });
   }
 
   async function onSignOut() {
@@ -154,18 +149,18 @@ export default function App() {
       <form className="card" onSubmit={onRecommend}>
         <h2 className="home-prompt">What do you want for lunch?</h2>
         <label className="field">
-          <span className="label">Your mood or cravings</span>
+          <span className="label">Your mood or cravings (optional)</span>
           <textarea
-            name="preferences"
-            rows={4}
-            placeholder="e.g. something light and warm, near Stern Hall…"
-            value={preferencesText}
-            onChange={(e) => setPreferencesText(e.target.value)}
+            name="mood"
+            rows={3}
+            placeholder="e.g. something spicy, light and warm, craving sushi..."
+            value={moodText}
+            onChange={(e) => setMoodText(e.target.value)}
           />
         </label>
 
         <button type="submit" className="primary" disabled={loading}>
-          {loading ? "Working…" : "Recommend"}
+          {loading ? "Finding dishes..." : "Get Recommendations"}
         </button>
       </form>
 
@@ -177,19 +172,27 @@ export default function App() {
       )}
 
       {result && (
-        <div className="card message success">
-          <strong>Suggestions</strong>
-          <ul className="suggestions">
-            {result.suggestions.map((s) => (
-              <li key={s}>{s}</li>
+        <>
+          <p className="preference-hint">
+            Your taste profile: {result.preference_summary}
+          </p>
+          <div className="dish-cards">
+            {[...result.recommendations, ...result.alternatives].map((dish) => (
+              <div className="card dish-card" key={`${dish.dish_name}-${dish.dining_hall}`}>
+                <h3 className="dish-name">{dish.dish_name}</h3>
+                <p className="dish-hall">{dish.dining_hall}</p>
+                <p className="dish-reason">{dish.reason}</p>
+                <button
+                  type="button"
+                  className="secondary"
+                  onClick={() => onPick(dish.dish_name, dish.dining_hall)}
+                >
+                  Pick this
+                </button>
+              </div>
             ))}
-          </ul>
-          {result.rationale != null && result.rationale !== "" && (
-            <p className="rationale">
-              <strong>Why:</strong> {result.rationale}
-            </p>
-          )}
-        </div>
+          </div>
+        </>
       )}
     </div>
   );

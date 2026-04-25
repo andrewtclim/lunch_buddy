@@ -1,14 +1,20 @@
 const base = import.meta.env.VITE_API_URL?.replace(/\/$/, "") ?? "http://127.0.0.1:8000";
 
+export type DishCard = {
+  dish_name: string;
+  dining_hall: string;
+  reason: string;
+};
+
 export type PredictRequestBody = {
-  user_id: string | null;
-  preferences: string[];
-  constraints: string[];
+  mood?: string;
+  date?: string;
 };
 
 export type PredictResponseBody = {
-  suggestions: string[];
-  rationale?: string | null;
+  recommendations: DishCard[];
+  alternatives: DishCard[];
+  preference_summary: string;
 };
 
 export async function predict(
