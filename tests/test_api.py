@@ -62,16 +62,6 @@ def test_health_includes_status_field():
 # POST /predict
 # ---------------------------------------------------------------------------
 
-def test_predict_returns_503_when_no_model_loaded():
-    # stub mode means no model -- /predict must refuse with 503 Service Unavailable
-    payload = {
-        "preferences": ["I like spicy food"],
-        "constraints": [],
-    }
-    response = client.post("/predict", json=payload)
-    assert response.status_code == 503
-
-
 def test_predict_returns_detail_on_503():
     # the 503 body should explain why so the caller can surface a useful error
     payload = {
