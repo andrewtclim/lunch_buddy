@@ -1,0 +1,138 @@
+{
+  "A_baseline": {
+    "v1": {
+      "label": "2.5-flash-default \u00d7 v1",
+      "model": "gemini-2.5-flash",
+      "thinking_budget": null,
+      "prompt_version": "v1",
+      "avg_latency": 12.71,
+      "std_latency": 1.49,
+      "min_latency": 10.74,
+      "max_latency": 14.33,
+      "latencies": [
+        13.06,
+        10.74,
+        14.33
+      ],
+      "success_rate": 0.6666666666666666
+    },
+    "v2": {
+      "label": "2.5-flash-default \u00d7 v2",
+      "model": "gemini-2.5-flash",
+      "thinking_budget": null,
+      "prompt_version": "v2",
+      "avg_latency": 14.21,
+      "std_latency": 1.25,
+      "min_latency": 12.58,
+      "max_latency": 15.63,
+      "latencies": [
+        12.58,
+        14.42,
+        15.63
+      ],
+      "success_rate": 0.3333333333333333
+    }
+  },
+  "B_reduced": {
+    "v1": {
+      "label": "2.5-flash-budget-1024 \u00d7 v1",
+      "model": "gemini-2.5-flash",
+      "thinking_budget": 1024,
+      "prompt_version": "v1",
+      "avg_latency": 5.89,
+      "std_latency": 0.39,
+      "min_latency": 5.35,
+      "max_latency": 6.23,
+      "latencies": [
+        6.09,
+        6.23,
+        5.35
+      ],
+      "success_rate": 0.6666666666666666
+    },
+    "v2": {
+      "label": "2.5-flash-budget-1024 \u00d7 v2",
+      "model": "gemini-2.5-flash",
+      "thinking_budget": 1024,
+      "prompt_version": "v2",
+      "avg_latency": 5.42,
+      "std_latency": 0.32,
+      "min_latency": 5.03,
+      "max_latency": 5.82,
+      "latencies": [
+        5.82,
+        5.03,
+        5.41
+      ],
+      "success_rate": 1.0
+    }
+  },
+  "C_no_thinking": {
+    "v1": {
+      "label": "2.5-flash-budget-0 \u00d7 v1",
+      "model": "gemini-2.5-flash",
+      "thinking_budget": 0,
+      "prompt_version": "v1",
+      "avg_latency": 2.06,
+      "std_latency": 0.06,
+      "min_latency": 1.99,
+      "max_latency": 2.13,
+      "latencies": [
+        2.13,
+        2.07,
+        1.99
+      ],
+      "success_rate": 1.0
+    },
+    "v2": {
+      "label": "2.5-flash-budget-0 \u00d7 v2",
+      "model": "gemini-2.5-flash",
+      "thinking_budget": 0,
+      "prompt_version": "v2",
+      "avg_latency": 1.68,
+      "std_latency": 0.05,
+      "min_latency": 1.62,
+      "max_latency": 1.74,
+      "latencies": [
+        1.69,
+        1.74,
+        1.62
+      ],
+      "success_rate": 1.0
+    }
+  },
+  "D_2_0_flash": {
+    "v1": {
+      "label": "2.0-flash \u00d7 v1",
+      "model": "gemini-2.0-flash",
+      "thinking_budget": null,
+      "prompt_version": "v1",
+      "avg_latency": 0.13,
+      "std_latency": 0.04,
+      "min_latency": 0.1,
+      "max_latency": 0.18,
+      "latencies": [
+        0.18,
+        0.1,
+        0.11
+      ],
+      "success_rate": 0.0
+    },
+    "v2": {
+      "label": "2.0-flash \u00d7 v2",
+      "model": "gemini-2.0-flash",
+      "thinking_budget": null,
+      "prompt_version": "v2",
+      "avg_latency": 0.11,
+      "std_latency": 0.02,
+      "min_latency": 0.1,
+      "max_latency": 0.14,
+      "latencies": [
+        0.11,
+        0.1,
+        0.14
+      ],
+      "success_rate": 0.0
+    }
+  }
+}

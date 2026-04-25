@@ -1,0 +1,586 @@
+{
+  "A_baseline": {
+    "v1": {
+      "label": "2.5-flash-default \u00d7 v1",
+      "model": "gemini-2.5-flash",
+      "thinking_budget": null,
+      "prompt_version": "v1",
+      "avg_latency": 12.71,
+      "std_latency": 1.49,
+      "min_latency": 10.74,
+      "max_latency": 14.33,
+      "latencies": [
+        13.06,
+        10.74,
+        14.33
+      ],
+      "outputs": [
+        {
+          "recommendations": [
+            {
+              "dish_name": "Gochujang Spiced Chicken",
+              "dining_hall": "Lakeside Dining",
+              "reason": "This dish perfectly blends spicy (gochujang, gochugaru) and Asian flavors, and chicken can be a lighter option for your mood today."
+            },
+            {
+              "dish_name": "Cilantro Jasmine Rice",
+              "dining_hall": "Wilbur Dining",
+              "reason": "Offers an Asian base (jasmine rice) with a spicy kick (jalapeno chili) and is inherently a light and simple choice."
+            },
+            {
+              "dish_name": "Star Ginger Teriyaki Chicken",
+              "dining_hall": "Gerhard Casper Dining",
+              "reason": "This dish is a great Asian option with spicy notes (chili powder) and is a light, flavorful chicken and bok choy meal."
+            }
+          ],
+          "alternatives": [
+            {
+              "dish_name": "Seasonal Rice Noodle Stir Fry",
+              "dining_hall": "Gerhard Casper Dining",
+              "reason": "A light and clear Asian option with noodles and vegetables, offering a less spicy but still flavorful meal."
+            },
+            {
+              "dish_name": "Buffalo Cauliflower Wrap",
+              "dining_hall": "Gerhard Casper Dining",
+              "reason": "If you want something spicy but different from Asian cuisine, this vegetarian wrap is a light and satisfying alternative."
+            }
+          ]
+        },
+        {
+          "recommendations": [
+            {
+              "dish_name": "Cilantro Jasmine Rice",
+              "dining_hall": "Wilbur Dining",
+              "reason": "Offers a pleasant, light Asian flavor with a kick from jalapeno, perfect for a lighter lunch option."
+            },
+            {
+              "dish_name": "Gochujang Spiced Chicken",
+              "dining_hall": "Lakeside Dining",
+              "reason": "Delivers authentic bold and spicy Asian flavors with gochujang and gochugaru, and chicken provides a light protein base for a light meal."
+            },
+            {
+              "dish_name": "Star Ginger Teriyaki Chicken",
+              "dining_hall": "Gerhard Casper Dining",
+              "reason": "A classic Asian dish with a spicy kick from chili powder and tender chicken and bok choy, making it a relatively light option."
+            }
+          ],
+          "alternatives": [
+            {
+              "dish_name": "Sweet & Spicy BBQ Chicken",
+              "dining_hall": "Lakeside Dining",
+              "reason": "A unique fusion of sweet and spicy BBQ flavors with Asian and Pacific Islander influences, offering a culturally diverse and light chicken option."
+            },
+            {
+              "dish_name": "Buffalo Cauliflower Wrap",
+              "dining_hall": "Gerhard Casper Dining",
+              "reason": "Provides a distinctly American spicy flavor in a light, convenient wrap, and is a great vegetarian choice for something different."
+            }
+          ]
+        }
+      ],
+      "success_rate": 0.6666666666666666
+    },
+    "v2": {
+      "label": "2.5-flash-default \u00d7 v2",
+      "model": "gemini-2.5-flash",
+      "thinking_budget": null,
+      "prompt_version": "v2",
+      "avg_latency": 14.21,
+      "std_latency": 1.25,
+      "min_latency": 12.58,
+      "max_latency": 15.63,
+      "latencies": [
+        12.58,
+        14.42,
+        15.63
+      ],
+      "outputs": [
+        {
+          "recommendations": [
+            {
+              "dish_name": "Seasonal Steamed Vegetables",
+              "dining_hall": "Arrillaga Family Dining Commons",
+              "reason": "This is the lightest option available, focusing purely on simple, healthy vegetables."
+            },
+            {
+              "dish_name": "Cilantro Jasmine Rice",
+              "dining_hall": "Wilbur Dining",
+              "reason": "A light and flavorful rice dish that also aligns with your preference for Asian flavors and a hint of spice."
+            },
+            {
+              "dish_name": "Seasonal Rice Noodle Stir Fry",
+              "dining_hall": "Gerhard Casper Dining",
+              "reason": "A light, vegetable-forward noodle dish that fits your preference for Asian cuisine."
+            }
+          ],
+          "alternatives": [
+            {
+              "dish_name": "Gochujang Spiced Chicken",
+              "dining_hall": "Lakeside Dining",
+              "reason": "Offers a heartier, very spicy, and authentically Asian experience with a bold gochujang flavor."
+            },
+            {
+              "dish_name": "Buffalo Cauliflower Wrap",
+              "dining_hall": "Gerhard Casper Dining",
+              "reason": "A spicy and flavorful non-Asian option, served in a convenient wrap format for a different style of meal."
+            }
+          ]
+        }
+      ],
+      "success_rate": 0.3333333333333333
+    }
+  },
+  "B_reduced": {
+    "v1": {
+      "label": "2.5-flash-budget-1024 \u00d7 v1",
+      "model": "gemini-2.5-flash",
+      "thinking_budget": 1024,
+      "prompt_version": "v1",
+      "avg_latency": 5.89,
+      "std_latency": 0.39,
+      "min_latency": 5.35,
+      "max_latency": 6.23,
+      "latencies": [
+        6.09,
+        6.23,
+        5.35
+      ],
+      "outputs": [
+        {
+          "recommendations": [
+            {
+              "dish_name": "Gochujang Spiced Chicken at Lakeside Dining (Dinner)",
+              "dining_hall": "Lakeside Dining",
+              "reason": "This dish perfectly fits your love for spicy and Asian foods with gochujang and gochugaru pepper flakes, and the chicken makes for a relatively light option for your mood."
+            },
+            {
+              "dish_name": "Cilantro Jasmine Rice at Wilbur Dining (Lunch)",
+              "dining_hall": "Wilbur Dining",
+              "reason": "A great choice for Asian cuisine with jasmine rice and a spicy kick from jalapeno chili, making it a flavorful and light meal."
+            },
+            {
+              "dish_name": "Star Ginger Teriyaki Chicken at Gerhard Casper Dining (Dinner)",
+              "dining_hall": "Gerhard Casper Dining",
+              "reason": "This is a classic Asian dish with teriyaki chicken and bok choy, offering a lighter protein option that fits your mood well."
+            }
+          ],
+          "alternatives": [
+            {
+              "dish_name": "Sweet & Spicy BBQ Chicken at Lakeside Dining (Lunch)",
+              "dining_hall": "Lakeside Dining",
+              "reason": "While not strictly Asian, this offers a spicy and savory flavor profile with chicken, providing a different twist on spicy protein."
+            },
+            {
+              "dish_name": "Seasonal Rice Noodle Stir Fry at Gerhard Casper Dining (Dinner)",
+              "dining_hall": "Gerhard Casper Dining",
+              "reason": "If you want something distinctly Asian and light but prefer less spice, this stir-fry offers a fresh and healthy option with rice noodles."
+            }
+          ]
+        },
+        {
+          "recommendations": [
+            {
+              "dish_name": "Cilantro Jasmine Rice",
+              "dining_hall": "Wilbur Dining",
+              "reason": "This dish features jasmine rice and jalapeno chili, offering a light, flavorful Asian option with a spicy kick."
+            },
+            {
+              "dish_name": "Gochujang Spiced Chicken",
+              "dining_hall": "Lakeside Dining",
+              "reason": "Korean Gochujang paste and gochugaru flakes provide authentic Asian spice, and chicken can be a relatively light protein for your dinner."
+            },
+            {
+              "dish_name": "Star Ginger Teriyaki Chicken",
+              "dining_hall": "Gerhard Casper Dining",
+              "reason": "A classic Asian dish with teriyaki chicken, bok choy, and a hint of chili powder for flavor, fitting your preference for Asian food."
+            }
+          ],
+          "alternatives": [
+            {
+              "dish_name": "Seasonal Rice Noodle Stir Fry",
+              "dining_hall": "Gerhard Casper Dining",
+              "reason": "This is a light, Asian-inspired option with rice noodles and vegetables, a great choice if you want something mild today."
+            },
+            {
+              "dish_name": "Buffalo Cauliflower Wrap",
+              "dining_hall": "Gerhard Casper Dining",
+              "reason": "If you're in the mood for something light and spicy but want to try a different cuisine, this wrap offers a good kick from buffalo sauce."
+            }
+          ]
+        }
+      ],
+      "success_rate": 0.6666666666666666
+    },
+    "v2": {
+      "label": "2.5-flash-budget-1024 \u00d7 v2",
+      "model": "gemini-2.5-flash",
+      "thinking_budget": 1024,
+      "prompt_version": "v2",
+      "avg_latency": 5.42,
+      "std_latency": 0.32,
+      "min_latency": 5.03,
+      "max_latency": 5.82,
+      "latencies": [
+        5.82,
+        5.03,
+        5.41
+      ],
+      "outputs": [
+        {
+          "recommendations": [
+            {
+              "dish_name": "Seasonal Steamed Vegetables",
+              "dining_hall": "Arrillaga Family Dining Commons",
+              "reason": "Steamed vegetables are inherently light and fresh, perfect for a light meal."
+            },
+            {
+              "dish_name": "Cilantro Jasmine Rice",
+              "dining_hall": "Wilbur Dining",
+              "reason": "This dish is light, and the cilantro and jalapeno chili align with your preference for Asian and spicy flavors."
+            },
+            {
+              "dish_name": "Craveable Grains",
+              "dining_hall": "Arrillaga Family Dining Commons",
+              "reason": "Grains are typically a healthy and light base, providing a satisfying yet not heavy option."
+            }
+          ],
+          "alternatives": [
+            {
+              "dish_name": "Gochujang Spiced Chicken",
+              "dining_hall": "Lakeside Dining",
+              "reason": "If you decide you want more flavor, this offers a spicy and Asian profile with chicken."
+            },
+            {
+              "dish_name": "Buffalo Cauliflower Wrap",
+              "dining_hall": "Gerhard Casper Dining",
+              "reason": "This wrap offers a different cuisine style (American) and a tangy kick from the buffalo sauce."
+            }
+          ]
+        },
+        {
+          "recommendations": [
+            {
+              "dish_name": "Seasonal Steamed Vegetables",
+              "dining_hall": "Arrillaga Family Dining Commons",
+              "reason": "This is the lightest option, consisting solely of steamed vegetables."
+            },
+            {
+              "dish_name": "Seasonal Rice Noodle Stir Fry",
+              "dining_hall": "Gerhard Casper Dining",
+              "reason": "Light rice noodles and vegetables, and aligns with your preference for Asian food."
+            },
+            {
+              "dish_name": "Cilantro Jasmine Rice",
+              "dining_hall": "Wilbur Dining",
+              "reason": "A simple, light rice dish with Asian flavors and a touch of heat from jalapeno."
+            }
+          ],
+          "alternatives": [
+            {
+              "dish_name": "Gochujang Spiced Chicken",
+              "dining_hall": "Lakeside Dining",
+              "reason": "A flavorful and protein-rich option with a spicy Korean twist, perfect for your general taste."
+            },
+            {
+              "dish_name": "Buffalo Cauliflower Wrap",
+              "dining_hall": "Gerhard Casper Dining",
+              "reason": "A satisfying, plant-based wrap with a spicy kick, offering a different cuisine style."
+            }
+          ]
+        },
+        {
+          "recommendations": [
+            {
+              "dish_name": "Seasonal Steamed Vegetables",
+              "dining_hall": "Arrillaga Family Dining Commons",
+              "reason": "This is the epitome of light, focusing on fresh, simply prepared vegetables."
+            },
+            {
+              "dish_name": "Craveable Grains",
+              "dining_hall": "Arrillaga Family Dining Commons",
+              "reason": "A light and simple base of grains, perfect for a non-heavy meal."
+            },
+            {
+              "dish_name": "Cilantro Jasmine Rice",
+              "dining_hall": "Wilbur Dining",
+              "reason": "A simple and fragrant rice dish, offering a light and digestible option."
+            }
+          ],
+          "alternatives": [
+            {
+              "dish_name": "Seasonal Rice Noodle Stir Fry",
+              "dining_hall": "Gerhard Casper Dining",
+              "reason": "A flavorful noodle dish that is Asian-inspired and could be lighter with plenty of vegetables."
+            },
+            {
+              "dish_name": "Gochujang Spiced Chicken",
+              "dining_hall": "Lakeside Dining",
+              "reason": "Offers a savory and spicy Asian flavor profile, a good protein option if you prefer something more substantial than just vegetables/grains."
+            }
+          ]
+        }
+      ],
+      "success_rate": 1.0
+    }
+  },
+  "C_no_thinking": {
+    "v1": {
+      "label": "2.5-flash-budget-0 \u00d7 v1",
+      "model": "gemini-2.5-flash",
+      "thinking_budget": 0,
+      "prompt_version": "v1",
+      "avg_latency": 2.06,
+      "std_latency": 0.06,
+      "min_latency": 1.99,
+      "max_latency": 2.13,
+      "latencies": [
+        2.13,
+        2.07,
+        1.99
+      ],
+      "outputs": [
+        {
+          "recommendations": [
+            {
+              "dish_name": "Gochujang Spiced Chicken",
+              "dining_hall": "Lakeside Dining",
+              "reason": "This dish features spicy gochujang and Asian flavors, and the chicken makes it a satisfying yet not overly heavy option for a light mood."
+            },
+            {
+              "dish_name": "Star Ginger Teriyaki Chicken",
+              "dining_hall": "Gerhard Casper Dining",
+              "reason": "This dish offers Asian teriyaki flavor and a light chicken option that aligns with your mood for something light today."
+            },
+            {
+              "dish_name": "Cilantro Jasmine Rice",
+              "dining_hall": "Wilbur Dining",
+              "reason": "This is a very light, flavorful Asian-inspired side dish with a hint of jalapeno for spice, perfect for a light meal."
+            }
+          ],
+          "alternatives": [
+            {
+              "dish_name": "Seasonal Rice Noodle Stir Fry",
+              "dining_hall": "Gerhard Casper Dining",
+              "reason": "This is another Asian option that is vegetarian and light, providing a different style from the chicken recommendations."
+            },
+            {
+              "dish_name": "Sweet & Spicy BBQ Chicken",
+              "dining_hall": "Lakeside Dining",
+              "reason": "While not strictly Asian, this dish offers sweet and spicy flavors and is a lighter chicken option for lunch, with a unique BBQ twist."
+            }
+          ]
+        },
+        {
+          "recommendations": [
+            {
+              "dish_name": "Cilantro Jasmine Rice",
+              "dining_hall": "Wilbur Dining (Lunch)",
+              "reason": "This dish is Asian-inspired with cilantro and jasmine rice, and the jalapeno chili adds a touch of spiciness, making it a good light option for lunch."
+            },
+            {
+              "dish_name": "Gochujang Spiced Chicken",
+              "dining_hall": "Lakeside Dining (Dinner)",
+              "reason": "Gochujang makes this a spicy Asian dish, satisfying your preference, and it can be a relatively lighter dinner option depending on portion size."
+            },
+            {
+              "dish_name": "Seasonal Rice Noodle Stir Fry",
+              "dining_hall": "Gerhard Casper Dining (Dinner)",
+              "reason": "Rice noodles are a classic Asian base, and stir-fries are generally light, fitting your mood and preference for Asian cuisine."
+            }
+          ],
+          "alternatives": [
+            {
+              "dish_name": "Sweet & Spicy BBQ Chicken",
+              "dining_hall": "Lakeside Dining (Lunch)",
+              "reason": "This offers a different sweet and spicy profile with BBQ flavors and red chile flakes, providing a unique alternative to traditional Asian spiciness."
+            },
+            {
+              "dish_name": "Star Ginger Teriyaki Chicken",
+              "dining_hall": "Gerhard Casper Dining (Dinner)",
+              "reason": "While also Asian, this offers a more savory teriyaki flavor profile, different from the other spicier recommendations, with chicken and bok choy."
+            }
+          ]
+        },
+        {
+          "recommendations": [
+            {
+              "dish_name": "Cilantro Jasmine Rice",
+              "dining_hall": "Wilbur Dining",
+              "reason": "This dish is light and features jasmine rice with cilantro, green onion, and jalapeno chili for a spicy Asian flavor profile."
+            },
+            {
+              "dish_name": "Gochujang Spiced Chicken",
+              "dining_hall": "Lakeside Dining",
+              "reason": "This chicken dish offers a spicy and Asian flavor with gochujang paste and ginger, and while flavorful, it can be enjoyed as a lighter option for dinner."
+            },
+            {
+              "dish_name": "Seasonal Rice Noodle Stir Fry",
+              "dining_hall": "Gerhard Casper Dining",
+              "reason": "Rice noodles and vegetables make this a light and clearly Asian-inspired dish for dinner."
+            }
+          ],
+          "alternatives": [
+            {
+              "dish_name": "Star Ginger Teriyaki Chicken",
+              "dining_hall": "Gerhard Casper Dining",
+              "reason": "This is another Asian option, offering a different flavor profile with teriyaki and bok choy, which could also be a lighter meal."
+            },
+            {
+              "dish_name": "Sweet & Spicy BBQ Chicken",
+              "dining_hall": "Lakeside Dining",
+              "reason": "This dish provides a sweet and spicy flavor with chili flakes, and while not strictly Asian, it has a zesty profile for a light lunch."
+            }
+          ]
+        }
+      ],
+      "success_rate": 1.0
+    },
+    "v2": {
+      "label": "2.5-flash-budget-0 \u00d7 v2",
+      "model": "gemini-2.5-flash",
+      "thinking_budget": 0,
+      "prompt_version": "v2",
+      "avg_latency": 1.68,
+      "std_latency": 0.05,
+      "min_latency": 1.62,
+      "max_latency": 1.74,
+      "latencies": [
+        1.69,
+        1.74,
+        1.62
+      ],
+      "outputs": [
+        {
+          "recommendations": [
+            {
+              "dish_name": "Cilantro Jasmine Rice",
+              "dining_hall": "Wilbur Dining",
+              "reason": "This rice dish is inherently light and contains minimal heavy ingredients."
+            },
+            {
+              "dish_name": "Seasonal Steamed Vegetables",
+              "dining_hall": "Arrillaga Family Dining Commons",
+              "reason": "Steamed vegetables are a very light and healthy option."
+            },
+            {
+              "dish_name": "Seasonal Rice Noodle Stir Fry",
+              "dining_hall": "Gerhard Casper Dining",
+              "reason": "Rice noodles are generally light, and the stir fry format keeps it from being too heavy."
+            }
+          ],
+          "alternatives": [
+            {
+              "dish_name": "Buffalo Cauliflower Wrap",
+              "dining_hall": "Gerhard Casper Dining",
+              "reason": "Offers a vegetarian, handheld option with a distinct flavor profile."
+            },
+            {
+              "dish_name": "Gochujang Spiced Chicken",
+              "dining_hall": "Lakeside Dining",
+              "reason": "A flavorful chicken dish with a spicy Korean kick, different from the lighter recommendations."
+            }
+          ]
+        },
+        {
+          "recommendations": [
+            {
+              "dish_name": "Cilantro Jasmine Rice",
+              "dining_hall": "Wilbur Dining",
+              "reason": "This is a lighter side dish, fitting for 'something light today'."
+            },
+            {
+              "dish_name": "Seasonal Steamed Vegetables",
+              "dining_hall": "Arrillaga Family Dining Commons",
+              "reason": "Steamed vegetables are inherently light and healthy."
+            },
+            {
+              "dish_name": "Seasonal Rice Noodle Stir Fry",
+              "dining_hall": "Gerhard Casper Dining",
+              "reason": "Rice noodles can be a lighter option, and stir-fries offer freshness."
+            }
+          ],
+          "alternatives": [
+            {
+              "dish_name": "Gochujang Spiced Chicken",
+              "dining_hall": "Lakeside Dining",
+              "reason": "Offers a savory and spicy flavor, aligning with your general taste for Asian and spicy foods."
+            },
+            {
+              "dish_name": "Buffalo Cauliflower Wrap",
+              "dining_hall": "Gerhard Casper Dining",
+              "reason": "A vegetarian wrap with a distinct buffalo flavor profile, offering a different type of 'light' meal."
+            }
+          ]
+        },
+        {
+          "recommendations": [
+            {
+              "dish_name": "Cilantro Jasmine Rice",
+              "dining_hall": "Wilbur Dining",
+              "reason": "This rice dish is inherently light and refreshing."
+            },
+            {
+              "dish_name": "Seasonal Steamed Vegetables",
+              "dining_hall": "Arrillaga Family Dining Commons",
+              "reason": "Steamed vegetables are a classic light and healthy option."
+            },
+            {
+              "dish_name": "Seasonal Rice Noodle Stir Fry",
+              "dining_hall": "Gerhard Casper Dining",
+              "reason": "Rice noodles and vegetables make for a relatively light and flavorful meal, and aligns with your Asian preference."
+            }
+          ],
+          "alternatives": [
+            {
+              "dish_name": "Buffalo Cauliflower Wrap",
+              "dining_hall": "Gerhard Casper Dining",
+              "reason": "A wrap can be a lighter option than a full meal and offers a different flavor profile."
+            },
+            {
+              "dish_name": "Gochujang Spiced Chicken",
+              "dining_hall": "Lakeside Dining",
+              "reason": "While not 'light', it offers your preferred spicy and Asian flavors as a heartier option."
+            }
+          ]
+        }
+      ],
+      "success_rate": 1.0
+    }
+  },
+  "D_2_0_flash": {
+    "v1": {
+      "label": "2.0-flash \u00d7 v1",
+      "model": "gemini-2.0-flash",
+      "thinking_budget": null,
+      "prompt_version": "v1",
+      "avg_latency": 0.13,
+      "std_latency": 0.04,
+      "min_latency": 0.1,
+      "max_latency": 0.18,
+      "latencies": [
+        0.18,
+        0.1,
+        0.11
+      ],
+      "outputs": [],
+      "success_rate": 0.0
+    },
+    "v2": {
+      "label": "2.0-flash \u00d7 v2",
+      "model": "gemini-2.0-flash",
+      "thinking_budget": null,
+      "prompt_version": "v2",
+      "avg_latency": 0.11,
+      "std_latency": 0.02,
+      "min_latency": 0.1,
+      "max_latency": 0.14,
+      "latencies": [
+        0.11,
+        0.1,
+        0.14
+      ],
+      "outputs": [],
+      "success_rate": 0.0
+    }
+  }
+}
