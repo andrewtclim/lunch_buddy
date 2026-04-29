@@ -17,6 +17,51 @@ export type PredictResponseBody = {
   preference_summary: string;
 };
 
+// --- /pick: tell the backend which dish the user chose ---
+
+export type PickRequestBody = {
+  dish_name: string;
+  dining_hall: string;
+};
+
+export type PickResponseBody = {
+  status: string;
+  message: string;
+};
+
+export async function pickDish(
+  body: PickRequestBody,
+  accessToken?: string | null,
+): Promise<PickResponseBody> {
+  const headers: Record<string, string> = { "Content-Type": "application/json" };
+  if (accessToken) {
+    headers.Authorization = `Bearer ${accessToken}`;
+  }
+
+  const res = await fetch(`${base}/pick`, {
+    method: "POST",
+    headers,
+    body: JSON.stringify(body),
+  });
+  const text = await res.text();
+  let data: unknown = null;
+  try {
+    data = text ? JSON.parse(text) : null;
+  } catch {
+    throw new Error(`Invalid JSON from server (${res.status})`);
+  }
+  if (!res.ok) {
+    const detail =
+      typeof data === "object" && data !== null && "detail" in data
+        ? String((data as { detail: unknown }).detail)
+        : text || res.statusText;
+    throw new Error(detail);
+  }
+  return data as PickResponseBody;
+}
+
+// --- /predict: get recommendations ---
+
 export async function predict(
   body: PredictRequestBody,
   accessToken?: string | null,
