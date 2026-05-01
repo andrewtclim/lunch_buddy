@@ -14,8 +14,8 @@ sys.path.insert(
     0,
     os.path.join(os.path.dirname(__file__), "..", "models", "gemini_flash_rag"),
 )
-from recommend import recommend  # noqa: E402
-from user_prefs import load_user_pref  # noqa: E402
+from recommend import recommend, fetch_dish_embedding, update_preference_vector, summarize_preferences  # noqa: E402
+from user_prefs import load_user_pref, save_user_pref  # noqa: E402
 
 from fastapi import Depends, FastAPI, HTTPException
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
@@ -228,4 +228,78 @@ def predict(
         recommendations=[DishCard(**d) for d in recs],
         alternatives=[DishCard(**d) for d in alts],
         preference_summary=profile["preference_summary"],
+    )
+
+
+# ---------------------------------------------------------------------------
+# POST /pick -- EMA update after user picks a dish
+# ---------------------------------------------------------------------------
+
+class PickRequest(BaseModel):
+    dish_name: str                    # from the DishCard the user tapped
+    dining_hall: str                  # included for logging / future use
+    date: Optional[str] = None       # defaults to today if omitted
+
+
+class PickResponse(BaseModel):
+    status: str                       # "ok" or "error"
+    message: str                      # human-readable confirmation
+
+
+@app.post("/pick", response_model=PickResponse)
+def pick(
+    body: PickRequest,
+    current_user: AuthenticatedUser = Depends(get_current_user),
+) -> PickResponse:
+    # resolve the date -- default to today if the frontend didn't send one
+    date_str = body.date or date.today().isoformat()
+
+    # load the user's current preference profile
+    profile = load_user_pref(current_user.user_id)
+    if profile is None:
+        raise HTTPException(
+            status_code=422,
+            detail="No preference profile found -- complete your taste profile first",
+        )
+
+    # look up the picked dish's embedding vector
+    dish_vec = fetch_dish_embedding(body.dish_name, date_str)
+    if dish_vec is None:
+        raise HTTPException(
+            status_code=404,
+            detail=f"Dish '{body.dish_name}' not found in menu for {date_str}",
+        )
+
+    # EMA update: nudge the preference vector toward the picked dish
+    new_vec = update_preference_vector(profile["preference_vector"], dish_vec)
+
+    # persist updated vector immediately (summary unchanged for now)
+    save_user_pref(
+        current_user.user_id,
+        new_vec,
+        profile["preference_summary"],
+        profile["allergens"],
+    )
+
+    # regenerate summary in a background thread so the user isn't blocked
+    # delay 5s to avoid Gemini 429 rate limit from the /predict call
+    import threading
+
+    def _update_summary():
+        time.sleep(5)
+        new_summary = summarize_preferences(
+            profile["preference_summary"], [body.dish_name],
+        )
+        save_user_pref(
+            current_user.user_id,
+            new_vec,
+            new_summary,
+            profile["allergens"],
+        )
+
+    threading.Thread(target=_update_summary, daemon=True).start()
+
+    return PickResponse(
+        status="ok",
+        message=f"Enjoy your {body.dish_name}!",
     )

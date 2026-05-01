@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import type { Session } from "@supabase/supabase-js";
-import { predict } from "./api";
+import { predict, pickDish } from "./api";
 import type { PredictResponseBody } from "./api";
 import AuthPage from "./AuthPage";
 import ProfilePage from "./ProfilePage";
@@ -23,6 +23,8 @@ export default function App() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<PredictResponseBody | null>(null);
+  const [pickedDish, setPickedDish] = useState<string | null>(null);
+  const [pickMsg, setPickMsg] = useState<string | null>(null);
 
   const userId = session?.user?.id ?? null;
 
@@ -58,6 +60,8 @@ export default function App() {
     e.preventDefault();
     setError(null);
     setResult(null);
+    setPickedDish(null);
+    setPickMsg(null);
     setLoading(true);
     const body = {
       mood: moodText.trim() || undefined,
@@ -72,8 +76,18 @@ export default function App() {
     }
   }
 
-  function onPick(dishName: string, diningHall: string) {
-    console.log("[pick]", { dishName, diningHall, userId });
+  async function onPick(dishName: string, diningHall: string) {
+    setPickedDish(dishName);
+    setPickMsg(null);
+    try {
+      const data = await pickDish(
+        { dish_name: dishName, dining_hall: diningHall },
+        session?.access_token,
+      );
+      setPickMsg(data.message);
+    } catch (err) {
+      setPickMsg(err instanceof Error ? err.message : "Pick failed");
+    }
   }
 
   async function onSignOut() {
@@ -146,7 +160,7 @@ export default function App() {
         </div>
       </header>
 
-      <form className="card" onSubmit={onRecommend}>
+      {!pickMsg && <form className="card" onSubmit={onRecommend}>
         <h2 className="home-prompt">What do you want for lunch?</h2>
         <label className="field">
           <span className="label">Your mood or cravings (optional)</span>
@@ -162,7 +176,7 @@ export default function App() {
         <button type="submit" className="primary" disabled={loading}>
           {loading ? "Finding dishes..." : "Get Recommendations"}
         </button>
-      </form>
+      </form>}
 
       {error && (
         <div className="card message error" role="alert">
@@ -176,22 +190,48 @@ export default function App() {
           <p className="preference-hint">
             Your taste profile: {result.preference_summary}
           </p>
-          <div className="dish-cards">
-            {[...result.recommendations, ...result.alternatives].map((dish) => (
-              <div className="card dish-card" key={`${dish.dish_name}-${dish.dining_hall}`}>
-                <h3 className="dish-name">{dish.dish_name}</h3>
-                <p className="dish-hall">{dish.dining_hall}</p>
-                <p className="dish-reason">{dish.reason}</p>
-                <button
-                  type="button"
-                  className="secondary"
-                  onClick={() => onPick(dish.dish_name, dish.dining_hall)}
-                >
-                  Pick this
-                </button>
-              </div>
-            ))}
-          </div>
+
+          {pickMsg ? (
+            // after picking: show only the chosen dish, centered
+            <div className="pick-confirmation">
+              {[...result.recommendations, ...result.alternatives]
+                .filter((dish) => dish.dish_name === pickedDish)
+                .map((dish) => (
+                  <div className="card dish-card picked" key={`${dish.dish_name}-${dish.dining_hall}`}>
+                    <h3 className="dish-name">{dish.dish_name}</h3>
+                    <p className="dish-hall">{dish.dining_hall}</p>
+                    <p className="dish-reason">{dish.reason}</p>
+                    <p className="pick-msg">{pickMsg}</p>
+                  </div>
+                ))}
+              <button
+                type="button"
+                className="secondary"
+                onClick={() => { setPickedDish(null); setPickMsg(null); }}
+              >
+                Back to results
+              </button>
+            </div>
+          ) : (
+            // before picking: show all dish cards
+            <div className="dish-cards">
+              {[...result.recommendations, ...result.alternatives].map((dish) => (
+                <div className="card dish-card" key={`${dish.dish_name}-${dish.dining_hall}`}>
+                  <h3 className="dish-name">{dish.dish_name}</h3>
+                  <p className="dish-hall">{dish.dining_hall}</p>
+                  <p className="dish-reason">{dish.reason}</p>
+                  <button
+                    type="button"
+                    className="secondary"
+                    disabled={pickedDish !== null}
+                    onClick={() => onPick(dish.dish_name, dish.dining_hall)}
+                  >
+                    {pickedDish === dish.dish_name ? "Picking..." : "Pick this"}
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
         </>
       )}
     </div>
