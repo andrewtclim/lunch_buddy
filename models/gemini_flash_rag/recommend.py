@@ -209,35 +209,51 @@ def retrieve_dishes(
     # cosine search the given table for today's dishes ranked by similarity to query_vec
     # table defaults to "daily_menu" (production) but can be set to "backfill_menu"
     # (experiment data) -- same schema, so the query works for both
-    conn = _get_pool().getconn()
-    try:
-        cur = conn.cursor()
-        cur.execute(
-            f"""
-            SELECT dish_name, dining_hall, meal_time, allergens, ingredients
-            FROM {table}
-            WHERE date_served = %s
-            ORDER BY embedding <=> %s::vector
-            LIMIT %s;
-        """,
-            (date_str, query_vec.tolist(), limit),
-        )
-        rows = cur.fetchall()
-        cur.close()
-    finally:
-        # always return the connection to the pool, even on exception, to prevent leaks
-        _get_pool().putconn(conn)
-    # pack each row into a dict so the rest of the pipeline can use field names
-    return [
-        {
-            "dish_name": row[0],
-            "dining_hall": row[1],
-            "meal_time": row[2],
-            "allergens": row[3] or [],  # NULL in DB becomes empty list
-            "ingredients": row[4] or "",  # NULL in DB becomes empty string
-        }
-        for row in rows
-    ]
+    #
+    # Retries once on a stale-connection error: Supabase closes idle pooled
+    # connections (e.g. after a long gap between API calls), and the pool
+    # doesn't validate before handing them out. The first attempt may get a
+    # dead connection -- discard it and try again with a fresh one.
+    pool = _get_pool()
+    last_err: Exception | None = None
+    for attempt in range(2):
+        conn = pool.getconn()
+        try:
+            cur = conn.cursor()
+            cur.execute(
+                f"""
+                SELECT dish_name, dining_hall, meal_time, allergens, ingredients
+                FROM {table}
+                WHERE date_served = %s
+                ORDER BY embedding <=> %s::vector
+                LIMIT %s;
+            """,
+                (date_str, query_vec.tolist(), limit),
+            )
+            rows = cur.fetchall()
+            cur.close()
+            pool.putconn(conn)
+            # pack each row into a dict so the rest of the pipeline can use field names
+            return [
+                {
+                    "dish_name": row[0],
+                    "dining_hall": row[1],
+                    "meal_time": row[2],
+                    "allergens": row[3] or [],  # NULL in DB becomes empty list
+                    "ingredients": row[4] or "",  # NULL in DB becomes empty string
+                }
+                for row in rows
+            ]
+        except psycopg2.DatabaseError as e:
+            last_err = e
+            # discard the stale connection from the pool so it isn't handed out again
+            pool.putconn(conn, close=True)
+            if attempt == 0:
+                print(
+                    f"  [db] retrieve_dishes retrying after stale connection: {e}",
+                    flush=True,
+                )
+    raise RuntimeError(f"retrieve_dishes failed twice for {date_str}: {last_err}")
 
 
 def fetch_dish_embedding(
@@ -503,11 +519,21 @@ def recommend(
     date_str: str,  # date to pull dishes for, "YYYY-MM-DD"
     daily_mood: str | None = None,  # optional free-text mood for today
     table: str = "daily_menu",  # which Supabase table to search
-) -> tuple[list[dict], np.ndarray]:
+    # --- ablation knobs (None / defaults preserve production behavior) ---
+    beta: float | None = None,
+    top_k_retrieval: int = 40,
+    top_k_gemini: int = 10,
+) -> tuple[list[dict], list[dict], np.ndarray]:
     # runs the full pipeline and returns:
-    #   - recs: list of up to 3 recommendation dicts from Gemini
-    #   - query_vec: the vector that was used for retrieval (blended if mood given)
-    #     caller uses query_vec for nothing -- it's returned only for logging/debug
+    #   - recs: up to 3 recommendation dicts from Gemini
+    #   - alts: 2 alternative dicts from Gemini
+    #   - query_vec: the vector used for retrieval (blended if mood given);
+    #     returned only for logging/debug
+    #
+    # ablation knobs (used by exp_08_mood_faithfulness benchmark):
+    #   - beta: override BETA_WITH_MOOD; only takes effect when daily_mood is set
+    #   - top_k_retrieval: how many dishes the cosine search pulls
+    #   - top_k_gemini: how many candidates we send to Gemini after filtering
     #
     # NOTE: pref_vec is NOT updated here -- updating requires the user's pick,
     # which happens outside this function. See update_preference_vector() above.
@@ -515,22 +541,23 @@ def recommend(
     # step 1 -- if mood was provided, embed it and blend into a temporary query vector
     if daily_mood:
         mood_vec = get_embedding(daily_mood)  # embed the mood string
-        # 50/50 profile/mood (BETA_WITH_MOOD)
-        query_vec = blend_mood(pref_vec, mood_vec)
+        effective_beta = BETA_WITH_MOOD if beta is None else beta
+        query_vec = blend_mood(pref_vec, mood_vec, beta=effective_beta)
     else:
         query_vec = pref_vec  # no mood -- use profile directly
 
-    # step 2 -- cosine search: find today's top 40 dishes closest to query_vec
-    # 40 gives the filter steps enough to work with on sparse days (weekends,
-    # limited halls) without pulling in dishes that are too far from the preference
-    candidates = retrieve_dishes(query_vec, date_str, table=table, limit=40)
+    # step 2 -- cosine search: top_k_retrieval dishes closest to query_vec
+    # default 40 gives filter steps enough room on sparse days (weekends,
+    # limited halls) without pulling dishes too far from the preference
+    candidates = retrieve_dishes(
+        query_vec, date_str, table=table, limit=top_k_retrieval
+    )
 
-    # step 3 -- clean up: remove station labels, allergen conflicts, duplicates
+    # step 3 -- clean up: remove station labels, allergen conflicts, duplicates,
+    # then keep top_k_gemini for the LLM to rerank
     candidates = filter_placeholders(candidates)
     candidates = filter_allergens(candidates, user_allergens)
-    candidates = deduplicate(candidates)[:10]  # top 10 go to Gemini
-    # (was 5 -- extra 5 give Gemini room
-    #  to pick 2 diverse alternatives)
+    candidates = deduplicate(candidates)[:top_k_gemini]
 
     # step 4 -- ask Gemini to pick top 3 recommendations + 2 diverse alternatives
     recs, alts = call_gemini(preference_summary, candidates, daily_mood=daily_mood)

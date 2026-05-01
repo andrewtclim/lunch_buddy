@@ -1,0 +1,60 @@
+{
+  "description": "Synthetic (mood, date, profile) triples for the mood-faithfulness eval. Each item carries a one-sentence user profile and a `relationship` flag describing how the profile relates to the mood: 'adjacent' (profile points at a neighboring food region), 'contrast' (profile is intentionally adversarial), or 'aligned' (profile reinforces the mood -- sanity check that we don't break the easy case).",
+  "tag_definitions": {
+    "high-signal-cuisine": "Mood maps clearly to a dish type or cuisine (noodles, pizza, soup).",
+    "high-signal-attribute": "Mood maps to a clear attribute filter (spicy, hearty, low-carb).",
+    "cross-cutting": "Combination of cuisine and attribute, or a regional cuisine cue (Italian, Asian flavors).",
+    "vague": "Under-specified; tests whether the system adds value over literal matching.",
+    "temporal": "Time-of-day or meal-context cues (breakfast-y)."
+  },
+  "relationship_definitions": {
+    "adjacent": "Profile and mood point at related-but-not-overlapping food regions (e.g., profile = spicy Korean, mood = noodles). Reproduces the demo bug shape -- realistic user behavior.",
+    "contrast": "Profile is the opposite of the mood. Worst-case stress test for blend dilution; if the system can't honor mood here, the blend strategy is fundamentally broken.",
+    "aligned": "Profile reinforces the mood. Should trivially hit 3/3 -- guards against fixes that 'over-correct' and break the easy case."
+  },
+  "items": [
+    {"mood": "noodles",                 "date": "2026-03-30", "tag": "high-signal-cuisine",   "relationship": "adjacent", "profile": "I love spicy Korean food -- kimchi stews and grilled meats."},
+    {"mood": "a fresh salad",           "date": "2026-03-30", "tag": "high-signal-cuisine",   "relationship": "adjacent", "profile": "I love hearty Italian pasta dishes -- lasagna and creamy sauces."},
+    {"mood": "spicy food",              "date": "2026-03-30", "tag": "high-signal-attribute", "relationship": "adjacent", "profile": "I gravitate toward Mediterranean food -- hummus, grilled lamb, and roasted vegetables."},
+    {"mood": "something with chicken",  "date": "2026-03-30", "tag": "high-signal-cuisine",   "relationship": "contrast", "profile": "I love vegetarian Italian dishes -- eggplant parmigiana and pasta primavera."},
+    {"mood": "something light",         "date": "2026-03-30", "tag": "vague",                 "relationship": "adjacent", "profile": "I love rich, saucy Italian dinners and comforting baked dishes."},
+    {"mood": "comfort food",            "date": "2026-03-30", "tag": "vague",                 "relationship": "adjacent", "profile": "I love crisp salads with grilled fish and citrus vinaigrette."},
+
+    {"mood": "soup",                    "date": "2026-04-01", "tag": "high-signal-cuisine",   "relationship": "contrast", "profile": "I love grilled meats and roasted vegetables -- usually dry, hearty plates."},
+    {"mood": "pizza",                   "date": "2026-04-01", "tag": "high-signal-cuisine",   "relationship": "adjacent", "profile": "I love Mediterranean food -- falafel, hummus, and grilled lamb."},
+    {"mood": "a healthy lunch",         "date": "2026-04-01", "tag": "high-signal-attribute", "relationship": "contrast", "profile": "I love rich Italian comfort food -- creamy pastas and cheesy bakes."},
+    {"mood": "high protein",            "date": "2026-04-01", "tag": "high-signal-attribute", "relationship": "adjacent", "profile": "I love grain bowls with light dressings and lots of vegetables."},
+    {"mood": "surprise me",             "date": "2026-04-01", "tag": "vague",                 "relationship": "adjacent", "profile": "I always order the same grilled chicken Caesar salad."},
+    {"mood": "easy on the stomach",     "date": "2026-04-01", "tag": "vague",                 "relationship": "contrast", "profile": "I love bold spicy Indian curries and rich saucy dishes."},
+
+    {"mood": "tacos or a burrito",      "date": "2026-04-03", "tag": "high-signal-cuisine",   "relationship": "adjacent", "profile": "I love Italian food -- pasta, pizza, and risotto."},
+    {"mood": "a sandwich",              "date": "2026-04-03", "tag": "high-signal-cuisine",   "relationship": "adjacent", "profile": "I love hot saucy entrees -- pastas, curries, and stews."},
+    {"mood": "seafood",                 "date": "2026-04-03", "tag": "high-signal-cuisine",   "relationship": "contrast", "profile": "I love grilled chicken and steak -- not really a fish person."},
+    {"mood": "low-carb",                "date": "2026-04-03", "tag": "high-signal-attribute", "relationship": "contrast", "profile": "I love hearty Italian pasta dishes and crusty bread."},
+    {"mood": "something Italian",       "date": "2026-04-03", "tag": "cross-cutting",         "relationship": "adjacent", "profile": "I love Mexican food -- tacos, salsas, and rice and beans."},
+    {"mood": "Asian flavors",           "date": "2026-04-03", "tag": "cross-cutting",         "relationship": "adjacent", "profile": "I love Mediterranean food -- falafel, hummus, and grilled lamb."},
+
+    {"mood": "a burger",                "date": "2026-04-05", "tag": "high-signal-cuisine",   "relationship": "adjacent", "profile": "I love East Asian flavors -- stir-fries, ramen, and rice bowls."},
+    {"mood": "a rice bowl",             "date": "2026-04-05", "tag": "high-signal-cuisine",   "relationship": "adjacent", "profile": "I love Italian pasta dishes and wood-fired pizza."},
+    {"mood": "stir-fry",                "date": "2026-04-05", "tag": "high-signal-cuisine",   "relationship": "adjacent", "profile": "I love hearty Italian dinners -- lasagna, risotto, and meatballs."},
+    {"mood": "hearty and filling",      "date": "2026-04-05", "tag": "high-signal-attribute", "relationship": "contrast", "profile": "I love light salads and steamed grain bowls."},
+    {"mood": "Mexican food",            "date": "2026-04-05", "tag": "cross-cutting",         "relationship": "adjacent", "profile": "I love East Asian flavors -- sushi, ramen, and stir-fries."},
+    {"mood": "something quick to eat",  "date": "2026-04-05", "tag": "vague",                 "relationship": "adjacent", "profile": "I love elaborate multi-course meals -- soup, salad, entree, dessert."},
+
+    {"mood": "ramen or pho",            "date": "2026-04-07", "tag": "high-signal-cuisine",   "relationship": "adjacent", "profile": "I love hearty Italian comfort food -- lasagna and risotto."},
+    {"mood": "breakfast-y food",        "date": "2026-04-07", "tag": "temporal",              "relationship": "adjacent", "profile": "I love hearty dinner entrees -- steak, pasta, and roasts."},
+    {"mood": "something cheesy",        "date": "2026-04-07", "tag": "high-signal-attribute", "relationship": "contrast", "profile": "I love clean lean meals -- grilled fish, salads, and vegetables."},
+    {"mood": "fresh and crunchy",       "date": "2026-04-07", "tag": "high-signal-attribute", "relationship": "contrast", "profile": "I love soft, slow-cooked dishes -- braises and stews."},
+    {"mood": "something Mediterranean", "date": "2026-04-07", "tag": "cross-cutting",         "relationship": "adjacent", "profile": "I love East Asian flavors -- sushi, ramen, and stir-fries."},
+    {"mood": "craving carbs",           "date": "2026-04-07", "tag": "vague",                 "relationship": "contrast", "profile": "I love grilled proteins and salads -- usually skip bread and rice."},
+
+    {"mood": "noodles",                 "date": "2026-03-30", "tag": "high-signal-cuisine",   "relationship": "contrast", "profile": "I'm strictly carnivore -- only grilled meats, no starches, no carbs of any kind."},
+    {"mood": "pizza",                   "date": "2026-04-01", "tag": "high-signal-cuisine",   "relationship": "contrast", "profile": "I'm strictly health-focused -- only fresh salads and lean proteins, no bread or cheese ever."},
+    {"mood": "soup",                    "date": "2026-04-01", "tag": "high-signal-cuisine",   "relationship": "contrast", "profile": "I never eat liquid foods with my meal -- always dry, solid plates."},
+    {"mood": "Mexican food",            "date": "2026-04-05", "tag": "cross-cutting",         "relationship": "contrast", "profile": "I dislike all Latin American cuisine -- I only eat East Asian food."},
+    {"mood": "comfort food",            "date": "2026-03-30", "tag": "vague",                 "relationship": "contrast", "profile": "I'm a minimalist eater -- only light, raw, whole foods like fresh fruit and vegetables."},
+
+    {"mood": "noodles",                 "date": "2026-03-30", "tag": "high-signal-cuisine",   "relationship": "aligned",  "profile": "I love noodle dishes of all kinds -- pasta, ramen, pho, lo mein, udon."},
+    {"mood": "pizza",                   "date": "2026-04-01", "tag": "high-signal-cuisine",   "relationship": "aligned",  "profile": "I love Italian food -- pizza, pasta, antipasti, and bruschetta."}
+  ]
+}
