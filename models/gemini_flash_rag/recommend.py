@@ -9,7 +9,7 @@
 #   2. If user provided a daily mood string, embed it and blend into a query_vec
 #       (beta=0.5 so mood meaningfully shifts retrieval)
 #   3. Cosine search backfill_menu / daily_menu using query_vec
-#   4. Filter placeholders, allergens, duplicates -> top 5 candidates
+#   4. Filter placeholders, allergens, duplicates -> top 20 candidates
 #   5. Call Gemini with candidates + preference summary + mood string
 #   6. User picks one; fetch that dish's embedding and EMA-update pref_vec
 #   7. Save updated pref_vec back to Supabase
@@ -521,8 +521,8 @@ def recommend(
     table: str = "daily_menu",  # which Supabase table to search
     # --- ablation knobs (None / defaults preserve production behavior) ---
     beta: float | None = None,
-    top_k_retrieval: int = 40,
-    top_k_gemini: int = 10,
+    top_k_retrieval: int = 80,
+    top_k_gemini: int = 20,
 ) -> tuple[list[dict], list[dict], np.ndarray]:
     # runs the full pipeline and returns:
     #   - recs: up to 3 recommendation dicts from Gemini
