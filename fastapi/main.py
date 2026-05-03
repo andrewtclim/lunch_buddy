@@ -14,7 +14,12 @@ sys.path.insert(
     0,
     os.path.join(os.path.dirname(__file__), "..", "models", "gemini_flash_rag"),
 )
-from recommend import recommend, fetch_dish_embedding, update_preference_vector, summarize_preferences  # noqa: E402
+from recommend import (
+    recommend,
+    fetch_dish_embedding,
+    update_preference_vector,
+    summarize_preferences,
+)  # noqa: E402
 from user_prefs import load_user_pref, save_user_pref  # noqa: E402
 
 from fastapi import Depends, FastAPI, HTTPException
@@ -35,7 +40,9 @@ except ImportError:
     mlflow = None  # type: ignore
 
 MODEL_URI = os.getenv("MLFLOW_MODEL_URI", "models:/LunchBuddyModel/Production")
-MLFLOW_TRACKING_URI = os.getenv("MLFLOW_TRACKING_URI")  # e.g. https://your-mlflow-server
+MLFLOW_TRACKING_URI = os.getenv(
+    "MLFLOW_TRACKING_URI"
+)  # e.g. https://your-mlflow-server
 SUPABASE_URL = os.getenv("SUPABASE_URL", "").rstrip("/")
 SUPABASE_JWT_AUDIENCE = os.getenv("SUPABASE_JWT_AUDIENCE", "authenticated")
 
@@ -106,21 +113,22 @@ app.add_middleware(
 
 # --- Pydantic: change fields to match what your model expects/returns ---
 
+
 class PredictRequest(BaseModel):
-    mood: Optional[str] = None   # free-text mood for today, e.g. "something spicy"
-    date: Optional[str] = None   # "YYYY-MM-DD"; defaults to today server-side if omitted
+    mood: Optional[str] = None  # free-text mood for today, e.g. "something spicy"
+    date: Optional[str] = None  # "YYYY-MM-DD"; defaults to today server-side if omitted
 
 
 class DishCard(BaseModel):
-    dish_name: str       # e.g. "Gochujang Spiced Chicken"
-    dining_hall: str     # e.g. "Arrillaga"
-    reason: str          # one-sentence explanation from Gemini
+    dish_name: str  # e.g. "Gochujang Spiced Chicken"
+    dining_hall: str  # e.g. "Arrillaga"
+    reason: str  # one-sentence explanation from Gemini
 
 
 class PredictResponse(BaseModel):
-    recommendations: list[DishCard]   # top 3 matches
-    alternatives: list[DishCard]      # 2 diverse alternatives
-    preference_summary: str           # user's current taste profile sentence
+    recommendations: list[DishCard]  # top 3 matches
+    alternatives: list[DishCard]  # 2 diverse alternatives
+    preference_summary: str  # user's current taste profile sentence
 
 
 def _fetch_jwks() -> dict[str, Any]:
@@ -131,20 +139,26 @@ def _fetch_jwks() -> dict[str, Any]:
         return {"keys": cached_keys}
 
     if not JWKS_URL:
-        raise HTTPException(status_code=500, detail="SUPABASE_URL is not configured on the API")
+        raise HTTPException(
+            status_code=500, detail="SUPABASE_URL is not configured on the API"
+        )
 
     try:
         with urlopen(JWKS_URL, timeout=5) as resp:
             payload = resp.read().decode("utf-8")
     except URLError as exc:
-        raise HTTPException(status_code=503, detail="Unable to fetch Supabase JWKS") from exc
+        raise HTTPException(
+            status_code=503, detail="Unable to fetch Supabase JWKS"
+        ) from exc
 
     import json
 
     jwks = json.loads(payload)
     keys = jwks.get("keys")
     if not isinstance(keys, list) or not keys:
-        raise HTTPException(status_code=503, detail="Supabase JWKS response was missing keys")
+        raise HTTPException(
+            status_code=503, detail="Supabase JWKS response was missing keys"
+        )
 
     _jwks_cache["keys"] = keys
     _jwks_cache["expires_at"] = now + _jwks_ttl_seconds
@@ -177,7 +191,9 @@ def get_current_user(
         raise HTTPException(status_code=401, detail="Token missing user id")
 
     email = claims.get("email")
-    return AuthenticatedUser(user_id=user_id, email=email if isinstance(email, str) else None)
+    return AuthenticatedUser(
+        user_id=user_id, email=email if isinstance(email, str) else None
+    )
 
 
 @app.get("/")
@@ -221,6 +237,8 @@ def predict(
         date_str=date_str,
         daily_mood=body.mood,
         table="daily_menu",
+        original_profile_vec=profile["original_profile_vector"],
+        recent_choices_vecs=profile["recent_choices_vecs"],
     )
 
     # 4. return structured response -- no EMA update here (deferred to /pick)
@@ -235,15 +253,16 @@ def predict(
 # POST /pick -- EMA update after user picks a dish
 # ---------------------------------------------------------------------------
 
+
 class PickRequest(BaseModel):
-    dish_name: str                    # from the DishCard the user tapped
-    dining_hall: str                  # included for logging / future use
-    date: Optional[str] = None       # defaults to today if omitted
+    dish_name: str  # from the DishCard the user tapped
+    dining_hall: str  # included for logging / future use
+    date: Optional[str] = None  # defaults to today if omitted
 
 
 class PickResponse(BaseModel):
-    status: str                       # "ok" or "error"
-    message: str                      # human-readable confirmation
+    status: str  # "ok" or "error"
+    message: str  # human-readable confirmation
 
 
 @app.post("/pick", response_model=PickResponse)
@@ -273,12 +292,17 @@ def pick(
     # EMA update: nudge the preference vector toward the picked dish
     new_vec = update_preference_vector(profile["preference_vector"], dish_vec)
 
-    # persist updated vector immediately (summary unchanged for now)
+    # prepend new pick to recent_choices and trim to 5 (most-recent first)
+    recent = [dish_vec.tolist()] + (profile.get("recent_choices_raw") or [])
+    recent = recent[:5]
+
+    # persist updated vector and recent choices immediately (summary unchanged for now)
     save_user_pref(
         current_user.user_id,
         new_vec,
         profile["preference_summary"],
         profile["allergens"],
+        recent_choices=recent,
     )
 
     # regenerate summary in a background thread so the user isn't blocked
@@ -288,7 +312,8 @@ def pick(
     def _update_summary():
         time.sleep(5)
         new_summary = summarize_preferences(
-            profile["preference_summary"], [body.dish_name],
+            profile["preference_summary"],
+            [body.dish_name],
         )
         save_user_pref(
             current_user.user_id,

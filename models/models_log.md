@@ -127,6 +127,16 @@ Gemini 2.5 Flash), FastAPI, Python, Docker, MLflow (experiment tracking).
   log results to MLflow.
 - **Files.** `experiments/exp_04_RAG_learning/`
 
+### exp_05 — FastAPI deploy scaffold — Apr 10 2026 — scaffold only
+
+- **What we tried.** Set up a FastAPI + Docker scaffold for serving recommendations
+  as a real API endpoint. `POST /predict` skeleton exists. Patrick added JWT auth
+  via Supabase JWKS.
+- **Status.** Scaffold only -- `/predict` is not yet wired to Supabase + Gemini.
+  Docker build confirmed working; `/health` and `/` endpoints respond correctly.
+  `python-jose` missing from `requirements.txt` (needed for JWT verify -- Patrick fix).
+- **Files.** `experiments/exp_05_fastapi_deploy/`, `fastapi/main.py`
+
 ### exp_06 — thinking_budget benchmark + prompt v2 — Apr 12 2026 — done
 
 - **What we tried.** Benchmarked `thinking_budget=0` (disables extended reasoning in
@@ -152,45 +162,26 @@ Gemini 2.5 Flash), FastAPI, Python, Docker, MLflow (experiment tracking).
 - **Registered.** `gemini_flash_rag_v2` in MLflow Model Registry.
 - **Files.** `gemini_flash_rag/recommend.py`, `gemini_flash_rag/register.py`
 
-### exp_07 — Connection pooling latency — Apr 25 2026 — done
+### exp_07 — connection pooling benchmark — Apr 25 2026 — done
 
-- **What we tried.** Replaced per-call `psycopg2.connect()` with a module-level `ThreadedConnectionPool` (minconn=1, maxconn=5) across all three DB functions in `recommend.py`.
-- **Results.** 3.3x speedup on `retrieve_dishes()` (avg 761ms → 228ms), 4x lower p95 (1163ms → 273ms). Each fresh connection to Supabase costs ~530ms of TCP+TLS+auth handshake; the pool keeps connections warm.
-- **Decision.** Shipped. For a full `backfill_menu` demo run (~30 DB calls), saves ~16 seconds. `try/finally` is required so exceptions don't leak connections and exhaust the pool.
-- **Files.** `experiments/exp_07_connection_pooling/`, `gemini_flash_rag/recommend.py`
+- **What we tried.** Benchmarked `psycopg2.pool.ThreadedConnectionPool` vs fresh-connection-per-call on `retrieve_dishes()`. 30 calls each, Gemini excluded from timing.
+- **Results.** avg 761ms → 228ms (3.3x); p95 1163ms → 273ms (4.3x). Each fresh connection pays ~530ms TCP+TLS+auth overhead; pooled calls 2+ reuse it.
+- **Decision.** Pooling applied to all three DB functions in `recommend.py` (min=1, max=5). `try/finally` on `putconn()` prevents pool exhaustion on exceptions.
+- **Files.** `experiments/exp_07_connection_pooling/`
 
-### exp_08 — Mood faithfulness eval + wider funnel — Apr 29 2026 — done
+### exp_08 — mood faithfulness eval — Apr 29 2026 — done
 
-- **What we tried.** Built a full LLM-as-judge eval harness to measure how well the system honors a user's stated mood. 37 synthetic (mood, date, profile) triples across 5 dates. Gemini 2.5 Flash labels every dish on each date as match/weak/miss for the given mood (cached). Primary metric: `mood_faithfulness@3` = fraction of top-3 recs labelled match. Ran 4 variants: baseline (beta=0.5, top_k=40/10), beta_0_8, beta_1_0, wider_funnel (top_k=80/20).
-- **Results.**
+- **What we tried.** LLM-as-judge eval for mood fidelity. Judge labels each (mood, dish) pair as match/weak/miss; faith@3 = matches-in-top-3 / 3. 37 profiles × 3 repeats across 3 categories: *adjacent* (profile opposes mood — the hard case), *aligned* (profile supports mood), *contrast* (profile strongly opposes in a different dimension). Ran baseline and three variants.
+- **Results.** Baseline adj faith@3=0.633; wider_funnel (top_k_retrieval=80, top_k_gemini=20): adj=0.717, aligned=0.833 (no regression). Wider pool helps but adj still trails — root cause: at beta=0.5 the blended query falls between profile and mood vectors in a retrieval dead zone (mood dilution).
+- **Decision.** wider_funnel defaults shipped (`top_k_retrieval=80`, `top_k_gemini=20`). Beta raise + signal separation queued as exp_09.
+- **Files.** `experiments/exp_08_mood_faithfulness/`
 
-  | Variant | faith@3 | adjacent | contrast | aligned | median lat |
-  |---|---|---|---|---|---|
-  | baseline | 0.652 | 0.633 | 0.652 | 0.833 | 1.96s |
-  | beta_0_8 | 0.754 | 0.706 | 0.807 | 0.833 | ~2.0s |
-  | wider_funnel | 0.775 | 0.717 | 0.844 | 0.833 | 2.05s |
-  | beta_1_0 | 0.802 | 0.750 | 0.867 | 0.833 | 1.85s |
+### exp_09 — alpha1 (mood weight) ablation — May 2 2026 — done
 
-- **Key findings.**
-  1. Retrieval failure, not reranking failure. `debug_retrieval.py` confirmed 0 mood-matching candidates in top-40 for adversarial cases (low-carb + Italian profile). Gemini can't recommend what it never sees.
-  2. `backfill_menu` has ~10 rows per unique dish (one per station), so top-40 raw candidates collapse to ~5 unique dishes after `deduplicate()`. Wider retrieval surfaces more unique mood-relevant options.
-  3. `wider_funnel` beats `beta_0_8` at the same beta. Candidate diversity matters as much as blend ratio.
-  4. `beta_1_0` is the ceiling but drops profile signal entirely at retrieval. One adjacent case (fresh salad) regressed. Belongs in the 3-vector architecture, not a band-aid beta change.
-  5. burger and stir-fry score 0 at all variants — menu availability failures on that date, not system failures.
-- **Label audit.** 10 eval items reclassified from adjacent → contrast after review. Distinction: "I love X" (soft preference, adjacent) vs. profile that directly conflicts on the same food dimension (contrast).
-- **Decision.** Shipped `wider_funnel`: `top_k_retrieval=80, top_k_gemini=20` as new defaults. +12pp faith@3, ~90ms median latency increase. Beta held at 0.5 pending 3-vector architecture.
-- **Next.** 3-vector architecture: separate mood_vec / recent_vec (last 5 picks) / original_profile_vec. `user_pref` schema needs `original_profile_vector` column (set once, never updated) and `recent_choices` (rolling list of last N dish embeddings).
-- **Files.** `experiments/exp_08_mood_faithfulness/`, `gemini_flash_rag/recommend.py`
-
-### exp_05 — FastAPI deploy scaffold — Apr 10 2026 — scaffold only
-
-- **What we tried.** Set up a FastAPI + Docker scaffold for serving recommendations
-  as a real API endpoint. `POST /predict` skeleton exists. Patrick added JWT auth
-  via Supabase JWKS.
-- **Status.** Scaffold only -- `/predict` is not yet wired to Supabase + Gemini.
-  Docker build confirmed working; `/health` and `/` endpoints respond correctly.
-  `python-jose` missing from `requirements.txt` (needed for JWT verify -- Patrick fix).
-- **Files.** `experiments/exp_05_fastapi_deploy/`, `fastapi/main.py`
+- **What we tried.** Swept `BETA_WITH_MOOD` (α₁) over {0.5, 0.6, 0.7, 0.8} with realistic pick history. Simulation: 4 no-mood picks on Mar 30/Apr 1/Apr 3/Apr 5 (profile-driven, random top-3 pick each day), eval on Apr 7 with mood. Single-eval-day design keeps history length identical across all profiles. Eval set expanded to 48 Apr 7 profiles (33 adj, 13 contrast, 2 aligned; SE=0.050 on adj slice) — new profiles reused existing judge labels, zero extra API calls.
+- **Results.** adj faith@3 improved monotonically: 0.774 → 0.808 → 0.872 → **0.889** (α₁=0.5→0.6→0.7→0.8). No aligned regression at any value.
+- **Decision.** `BETA_WITH_MOOD` updated 0.5 → 0.8 in `recommend.py`.
+- **Files.** `experiments/exp_09_alpha1_ablation/`
 
 ---
 
@@ -370,33 +361,33 @@ Applied benchmark findings from exp_06. Four files changed:
 
 ---
 
-## Session log — Apr 29 2026
+## Session log — May 2 2026
 
-### exp_08 — Mood faithfulness eval harness + wider funnel
+### 3-vector architecture — feature/3-vector-architecture branch
 
-**Motivation.** A teammate demo showed mood="noodles" returning 0/5 noodle dishes. Rather than guessing at a fix, we measured first.
+Implemented the signal separation designed to fix mood dilution (diagnosed in exp_08, quantified in exp_09). Previously, signup preference and pick history were permanently fused into one EMA vector (`preference_vector`); mood was blended on top at query time. The new design splits them into three independent vectors so each can be weighted appropriately.
 
-**Eval harness built (`experiments/exp_08_mood_faithfulness/`):**
-- `eval_set.json` — 37 (mood, date, profile) triples. Three relationship types: adjacent (profile points at a different food region — the realistic everyday use case), contrast (profile directly opposes the mood — stress test), aligned (sanity check). 10 items were initially mislabeled as adjacent and corrected to contrast after manual audit.
-- `judge.py` — Gemini 2.5 Flash labels every dish on each date as match/weak/miss per mood. Cache key includes a prompt hash so edited rubrics auto-invalidate stale labels. Judge uses AI Studio (plain REST) rather than Vertex AI to avoid HTTP/2 stalling under sustained bulk load.
-- `run_benchmark.py` — runs `recommend()` across all eval items and variants, logs metrics and per-call rows to MLflow. Fresh Vertex AI client is instantiated right before the recommend loop to avoid cold-connection stalls after the (idle) labelling phase.
-- `debug_retrieval.py` — diagnostic tool: shows exactly what `retrieve_dishes()` returns for a given (mood, date, profile, beta), looks up each candidate in the judge cache. No API calls. Used to confirm retrieval failures vs. reranking failures.
+**New blend formula (mood present):**
+```
+query_vec = α₁·mood_vec + α₂·recent_vec + α₃·original_vec
+α₁ = 0.8 (fixed), α₂ = 0.2·(n/5), α₃ = 0.2 - α₂   [n = min(picks, 5)]
+```
+At n=0: `0.8·mood + 0.2·original` (same as the exp_09 winner). At n≥5: `0.8·mood + 0.2·recent` (original fully replaced). No mood: `query_vec = pref_vec` unchanged.
 
-**Diagnosis.** `debug_retrieval.py` on the low-carb + Italian-pasta case: 0 mood-matching dishes in the top-40 candidates at beta=0.5. The blended query vector landed in a dead zone between Italian food space and low-carb food space. At beta=1.0, 2 unique low-carb matches appeared. Retrieval failure, not reranking failure.
+**`supabase/migrations/20260502000000_add_3vector_columns.sql`**
+- `original_profile_vector vector(768)` — nullable; NULL = pre-migration user
+- `recent_choices jsonb NOT NULL DEFAULT '[]'::jsonb` — last ≤5 pick embeddings, most-recent first
 
-**Ablations.**
+**`gemini_flash_rag/user_prefs.py`**
+- `load_user_pref()` extended: returns `original_profile_vector` (falls back to `pref_vec` when NULL), `recent_choices_raw`, `recent_choices_vecs`
+- `save_user_pref()` extended: new optional params `recent_choices` and `original_profile_vector`; `COALESCE` in SQL makes `original_profile_vector` write-once (never overwritten by picks); `recent_choices` conditional-overwrite (only updates when a non-empty array is passed)
 
-| Variant | faith@3 | adj | con | aln | median lat |
-|---|---|---|---|---|---|
-| baseline (beta=0.5, top_k=40/10) | 0.652 | 0.633 | 0.652 | 0.833 | 1.96s |
-| beta_0_8 | 0.754 | 0.706 | 0.807 | 0.833 | ~2.0s |
-| wider_funnel (top_k=80/20) | 0.775 | 0.717 | 0.844 | 0.833 | 2.05s |
-| beta_1_0 | 0.802 | 0.750 | 0.867 | 0.833 | 1.85s |
+**`gemini_flash_rag/recommend.py`**
+- New `three_way_blend(mood_vec, recent_vecs, original_vec, beta)` — implements the ramp formula
+- `recommend()`: two new optional params (`original_profile_vec`, `recent_choices_vecs`); uses `three_way_blend()` when `original_profile_vec` is not None, falls back to `blend_mood()` for pre-migration users
+- `BETA_WITH_MOOD` updated 0.5 → 0.8 (exp_09 result)
 
-Surprise: wider_funnel (same beta, more candidates) beats beta_0_8. Root cause: `backfill_menu` stores ~10 rows per dish (one per station), so top-40 collapses to ~5 unique dishes after `deduplicate()`. More raw candidates = more unique dishes for Gemini. beta=1.0 is the ceiling but removes profile signal at retrieval and regresses one adjacent case (fresh salad). Not appropriate without the 3-vector architecture.
+### Pending
 
-**What was shipped.** `recommend.py` defaults: `top_k_retrieval 40→80`, `top_k_gemini 10→20`. ~90ms median latency increase, +12pp faith@3.
-
-**What surprised us.** Contrast cases outscored adjacent at baseline (0.652 vs 0.633). The contrast set happens to contain high-signal concrete moods (seafood, noodles, something cheesy) that retrieval handles easily regardless of profile. The adjacent failures (burger, rice bowl, stir-fry) reflect cuisine pairs that are geometrically distant in the embedding space — the 50/50 blended query lands in a dead zone between them.
-
-**Next branch.** 3-vector architecture: `query_vec = α₁·mood_vec + α₂·recent_vec + α₃·original_vec`. Requires schema additions to `user_pref`: `original_profile_vector` (set once at signup, never updated) and `recent_choices` (rolling JSON array of last N dish embeddings). `α₂` grows relative to `α₃` as the user makes more picks. The existing eval harness (mood_faithfulness@3) remains valid for measuring this.
+- Apply Supabase migration to live database
+- Wire new fields through `fastapi/main.py`: `/predict` passes `original_profile_vec` and `recent_choices_vecs`; `/pick` prepends new dish embedding to `recent_choices` and trims to 5
