@@ -1,0 +1,2874 @@
+[
+  {
+    "variant": "baseline",
+    "mood": "noodles",
+    "date": "2026-03-30",
+    "tag": "high-signal-cuisine",
+    "relationship": "adjacent",
+    "profile": "I love spicy Korean food -- kimchi stews and grilled meats.",
+    "repeat": 0,
+    "available_matches": 10,
+    "match_count": 3,
+    "weak_count": 0,
+    "faithfulness": 1.0,
+    "recall": 0.3,
+    "latency_sec": 3.8665516250184737,
+    "json_ok": true,
+    "top3": [
+      "Pancit Noodles",
+      "Garlic Noodles",
+      "Pasta Alfredo"
+    ],
+    "top3_labels": [
+      "match",
+      "match",
+      "match"
+    ]
+  },
+  {
+    "variant": "baseline",
+    "mood": "noodles",
+    "date": "2026-03-30",
+    "tag": "high-signal-cuisine",
+    "relationship": "adjacent",
+    "profile": "I love spicy Korean food -- kimchi stews and grilled meats.",
+    "repeat": 1,
+    "available_matches": 10,
+    "match_count": 3,
+    "weak_count": 0,
+    "faithfulness": 1.0,
+    "recall": 0.3,
+    "latency_sec": 1.7965224590152502,
+    "json_ok": true,
+    "top3": [
+      "Pancit Noodles",
+      "Garlic Noodles",
+      "Pasta"
+    ],
+    "top3_labels": [
+      "match",
+      "match",
+      "match"
+    ]
+  },
+  {
+    "variant": "baseline",
+    "mood": "noodles",
+    "date": "2026-03-30",
+    "tag": "high-signal-cuisine",
+    "relationship": "adjacent",
+    "profile": "I love spicy Korean food -- kimchi stews and grilled meats.",
+    "repeat": 2,
+    "available_matches": 10,
+    "match_count": 3,
+    "weak_count": 0,
+    "faithfulness": 1.0,
+    "recall": 0.3,
+    "latency_sec": 1.783338500012178,
+    "json_ok": true,
+    "top3": [
+      "Pancit Noodles",
+      "Garlic Noodles",
+      "Pasta Alfredo"
+    ],
+    "top3_labels": [
+      "match",
+      "match",
+      "match"
+    ]
+  },
+  {
+    "variant": "baseline",
+    "mood": "a fresh salad",
+    "date": "2026-03-30",
+    "tag": "high-signal-cuisine",
+    "relationship": "adjacent",
+    "profile": "I love hearty Italian pasta dishes -- lasagna and creamy sauces.",
+    "repeat": 0,
+    "available_matches": 5,
+    "match_count": 3,
+    "weak_count": 0,
+    "faithfulness": 1.0,
+    "recall": 0.6,
+    "latency_sec": 1.768557250034064,
+    "json_ok": true,
+    "top3": [
+      "Composed Salad",
+      "Kale Caesar Salad",
+      "BLT Pasta Salad"
+    ],
+    "top3_labels": [
+      "match",
+      "match",
+      "match"
+    ]
+  },
+  {
+    "variant": "baseline",
+    "mood": "a fresh salad",
+    "date": "2026-03-30",
+    "tag": "high-signal-cuisine",
+    "relationship": "adjacent",
+    "profile": "I love hearty Italian pasta dishes -- lasagna and creamy sauces.",
+    "repeat": 1,
+    "available_matches": 5,
+    "match_count": 3,
+    "weak_count": 0,
+    "faithfulness": 1.0,
+    "recall": 0.6,
+    "latency_sec": 1.9139641670044512,
+    "json_ok": true,
+    "top3": [
+      "Composed Salad",
+      "Kale Caesar Salad",
+      "BLT Pasta Salad"
+    ],
+    "top3_labels": [
+      "match",
+      "match",
+      "match"
+    ]
+  },
+  {
+    "variant": "baseline",
+    "mood": "a fresh salad",
+    "date": "2026-03-30",
+    "tag": "high-signal-cuisine",
+    "relationship": "adjacent",
+    "profile": "I love hearty Italian pasta dishes -- lasagna and creamy sauces.",
+    "repeat": 2,
+    "available_matches": 5,
+    "match_count": 3,
+    "weak_count": 0,
+    "faithfulness": 1.0,
+    "recall": 0.6,
+    "latency_sec": 2.153102125041187,
+    "json_ok": true,
+    "top3": [
+      "Composed Salad",
+      "Kale Caesar Salad",
+      "BLT Pasta Salad"
+    ],
+    "top3_labels": [
+      "match",
+      "match",
+      "match"
+    ]
+  },
+  {
+    "variant": "baseline",
+    "mood": "spicy food",
+    "date": "2026-03-30",
+    "tag": "high-signal-attribute",
+    "relationship": "adjacent",
+    "profile": "I gravitate toward Mediterranean food -- hummus, grilled lamb, and roasted vegetables.",
+    "repeat": 0,
+    "available_matches": 18,
+    "match_count": 2,
+    "weak_count": 1,
+    "faithfulness": 0.6666666666666666,
+    "recall": 0.1111111111111111,
+    "latency_sec": 2.0483326659887098,
+    "json_ok": true,
+    "top3": [
+      "Pollo Asado Grilled Chicken",
+      "Butter Chicken",
+      "Moroccan Lentil Soup"
+    ],
+    "top3_labels": [
+      "match",
+      "match",
+      "weak"
+    ]
+  },
+  {
+    "variant": "baseline",
+    "mood": "spicy food",
+    "date": "2026-03-30",
+    "tag": "high-signal-attribute",
+    "relationship": "adjacent",
+    "profile": "I gravitate toward Mediterranean food -- hummus, grilled lamb, and roasted vegetables.",
+    "repeat": 1,
+    "available_matches": 18,
+    "match_count": 3,
+    "weak_count": 0,
+    "faithfulness": 1.0,
+    "recall": 0.16666666666666666,
+    "latency_sec": 2.0484714999911375,
+    "json_ok": true,
+    "top3": [
+      "Pollo Asado Grilled Chicken",
+      "Butter Chicken",
+      "Butter Vegetables"
+    ],
+    "top3_labels": [
+      "match",
+      "match",
+      "match"
+    ]
+  },
+  {
+    "variant": "baseline",
+    "mood": "spicy food",
+    "date": "2026-03-30",
+    "tag": "high-signal-attribute",
+    "relationship": "adjacent",
+    "profile": "I gravitate toward Mediterranean food -- hummus, grilled lamb, and roasted vegetables.",
+    "repeat": 2,
+    "available_matches": 18,
+    "match_count": 3,
+    "weak_count": 0,
+    "faithfulness": 1.0,
+    "recall": 0.16666666666666666,
+    "latency_sec": 1.5348874590126798,
+    "json_ok": true,
+    "top3": [
+      "Pollo Asado Grilled Chicken",
+      "Butter Chicken",
+      "Butter Vegetables"
+    ],
+    "top3_labels": [
+      "match",
+      "match",
+      "match"
+    ]
+  },
+  {
+    "variant": "baseline",
+    "mood": "something with chicken",
+    "date": "2026-03-30",
+    "tag": "high-signal-cuisine",
+    "relationship": "adjacent",
+    "profile": "I love vegetarian Italian dishes -- eggplant parmigiana and pasta primavera.",
+    "repeat": 0,
+    "available_matches": 9,
+    "match_count": 3,
+    "weak_count": 0,
+    "faithfulness": 1.0,
+    "recall": 0.3333333333333333,
+    "latency_sec": 1.7405058750300668,
+    "json_ok": true,
+    "top3": [
+      "Blackened Chicken",
+      "Grilled Chicken",
+      "Chicken Tenders"
+    ],
+    "top3_labels": [
+      "match",
+      "match",
+      "match"
+    ]
+  },
+  {
+    "variant": "baseline",
+    "mood": "something with chicken",
+    "date": "2026-03-30",
+    "tag": "high-signal-cuisine",
+    "relationship": "adjacent",
+    "profile": "I love vegetarian Italian dishes -- eggplant parmigiana and pasta primavera.",
+    "repeat": 1,
+    "available_matches": 9,
+    "match_count": 3,
+    "weak_count": 0,
+    "faithfulness": 1.0,
+    "recall": 0.3333333333333333,
+    "latency_sec": 1.8432964999810793,
+    "json_ok": true,
+    "top3": [
+      "Blackened Chicken",
+      "Grilled Chicken",
+      "Chicken Tenders"
+    ],
+    "top3_labels": [
+      "match",
+      "match",
+      "match"
+    ]
+  },
+  {
+    "variant": "baseline",
+    "mood": "something with chicken",
+    "date": "2026-03-30",
+    "tag": "high-signal-cuisine",
+    "relationship": "adjacent",
+    "profile": "I love vegetarian Italian dishes -- eggplant parmigiana and pasta primavera.",
+    "repeat": 2,
+    "available_matches": 9,
+    "match_count": 3,
+    "weak_count": 0,
+    "faithfulness": 1.0,
+    "recall": 0.3333333333333333,
+    "latency_sec": 1.7408493750263005,
+    "json_ok": true,
+    "top3": [
+      "Blackened Chicken",
+      "Grilled Chicken",
+      "Chicken Tenders"
+    ],
+    "top3_labels": [
+      "match",
+      "match",
+      "match"
+    ]
+  },
+  {
+    "variant": "baseline",
+    "mood": "something light",
+    "date": "2026-03-30",
+    "tag": "vague",
+    "relationship": "adjacent",
+    "profile": "I love rich, saucy Italian dinners and comforting baked dishes.",
+    "repeat": 0,
+    "available_matches": 39,
+    "match_count": 3,
+    "weak_count": 0,
+    "faithfulness": 1.0,
+    "recall": 0.07692307692307693,
+    "latency_sec": 1.946413333993405,
+    "json_ok": true,
+    "top3": [
+      "Roasted Asparagus",
+      "Seared Salmon",
+      "Seasonal Roasted Vegetables"
+    ],
+    "top3_labels": [
+      "match",
+      "match",
+      "match"
+    ]
+  },
+  {
+    "variant": "baseline",
+    "mood": "something light",
+    "date": "2026-03-30",
+    "tag": "vague",
+    "relationship": "adjacent",
+    "profile": "I love rich, saucy Italian dinners and comforting baked dishes.",
+    "repeat": 1,
+    "available_matches": 39,
+    "match_count": 3,
+    "weak_count": 0,
+    "faithfulness": 1.0,
+    "recall": 0.07692307692307693,
+    "latency_sec": 1.6374460840015672,
+    "json_ok": true,
+    "top3": [
+      "Roasted Asparagus",
+      "Seared Salmon",
+      "Seasonal Roasted Vegetables"
+    ],
+    "top3_labels": [
+      "match",
+      "match",
+      "match"
+    ]
+  },
+  {
+    "variant": "baseline",
+    "mood": "something light",
+    "date": "2026-03-30",
+    "tag": "vague",
+    "relationship": "adjacent",
+    "profile": "I love rich, saucy Italian dinners and comforting baked dishes.",
+    "repeat": 2,
+    "available_matches": 39,
+    "match_count": 3,
+    "weak_count": 0,
+    "faithfulness": 1.0,
+    "recall": 0.07692307692307693,
+    "latency_sec": 1.9543796660145745,
+    "json_ok": true,
+    "top3": [
+      "Roasted Asparagus",
+      "Seared Salmon",
+      "Seasonal Roasted Vegetables"
+    ],
+    "top3_labels": [
+      "match",
+      "match",
+      "match"
+    ]
+  },
+  {
+    "variant": "baseline",
+    "mood": "comfort food",
+    "date": "2026-03-30",
+    "tag": "vague",
+    "relationship": "adjacent",
+    "profile": "I love crisp salads with grilled fish and citrus vinaigrette.",
+    "repeat": 0,
+    "available_matches": 65,
+    "match_count": 3,
+    "weak_count": 0,
+    "faithfulness": 1.0,
+    "recall": 0.046153846153846156,
+    "latency_sec": 3.1869474590057507,
+    "json_ok": true,
+    "top3": [
+      "Potato Salad",
+      "Garlic Rice",
+      "Pancit Noodles"
+    ],
+    "top3_labels": [
+      "match",
+      "match",
+      "match"
+    ]
+  },
+  {
+    "variant": "baseline",
+    "mood": "comfort food",
+    "date": "2026-03-30",
+    "tag": "vague",
+    "relationship": "adjacent",
+    "profile": "I love crisp salads with grilled fish and citrus vinaigrette.",
+    "repeat": 1,
+    "available_matches": 65,
+    "match_count": 3,
+    "weak_count": 0,
+    "faithfulness": 1.0,
+    "recall": 0.046153846153846156,
+    "latency_sec": 1.9216880000312813,
+    "json_ok": true,
+    "top3": [
+      "Potato Salad",
+      "Garlic Rice",
+      "Pancit Noodles"
+    ],
+    "top3_labels": [
+      "match",
+      "match",
+      "match"
+    ]
+  },
+  {
+    "variant": "baseline",
+    "mood": "comfort food",
+    "date": "2026-03-30",
+    "tag": "vague",
+    "relationship": "adjacent",
+    "profile": "I love crisp salads with grilled fish and citrus vinaigrette.",
+    "repeat": 2,
+    "available_matches": 65,
+    "match_count": 3,
+    "weak_count": 0,
+    "faithfulness": 1.0,
+    "recall": 0.046153846153846156,
+    "latency_sec": 1.5547717500012368,
+    "json_ok": true,
+    "top3": [
+      "Potato Salad",
+      "Pancit Noodles",
+      "Garlic Rice"
+    ],
+    "top3_labels": [
+      "match",
+      "match",
+      "match"
+    ]
+  },
+  {
+    "variant": "baseline",
+    "mood": "soup",
+    "date": "2026-04-01",
+    "tag": "high-signal-cuisine",
+    "relationship": "adjacent",
+    "profile": "I love grilled meats and roasted vegetables -- usually dry, hearty plates.",
+    "repeat": 0,
+    "available_matches": 6,
+    "match_count": 2,
+    "weak_count": 1,
+    "faithfulness": 0.6666666666666666,
+    "recall": 0.3333333333333333,
+    "latency_sec": 1.8258375420118682,
+    "json_ok": true,
+    "top3": [
+      "Creamy Tomato Basil Soup",
+      "Miso Soup with Mushrooms & Tofu",
+      "Farro with Mixed Mushrooms"
+    ],
+    "top3_labels": [
+      "match",
+      "match",
+      "weak"
+    ]
+  },
+  {
+    "variant": "baseline",
+    "mood": "soup",
+    "date": "2026-04-01",
+    "tag": "high-signal-cuisine",
+    "relationship": "adjacent",
+    "profile": "I love grilled meats and roasted vegetables -- usually dry, hearty plates.",
+    "repeat": 1,
+    "available_matches": 6,
+    "match_count": 2,
+    "weak_count": 1,
+    "faithfulness": 0.6666666666666666,
+    "recall": 0.3333333333333333,
+    "latency_sec": 1.62086329102749,
+    "json_ok": true,
+    "top3": [
+      "Creamy Tomato Basil Soup",
+      "Miso Soup with Mushrooms & Tofu",
+      "Farro with Mixed Mushrooms"
+    ],
+    "top3_labels": [
+      "match",
+      "match",
+      "weak"
+    ]
+  },
+  {
+    "variant": "baseline",
+    "mood": "soup",
+    "date": "2026-04-01",
+    "tag": "high-signal-cuisine",
+    "relationship": "adjacent",
+    "profile": "I love grilled meats and roasted vegetables -- usually dry, hearty plates.",
+    "repeat": 2,
+    "available_matches": 6,
+    "match_count": 2,
+    "weak_count": 1,
+    "faithfulness": 0.6666666666666666,
+    "recall": 0.3333333333333333,
+    "latency_sec": 1.7577129999990575,
+    "json_ok": true,
+    "top3": [
+      "Creamy Tomato Basil Soup",
+      "Miso Soup with Mushrooms & Tofu",
+      "Farro with Mixed Mushrooms"
+    ],
+    "top3_labels": [
+      "match",
+      "match",
+      "weak"
+    ]
+  },
+  {
+    "variant": "baseline",
+    "mood": "pizza",
+    "date": "2026-04-01",
+    "tag": "high-signal-cuisine",
+    "relationship": "adjacent",
+    "profile": "I love Mediterranean food -- falafel, hummus, and grilled lamb.",
+    "repeat": 0,
+    "available_matches": 2,
+    "match_count": 2,
+    "weak_count": 0,
+    "faithfulness": 0.6666666666666666,
+    "recall": 1.0,
+    "latency_sec": 1.8433539170073345,
+    "json_ok": true,
+    "top3": [
+      "Handmade Pizza",
+      "Allergen Friendly Pizza Station",
+      "Pasta Marinara"
+    ],
+    "top3_labels": [
+      "match",
+      "match",
+      "miss"
+    ]
+  },
+  {
+    "variant": "baseline",
+    "mood": "pizza",
+    "date": "2026-04-01",
+    "tag": "high-signal-cuisine",
+    "relationship": "adjacent",
+    "profile": "I love Mediterranean food -- falafel, hummus, and grilled lamb.",
+    "repeat": 1,
+    "available_matches": 2,
+    "match_count": 2,
+    "weak_count": 0,
+    "faithfulness": 0.6666666666666666,
+    "recall": 1.0,
+    "latency_sec": 1.84291150001809,
+    "json_ok": true,
+    "top3": [
+      "Handmade Pizza",
+      "Allergen Friendly Pizza Station",
+      "Pasta Marinara"
+    ],
+    "top3_labels": [
+      "match",
+      "match",
+      "miss"
+    ]
+  },
+  {
+    "variant": "baseline",
+    "mood": "pizza",
+    "date": "2026-04-01",
+    "tag": "high-signal-cuisine",
+    "relationship": "adjacent",
+    "profile": "I love Mediterranean food -- falafel, hummus, and grilled lamb.",
+    "repeat": 2,
+    "available_matches": 2,
+    "match_count": 2,
+    "weak_count": 0,
+    "faithfulness": 0.6666666666666666,
+    "recall": 1.0,
+    "latency_sec": 1.8981689999927767,
+    "json_ok": true,
+    "top3": [
+      "Handmade Pizza",
+      "Allergen Friendly Pizza Station",
+      "Pasta Marinara"
+    ],
+    "top3_labels": [
+      "match",
+      "match",
+      "miss"
+    ]
+  },
+  {
+    "variant": "baseline",
+    "mood": "a healthy lunch",
+    "date": "2026-04-01",
+    "tag": "high-signal-attribute",
+    "relationship": "adjacent",
+    "profile": "I love rich Italian comfort food -- creamy pastas and cheesy bakes.",
+    "repeat": 0,
+    "available_matches": 41,
+    "match_count": 2,
+    "weak_count": 0,
+    "faithfulness": 0.6666666666666666,
+    "recall": 0.04878048780487805,
+    "latency_sec": 1.9448798340163194,
+    "json_ok": true,
+    "top3": [
+      "Buffalo Cauliflower Wrap",
+      "Pasta Marinara",
+      "Panini Station (Branner)"
+    ],
+    "top3_labels": [
+      "match",
+      "miss",
+      "match"
+    ]
+  },
+  {
+    "variant": "baseline",
+    "mood": "a healthy lunch",
+    "date": "2026-04-01",
+    "tag": "high-signal-attribute",
+    "relationship": "adjacent",
+    "profile": "I love rich Italian comfort food -- creamy pastas and cheesy bakes.",
+    "repeat": 1,
+    "available_matches": 41,
+    "match_count": 1,
+    "weak_count": 0,
+    "faithfulness": 0.3333333333333333,
+    "recall": 0.024390243902439025,
+    "latency_sec": 1.8904860420152545,
+    "json_ok": true,
+    "top3": [
+      "Buffalo Cauliflower Wrap",
+      "Pasta Marinara",
+      "Pasta Bolognese"
+    ],
+    "top3_labels": [
+      "match",
+      "miss",
+      "miss"
+    ]
+  },
+  {
+    "variant": "baseline",
+    "mood": "a healthy lunch",
+    "date": "2026-04-01",
+    "tag": "high-signal-attribute",
+    "relationship": "adjacent",
+    "profile": "I love rich Italian comfort food -- creamy pastas and cheesy bakes.",
+    "repeat": 2,
+    "available_matches": 41,
+    "match_count": 1,
+    "weak_count": 0,
+    "faithfulness": 0.3333333333333333,
+    "recall": 0.024390243902439025,
+    "latency_sec": 1.9676205000141636,
+    "json_ok": true,
+    "top3": [
+      "Buffalo Cauliflower Wrap",
+      "Pasta Marinara",
+      "Pasta Bolognese"
+    ],
+    "top3_labels": [
+      "match",
+      "miss",
+      "miss"
+    ]
+  },
+  {
+    "variant": "baseline",
+    "mood": "high protein",
+    "date": "2026-04-01",
+    "tag": "high-signal-attribute",
+    "relationship": "adjacent",
+    "profile": "I love grain bowls with light dressings and lots of vegetables.",
+    "repeat": 0,
+    "available_matches": 41,
+    "match_count": 1,
+    "weak_count": 2,
+    "faithfulness": 0.3333333333333333,
+    "recall": 0.024390243902439025,
+    "latency_sec": 1.3854934590053745,
+    "json_ok": true,
+    "top3": [
+      "Flavor Forward Legumes",
+      "Barley, Arugula & Goat Cheese Salad",
+      "Craveable Grains"
+    ],
+    "top3_labels": [
+      "match",
+      "weak",
+      "weak"
+    ]
+  },
+  {
+    "variant": "baseline",
+    "mood": "high protein",
+    "date": "2026-04-01",
+    "tag": "high-signal-attribute",
+    "relationship": "adjacent",
+    "profile": "I love grain bowls with light dressings and lots of vegetables.",
+    "repeat": 1,
+    "available_matches": 41,
+    "match_count": 1,
+    "weak_count": 2,
+    "faithfulness": 0.3333333333333333,
+    "recall": 0.024390243902439025,
+    "latency_sec": 1.3570569579605944,
+    "json_ok": true,
+    "top3": [
+      "Craveable Grains",
+      "Flavor Forward Legumes",
+      "Barley, Arugula & Goat Cheese Salad"
+    ],
+    "top3_labels": [
+      "weak",
+      "match",
+      "weak"
+    ]
+  },
+  {
+    "variant": "baseline",
+    "mood": "high protein",
+    "date": "2026-04-01",
+    "tag": "high-signal-attribute",
+    "relationship": "adjacent",
+    "profile": "I love grain bowls with light dressings and lots of vegetables.",
+    "repeat": 2,
+    "available_matches": 41,
+    "match_count": 1,
+    "weak_count": 2,
+    "faithfulness": 0.3333333333333333,
+    "recall": 0.024390243902439025,
+    "latency_sec": 1.638066749961581,
+    "json_ok": true,
+    "top3": [
+      "Flavor Forward Legumes",
+      "Craveable Grains",
+      "Barley, Arugula & Goat Cheese Salad"
+    ],
+    "top3_labels": [
+      "match",
+      "weak",
+      "weak"
+    ]
+  },
+  {
+    "variant": "baseline",
+    "mood": "surprise me",
+    "date": "2026-04-01",
+    "tag": "vague",
+    "relationship": "adjacent",
+    "profile": "I always order the same grilled chicken Caesar salad.",
+    "repeat": 0,
+    "available_matches": 32,
+    "match_count": 1,
+    "weak_count": 0,
+    "faithfulness": 0.3333333333333333,
+    "recall": 0.03125,
+    "latency_sec": 1.7386049579945393,
+    "json_ok": true,
+    "top3": [
+      "Composed Salad",
+      "BBQ Chicken Sandwich",
+      "Pastrami Sandwich w/Rosemary Fries"
+    ],
+    "top3_labels": [
+      "match",
+      "miss",
+      "miss"
+    ]
+  },
+  {
+    "variant": "baseline",
+    "mood": "surprise me",
+    "date": "2026-04-01",
+    "tag": "vague",
+    "relationship": "adjacent",
+    "profile": "I always order the same grilled chicken Caesar salad.",
+    "repeat": 1,
+    "available_matches": 32,
+    "match_count": 1,
+    "weak_count": 0,
+    "faithfulness": 0.3333333333333333,
+    "recall": 0.03125,
+    "latency_sec": 1.7416451249737293,
+    "json_ok": true,
+    "top3": [
+      "Composed Salad",
+      "BBQ Chicken Sandwich",
+      "Pastrami Sandwich w/Rosemary Fries"
+    ],
+    "top3_labels": [
+      "match",
+      "miss",
+      "miss"
+    ]
+  },
+  {
+    "variant": "baseline",
+    "mood": "surprise me",
+    "date": "2026-04-01",
+    "tag": "vague",
+    "relationship": "adjacent",
+    "profile": "I always order the same grilled chicken Caesar salad.",
+    "repeat": 2,
+    "available_matches": 32,
+    "match_count": 1,
+    "weak_count": 0,
+    "faithfulness": 0.3333333333333333,
+    "recall": 0.03125,
+    "latency_sec": 1.7400276249973103,
+    "json_ok": true,
+    "top3": [
+      "Composed Salad",
+      "BBQ Chicken Sandwich",
+      "Pastrami Sandwich w/Rosemary Fries"
+    ],
+    "top3_labels": [
+      "match",
+      "miss",
+      "miss"
+    ]
+  },
+  {
+    "variant": "baseline",
+    "mood": "easy on the stomach",
+    "date": "2026-04-01",
+    "tag": "vague",
+    "relationship": "adjacent",
+    "profile": "I love bold spicy Indian curries and rich saucy dishes.",
+    "repeat": 0,
+    "available_matches": 43,
+    "match_count": 2,
+    "weak_count": 0,
+    "faithfulness": 0.6666666666666666,
+    "recall": 0.046511627906976744,
+    "latency_sec": 1.8449375840136781,
+    "json_ok": true,
+    "top3": [
+      "Basmati Rice",
+      "Flavor Forward Legumes",
+      "Craveable Grains"
+    ],
+    "top3_labels": [
+      "match",
+      "miss",
+      "match"
+    ]
+  },
+  {
+    "variant": "baseline",
+    "mood": "easy on the stomach",
+    "date": "2026-04-01",
+    "tag": "vague",
+    "relationship": "adjacent",
+    "profile": "I love bold spicy Indian curries and rich saucy dishes.",
+    "repeat": 1,
+    "available_matches": 43,
+    "match_count": 2,
+    "weak_count": 0,
+    "faithfulness": 0.6666666666666666,
+    "recall": 0.046511627906976744,
+    "latency_sec": 1.7402001669979654,
+    "json_ok": true,
+    "top3": [
+      "Basmati Rice",
+      "Lemon Basmati Rice",
+      "Flavor Forward Legumes"
+    ],
+    "top3_labels": [
+      "match",
+      "match",
+      "miss"
+    ]
+  },
+  {
+    "variant": "baseline",
+    "mood": "easy on the stomach",
+    "date": "2026-04-01",
+    "tag": "vague",
+    "relationship": "adjacent",
+    "profile": "I love bold spicy Indian curries and rich saucy dishes.",
+    "repeat": 2,
+    "available_matches": 43,
+    "match_count": 2,
+    "weak_count": 0,
+    "faithfulness": 0.6666666666666666,
+    "recall": 0.046511627906976744,
+    "latency_sec": 1.946010416955687,
+    "json_ok": true,
+    "top3": [
+      "Basmati Rice",
+      "Lemon Basmati Rice",
+      "Flavor Forward Legumes"
+    ],
+    "top3_labels": [
+      "match",
+      "match",
+      "miss"
+    ]
+  },
+  {
+    "variant": "baseline",
+    "mood": "tacos or a burrito",
+    "date": "2026-04-03",
+    "tag": "high-signal-cuisine",
+    "relationship": "adjacent",
+    "profile": "I love Italian food -- pasta, pizza, and risotto.",
+    "repeat": 0,
+    "available_matches": 4,
+    "match_count": 1,
+    "weak_count": 0,
+    "faithfulness": 0.3333333333333333,
+    "recall": 0.25,
+    "latency_sec": 1.6570790829719044,
+    "json_ok": true,
+    "top3": [
+      "Breakfast Burrito",
+      "Spaghetti",
+      "Pasta"
+    ],
+    "top3_labels": [
+      "match",
+      "miss",
+      "miss"
+    ]
+  },
+  {
+    "variant": "baseline",
+    "mood": "tacos or a burrito",
+    "date": "2026-04-03",
+    "tag": "high-signal-cuisine",
+    "relationship": "adjacent",
+    "profile": "I love Italian food -- pasta, pizza, and risotto.",
+    "repeat": 1,
+    "available_matches": 4,
+    "match_count": 1,
+    "weak_count": 0,
+    "faithfulness": 0.3333333333333333,
+    "recall": 0.25,
+    "latency_sec": 1.8934304579743184,
+    "json_ok": true,
+    "top3": [
+      "Breakfast Burrito",
+      "Spaghetti",
+      "Pasta"
+    ],
+    "top3_labels": [
+      "match",
+      "miss",
+      "miss"
+    ]
+  },
+  {
+    "variant": "baseline",
+    "mood": "tacos or a burrito",
+    "date": "2026-04-03",
+    "tag": "high-signal-cuisine",
+    "relationship": "adjacent",
+    "profile": "I love Italian food -- pasta, pizza, and risotto.",
+    "repeat": 2,
+    "available_matches": 4,
+    "match_count": 1,
+    "weak_count": 0,
+    "faithfulness": 0.3333333333333333,
+    "recall": 0.25,
+    "latency_sec": 2.2638840829604305,
+    "json_ok": true,
+    "top3": [
+      "Breakfast Burrito",
+      "Spaghetti",
+      "Pasta"
+    ],
+    "top3_labels": [
+      "match",
+      "miss",
+      "miss"
+    ]
+  },
+  {
+    "variant": "baseline",
+    "mood": "a sandwich",
+    "date": "2026-04-03",
+    "tag": "high-signal-cuisine",
+    "relationship": "adjacent",
+    "profile": "I love hot saucy entrees -- pastas, curries, and stews.",
+    "repeat": 0,
+    "available_matches": 11,
+    "match_count": 3,
+    "weak_count": 0,
+    "faithfulness": 1.0,
+    "recall": 0.2727272727272727,
+    "latency_sec": 2.1711434589815326,
+    "json_ok": true,
+    "top3": [
+      "BBQ Chicken Sandwich",
+      "Pastrami Sandwich w/Rosemary Fries",
+      "Southern BBQ Pork Sandwich"
+    ],
+    "top3_labels": [
+      "match",
+      "match",
+      "match"
+    ]
+  },
+  {
+    "variant": "baseline",
+    "mood": "a sandwich",
+    "date": "2026-04-03",
+    "tag": "high-signal-cuisine",
+    "relationship": "adjacent",
+    "profile": "I love hot saucy entrees -- pastas, curries, and stews.",
+    "repeat": 1,
+    "available_matches": 11,
+    "match_count": 3,
+    "weak_count": 0,
+    "faithfulness": 1.0,
+    "recall": 0.2727272727272727,
+    "latency_sec": 2.046816707996186,
+    "json_ok": true,
+    "top3": [
+      "BBQ Chicken Sandwich",
+      "Southern BBQ Pork Sandwich",
+      "Pastrami Sandwich w/Rosemary Fries"
+    ],
+    "top3_labels": [
+      "match",
+      "match",
+      "match"
+    ]
+  },
+  {
+    "variant": "baseline",
+    "mood": "a sandwich",
+    "date": "2026-04-03",
+    "tag": "high-signal-cuisine",
+    "relationship": "adjacent",
+    "profile": "I love hot saucy entrees -- pastas, curries, and stews.",
+    "repeat": 2,
+    "available_matches": 11,
+    "match_count": 3,
+    "weak_count": 0,
+    "faithfulness": 1.0,
+    "recall": 0.2727272727272727,
+    "latency_sec": 2.0483514170045964,
+    "json_ok": true,
+    "top3": [
+      "BBQ Chicken Sandwich",
+      "Southern BBQ Pork Sandwich",
+      "Pastrami Sandwich w/Rosemary Fries"
+    ],
+    "top3_labels": [
+      "match",
+      "match",
+      "match"
+    ]
+  },
+  {
+    "variant": "baseline",
+    "mood": "seafood",
+    "date": "2026-04-03",
+    "tag": "high-signal-cuisine",
+    "relationship": "adjacent",
+    "profile": "I love grilled chicken and steak -- not really a fish person.",
+    "repeat": 0,
+    "available_matches": 5,
+    "match_count": 3,
+    "weak_count": 0,
+    "faithfulness": 1.0,
+    "recall": 0.6,
+    "latency_sec": 1.753265500010457,
+    "json_ok": true,
+    "top3": [
+      "Parmesan Crusted Cod",
+      "Fried Fish Taco Bar",
+      "Battered Fried Fish"
+    ],
+    "top3_labels": [
+      "match",
+      "match",
+      "match"
+    ]
+  },
+  {
+    "variant": "baseline",
+    "mood": "seafood",
+    "date": "2026-04-03",
+    "tag": "high-signal-cuisine",
+    "relationship": "adjacent",
+    "profile": "I love grilled chicken and steak -- not really a fish person.",
+    "repeat": 1,
+    "available_matches": 5,
+    "match_count": 3,
+    "weak_count": 0,
+    "faithfulness": 1.0,
+    "recall": 0.6,
+    "latency_sec": 1.773196124995593,
+    "json_ok": true,
+    "top3": [
+      "Parmesan Crusted Cod",
+      "Battered Fried Fish",
+      "Fried Fish Taco Bar"
+    ],
+    "top3_labels": [
+      "match",
+      "match",
+      "match"
+    ]
+  },
+  {
+    "variant": "baseline",
+    "mood": "seafood",
+    "date": "2026-04-03",
+    "tag": "high-signal-cuisine",
+    "relationship": "adjacent",
+    "profile": "I love grilled chicken and steak -- not really a fish person.",
+    "repeat": 2,
+    "available_matches": 5,
+    "match_count": 3,
+    "weak_count": 0,
+    "faithfulness": 1.0,
+    "recall": 0.6,
+    "latency_sec": 1.980787209002301,
+    "json_ok": true,
+    "top3": [
+      "Parmesan Crusted Cod",
+      "Fried Fish Taco Bar",
+      "Battered Fried Fish"
+    ],
+    "top3_labels": [
+      "match",
+      "match",
+      "match"
+    ]
+  },
+  {
+    "variant": "baseline",
+    "mood": "low-carb",
+    "date": "2026-04-03",
+    "tag": "high-signal-attribute",
+    "relationship": "adjacent",
+    "profile": "I love hearty Italian pasta dishes and crusty bread.",
+    "repeat": 0,
+    "available_matches": 31,
+    "match_count": 0,
+    "weak_count": 0,
+    "faithfulness": 0.0,
+    "recall": 0.0,
+    "latency_sec": 2.478164374944754,
+    "json_ok": true,
+    "top3": [
+      "Craveable Grains",
+      "Penne Pasta (Gluten-Free)",
+      "Handmade Pizza"
+    ],
+    "top3_labels": [
+      "miss",
+      "miss",
+      "miss"
+    ]
+  },
+  {
+    "variant": "baseline",
+    "mood": "low-carb",
+    "date": "2026-04-03",
+    "tag": "high-signal-attribute",
+    "relationship": "adjacent",
+    "profile": "I love hearty Italian pasta dishes and crusty bread.",
+    "repeat": 1,
+    "available_matches": 31,
+    "match_count": 0,
+    "weak_count": 0,
+    "faithfulness": 0.0,
+    "recall": 0.0,
+    "latency_sec": 2.560672874969896,
+    "json_ok": true,
+    "top3": [
+      "Craveable Grains",
+      "Penne Pasta (Gluten-Free)",
+      "Handmade Pizza"
+    ],
+    "top3_labels": [
+      "miss",
+      "miss",
+      "miss"
+    ]
+  },
+  {
+    "variant": "baseline",
+    "mood": "low-carb",
+    "date": "2026-04-03",
+    "tag": "high-signal-attribute",
+    "relationship": "adjacent",
+    "profile": "I love hearty Italian pasta dishes and crusty bread.",
+    "repeat": 2,
+    "available_matches": 31,
+    "match_count": 0,
+    "weak_count": 0,
+    "faithfulness": 0.0,
+    "recall": 0.0,
+    "latency_sec": 602.2195187910111,
+    "json_ok": true,
+    "top3": [
+      "Craveable Grains",
+      "Penne Pasta (Gluten-Free)",
+      "Handmade Pizza"
+    ],
+    "top3_labels": [
+      "miss",
+      "miss",
+      "miss"
+    ]
+  },
+  {
+    "variant": "baseline",
+    "mood": "something Italian",
+    "date": "2026-04-03",
+    "tag": "cross-cutting",
+    "relationship": "adjacent",
+    "profile": "I love Mexican food -- tacos, salsas, and rice and beans.",
+    "repeat": 0,
+    "available_matches": 15,
+    "match_count": 3,
+    "weak_count": 0,
+    "faithfulness": 1.0,
+    "recall": 0.2,
+    "latency_sec": 602.1989076660248,
+    "json_ok": true,
+    "top3": [
+      "Eggplant Parmesan",
+      "Pasta Marinara",
+      "Marinara Sauce"
+    ],
+    "top3_labels": [
+      "match",
+      "match",
+      "match"
+    ]
+  },
+  {
+    "variant": "baseline",
+    "mood": "something Italian",
+    "date": "2026-04-03",
+    "tag": "cross-cutting",
+    "relationship": "adjacent",
+    "profile": "I love Mexican food -- tacos, salsas, and rice and beans.",
+    "repeat": 1,
+    "available_matches": 15,
+    "match_count": 3,
+    "weak_count": 0,
+    "faithfulness": 1.0,
+    "recall": 0.2,
+    "latency_sec": 2.4763123329612426,
+    "json_ok": true,
+    "top3": [
+      "Eggplant Parmesan",
+      "Pasta Marinara",
+      "Spaghetti"
+    ],
+    "top3_labels": [
+      "match",
+      "match",
+      "match"
+    ]
+  },
+  {
+    "variant": "baseline",
+    "mood": "something Italian",
+    "date": "2026-04-03",
+    "tag": "cross-cutting",
+    "relationship": "adjacent",
+    "profile": "I love Mexican food -- tacos, salsas, and rice and beans.",
+    "repeat": 2,
+    "available_matches": 15,
+    "match_count": 3,
+    "weak_count": 0,
+    "faithfulness": 1.0,
+    "recall": 0.2,
+    "latency_sec": 1.9773045420297422,
+    "json_ok": true,
+    "top3": [
+      "Eggplant Parmesan",
+      "Pasta Marinara",
+      "Marinara Sauce"
+    ],
+    "top3_labels": [
+      "match",
+      "match",
+      "match"
+    ]
+  },
+  {
+    "variant": "baseline",
+    "mood": "Asian flavors",
+    "date": "2026-04-03",
+    "tag": "cross-cutting",
+    "relationship": "adjacent",
+    "profile": "I love Mediterranean food -- falafel, hummus, and grilled lamb.",
+    "repeat": 0,
+    "available_matches": 7,
+    "match_count": 2,
+    "weak_count": 1,
+    "faithfulness": 0.6666666666666666,
+    "recall": 0.2857142857142857,
+    "latency_sec": 601.8474165420048,
+    "json_ok": true,
+    "top3": [
+      "Sesame 5-Spice Herbed Rock Fish",
+      "Butter Chicken",
+      "Basmati Rice"
+    ],
+    "top3_labels": [
+      "match",
+      "match",
+      "weak"
+    ]
+  },
+  {
+    "variant": "baseline",
+    "mood": "Asian flavors",
+    "date": "2026-04-03",
+    "tag": "cross-cutting",
+    "relationship": "adjacent",
+    "profile": "I love Mediterranean food -- falafel, hummus, and grilled lamb.",
+    "repeat": 1,
+    "available_matches": 7,
+    "match_count": 2,
+    "weak_count": 1,
+    "faithfulness": 0.6666666666666666,
+    "recall": 0.2857142857142857,
+    "latency_sec": 2.476302916998975,
+    "json_ok": true,
+    "top3": [
+      "Sesame 5-Spice Herbed Rock Fish",
+      "Butter Chicken",
+      "Basmati Rice"
+    ],
+    "top3_labels": [
+      "match",
+      "match",
+      "weak"
+    ]
+  },
+  {
+    "variant": "baseline",
+    "mood": "Asian flavors",
+    "date": "2026-04-03",
+    "tag": "cross-cutting",
+    "relationship": "adjacent",
+    "profile": "I love Mediterranean food -- falafel, hummus, and grilled lamb.",
+    "repeat": 2,
+    "available_matches": 7,
+    "match_count": 2,
+    "weak_count": 1,
+    "faithfulness": 0.6666666666666666,
+    "recall": 0.2857142857142857,
+    "latency_sec": 2.089408917003311,
+    "json_ok": true,
+    "top3": [
+      "Sesame 5-Spice Herbed Rock Fish",
+      "Butter Chicken",
+      "Basmati Rice"
+    ],
+    "top3_labels": [
+      "match",
+      "match",
+      "weak"
+    ]
+  },
+  {
+    "variant": "baseline",
+    "mood": "a burger",
+    "date": "2026-04-05",
+    "tag": "high-signal-cuisine",
+    "relationship": "adjacent",
+    "profile": "I love East Asian flavors -- stir-fries, ramen, and rice bowls.",
+    "repeat": 0,
+    "available_matches": 1,
+    "match_count": 0,
+    "weak_count": 0,
+    "faithfulness": 0.0,
+    "recall": 0.0,
+    "latency_sec": 0.9376891250140034,
+    "json_ok": false,
+    "top3": [],
+    "top3_labels": []
+  },
+  {
+    "variant": "baseline",
+    "mood": "a burger",
+    "date": "2026-04-05",
+    "tag": "high-signal-cuisine",
+    "relationship": "adjacent",
+    "profile": "I love East Asian flavors -- stir-fries, ramen, and rice bowls.",
+    "repeat": 1,
+    "available_matches": 1,
+    "match_count": 0,
+    "weak_count": 0,
+    "faithfulness": 0.0,
+    "recall": 0.0,
+    "latency_sec": 1.975916708004661,
+    "json_ok": true,
+    "top3": [
+      "NY Steak",
+      "New York Steak with Herb Butter",
+      "Grilled Chicken"
+    ],
+    "top3_labels": [
+      "miss",
+      "miss",
+      "miss"
+    ]
+  },
+  {
+    "variant": "baseline",
+    "mood": "a burger",
+    "date": "2026-04-05",
+    "tag": "high-signal-cuisine",
+    "relationship": "adjacent",
+    "profile": "I love East Asian flavors -- stir-fries, ramen, and rice bowls.",
+    "repeat": 2,
+    "available_matches": 1,
+    "match_count": 0,
+    "weak_count": 0,
+    "faithfulness": 0.0,
+    "recall": 0.0,
+    "latency_sec": 2.0742942499928176,
+    "json_ok": true,
+    "top3": [
+      "NY Steak",
+      "New York Steak with Herb Butter",
+      "Grilled Chicken"
+    ],
+    "top3_labels": [
+      "miss",
+      "miss",
+      "miss"
+    ]
+  },
+  {
+    "variant": "baseline",
+    "mood": "a rice bowl",
+    "date": "2026-04-05",
+    "tag": "high-signal-cuisine",
+    "relationship": "adjacent",
+    "profile": "I love Italian pasta dishes and wood-fired pizza.",
+    "repeat": 0,
+    "available_matches": 3,
+    "match_count": 0,
+    "weak_count": 1,
+    "faithfulness": 0.0,
+    "recall": 0.0,
+    "latency_sec": 2.1496193750062957,
+    "json_ok": true,
+    "top3": [
+      "Garlic Rice",
+      "Penne Pasta (Gluten-Free)",
+      "Vermicelli Noodles"
+    ],
+    "top3_labels": [
+      "weak",
+      "miss",
+      "miss"
+    ]
+  },
+  {
+    "variant": "baseline",
+    "mood": "a rice bowl",
+    "date": "2026-04-05",
+    "tag": "high-signal-cuisine",
+    "relationship": "adjacent",
+    "profile": "I love Italian pasta dishes and wood-fired pizza.",
+    "repeat": 1,
+    "available_matches": 3,
+    "match_count": 0,
+    "weak_count": 1,
+    "faithfulness": 0.0,
+    "recall": 0.0,
+    "latency_sec": 2.0330623330082744,
+    "json_ok": true,
+    "top3": [
+      "Garlic Rice",
+      "Penne Pasta (Gluten-Free)",
+      "Vermicelli Noodles"
+    ],
+    "top3_labels": [
+      "weak",
+      "miss",
+      "miss"
+    ]
+  },
+  {
+    "variant": "baseline",
+    "mood": "a rice bowl",
+    "date": "2026-04-05",
+    "tag": "high-signal-cuisine",
+    "relationship": "adjacent",
+    "profile": "I love Italian pasta dishes and wood-fired pizza.",
+    "repeat": 2,
+    "available_matches": 3,
+    "match_count": 0,
+    "weak_count": 1,
+    "faithfulness": 0.0,
+    "recall": 0.0,
+    "latency_sec": 2.061358332983218,
+    "json_ok": true,
+    "top3": [
+      "Garlic Rice",
+      "Penne Pasta (Gluten-Free)",
+      "Vermicelli Noodles"
+    ],
+    "top3_labels": [
+      "weak",
+      "miss",
+      "miss"
+    ]
+  },
+  {
+    "variant": "baseline",
+    "mood": "stir-fry",
+    "date": "2026-04-05",
+    "tag": "high-signal-cuisine",
+    "relationship": "adjacent",
+    "profile": "I love hearty Italian dinners -- lasagna, risotto, and meatballs.",
+    "repeat": 0,
+    "available_matches": 2,
+    "match_count": 0,
+    "weak_count": 0,
+    "faithfulness": 0.0,
+    "recall": 0.0,
+    "latency_sec": 2.151978624984622,
+    "json_ok": true,
+    "top3": [
+      "Vermicelli Noodles",
+      "Garlic Rice",
+      "Seasonal Steamed Vegetables"
+    ],
+    "top3_labels": [
+      "miss",
+      "miss",
+      "miss"
+    ]
+  },
+  {
+    "variant": "baseline",
+    "mood": "stir-fry",
+    "date": "2026-04-05",
+    "tag": "high-signal-cuisine",
+    "relationship": "adjacent",
+    "profile": "I love hearty Italian dinners -- lasagna, risotto, and meatballs.",
+    "repeat": 1,
+    "available_matches": 2,
+    "match_count": 0,
+    "weak_count": 0,
+    "faithfulness": 0.0,
+    "recall": 0.0,
+    "latency_sec": 1.8401287500164472,
+    "json_ok": true,
+    "top3": [
+      "Vermicelli Noodles",
+      "Seasonal Steamed Vegetables",
+      "Garlic Rice"
+    ],
+    "top3_labels": [
+      "miss",
+      "miss",
+      "miss"
+    ]
+  },
+  {
+    "variant": "baseline",
+    "mood": "stir-fry",
+    "date": "2026-04-05",
+    "tag": "high-signal-cuisine",
+    "relationship": "adjacent",
+    "profile": "I love hearty Italian dinners -- lasagna, risotto, and meatballs.",
+    "repeat": 2,
+    "available_matches": 2,
+    "match_count": 0,
+    "weak_count": 0,
+    "faithfulness": 0.0,
+    "recall": 0.0,
+    "latency_sec": 2.2526017909985967,
+    "json_ok": true,
+    "top3": [
+      "Vermicelli Noodles",
+      "Garlic Rice",
+      "Seasonal Steamed Vegetables"
+    ],
+    "top3_labels": [
+      "miss",
+      "miss",
+      "miss"
+    ]
+  },
+  {
+    "variant": "baseline",
+    "mood": "hearty and filling",
+    "date": "2026-04-05",
+    "tag": "high-signal-attribute",
+    "relationship": "adjacent",
+    "profile": "I love light salads and steamed grain bowls.",
+    "repeat": 0,
+    "available_matches": 40,
+    "match_count": 1,
+    "weak_count": 2,
+    "faithfulness": 0.3333333333333333,
+    "recall": 0.025,
+    "latency_sec": 1.5117163750110194,
+    "json_ok": true,
+    "top3": [
+      "Flavor Forward Legumes",
+      "Craveable Grains",
+      "Steel Cut Oatmeal"
+    ],
+    "top3_labels": [
+      "weak",
+      "weak",
+      "match"
+    ]
+  },
+  {
+    "variant": "baseline",
+    "mood": "hearty and filling",
+    "date": "2026-04-05",
+    "tag": "high-signal-attribute",
+    "relationship": "adjacent",
+    "profile": "I love light salads and steamed grain bowls.",
+    "repeat": 1,
+    "available_matches": 40,
+    "match_count": 1,
+    "weak_count": 2,
+    "faithfulness": 0.3333333333333333,
+    "recall": 0.025,
+    "latency_sec": 1.7641887080390006,
+    "json_ok": true,
+    "top3": [
+      "Flavor Forward Legumes",
+      "Steel Cut Oatmeal",
+      "Craveable Grains"
+    ],
+    "top3_labels": [
+      "weak",
+      "match",
+      "weak"
+    ]
+  },
+  {
+    "variant": "baseline",
+    "mood": "hearty and filling",
+    "date": "2026-04-05",
+    "tag": "high-signal-attribute",
+    "relationship": "adjacent",
+    "profile": "I love light salads and steamed grain bowls.",
+    "repeat": 2,
+    "available_matches": 40,
+    "match_count": 1,
+    "weak_count": 2,
+    "faithfulness": 0.3333333333333333,
+    "recall": 0.025,
+    "latency_sec": 1.5529007079894654,
+    "json_ok": true,
+    "top3": [
+      "Craveable Grains",
+      "Flavor Forward Legumes",
+      "Steel Cut Oatmeal"
+    ],
+    "top3_labels": [
+      "weak",
+      "weak",
+      "match"
+    ]
+  },
+  {
+    "variant": "baseline",
+    "mood": "Mexican food",
+    "date": "2026-04-05",
+    "tag": "cross-cutting",
+    "relationship": "adjacent",
+    "profile": "I love East Asian flavors -- sushi, ramen, and stir-fries.",
+    "repeat": 0,
+    "available_matches": 2,
+    "match_count": 1,
+    "weak_count": 0,
+    "faithfulness": 0.3333333333333333,
+    "recall": 0.5,
+    "latency_sec": 1.9269626250024885,
+    "json_ok": true,
+    "top3": [
+      "Cheese Quesadilla",
+      "Chimichurri Sauce",
+      "Mojo Tofu"
+    ],
+    "top3_labels": [
+      "match",
+      "miss",
+      "miss"
+    ]
+  },
+  {
+    "variant": "baseline",
+    "mood": "Mexican food",
+    "date": "2026-04-05",
+    "tag": "cross-cutting",
+    "relationship": "adjacent",
+    "profile": "I love East Asian flavors -- sushi, ramen, and stir-fries.",
+    "repeat": 1,
+    "available_matches": 2,
+    "match_count": 1,
+    "weak_count": 0,
+    "faithfulness": 0.3333333333333333,
+    "recall": 0.5,
+    "latency_sec": 2.118325417046435,
+    "json_ok": true,
+    "top3": [
+      "Cheese Quesadilla",
+      "Mojo Tofu",
+      "Chimichurri Sauce"
+    ],
+    "top3_labels": [
+      "match",
+      "miss",
+      "miss"
+    ]
+  },
+  {
+    "variant": "baseline",
+    "mood": "Mexican food",
+    "date": "2026-04-05",
+    "tag": "cross-cutting",
+    "relationship": "adjacent",
+    "profile": "I love East Asian flavors -- sushi, ramen, and stir-fries.",
+    "repeat": 2,
+    "available_matches": 2,
+    "match_count": 1,
+    "weak_count": 0,
+    "faithfulness": 0.3333333333333333,
+    "recall": 0.5,
+    "latency_sec": 1.7027046249713749,
+    "json_ok": true,
+    "top3": [
+      "Cheese Quesadilla",
+      "Chimichurri Sauce",
+      "Mojo Tofu"
+    ],
+    "top3_labels": [
+      "match",
+      "miss",
+      "miss"
+    ]
+  },
+  {
+    "variant": "baseline",
+    "mood": "something quick to eat",
+    "date": "2026-04-05",
+    "tag": "vague",
+    "relationship": "adjacent",
+    "profile": "I love elaborate multi-course meals -- soup, salad, entree, dessert.",
+    "repeat": 0,
+    "available_matches": 54,
+    "match_count": 3,
+    "weak_count": 0,
+    "faithfulness": 1.0,
+    "recall": 0.05555555555555555,
+    "latency_sec": 1.8121147500351071,
+    "json_ok": true,
+    "top3": [
+      "Cheese Quesadilla",
+      "Seasonal Fruit",
+      "Composed Salad"
+    ],
+    "top3_labels": [
+      "match",
+      "match",
+      "match"
+    ]
+  },
+  {
+    "variant": "baseline",
+    "mood": "something quick to eat",
+    "date": "2026-04-05",
+    "tag": "vague",
+    "relationship": "adjacent",
+    "profile": "I love elaborate multi-course meals -- soup, salad, entree, dessert.",
+    "repeat": 1,
+    "available_matches": 54,
+    "match_count": 3,
+    "weak_count": 0,
+    "faithfulness": 1.0,
+    "recall": 0.05555555555555555,
+    "latency_sec": 1.7065700830426067,
+    "json_ok": true,
+    "top3": [
+      "Cheese Quesadilla",
+      "Vermicelli Noodles",
+      "Pasta"
+    ],
+    "top3_labels": [
+      "match",
+      "match",
+      "match"
+    ]
+  },
+  {
+    "variant": "baseline",
+    "mood": "something quick to eat",
+    "date": "2026-04-05",
+    "tag": "vague",
+    "relationship": "adjacent",
+    "profile": "I love elaborate multi-course meals -- soup, salad, entree, dessert.",
+    "repeat": 2,
+    "available_matches": 54,
+    "match_count": 3,
+    "weak_count": 0,
+    "faithfulness": 1.0,
+    "recall": 0.05555555555555555,
+    "latency_sec": 1.9992203330039047,
+    "json_ok": true,
+    "top3": [
+      "Cheese Quesadilla",
+      "Vermicelli Noodles",
+      "Pasta"
+    ],
+    "top3_labels": [
+      "match",
+      "match",
+      "match"
+    ]
+  },
+  {
+    "variant": "baseline",
+    "mood": "ramen or pho",
+    "date": "2026-04-07",
+    "tag": "high-signal-cuisine",
+    "relationship": "adjacent",
+    "profile": "I love hearty Italian comfort food -- lasagna and risotto.",
+    "repeat": 0,
+    "available_matches": 2,
+    "match_count": 2,
+    "weak_count": 0,
+    "faithfulness": 0.6666666666666666,
+    "recall": 1.0,
+    "latency_sec": 2.0273355420213193,
+    "json_ok": true,
+    "top3": [
+      "Braised Bok Choy",
+      "Udon Noodles",
+      "Pasta Pomodoro"
+    ],
+    "top3_labels": [
+      "match",
+      "match",
+      "miss"
+    ]
+  },
+  {
+    "variant": "baseline",
+    "mood": "ramen or pho",
+    "date": "2026-04-07",
+    "tag": "high-signal-cuisine",
+    "relationship": "adjacent",
+    "profile": "I love hearty Italian comfort food -- lasagna and risotto.",
+    "repeat": 1,
+    "available_matches": 2,
+    "match_count": 2,
+    "weak_count": 0,
+    "faithfulness": 0.6666666666666666,
+    "recall": 1.0,
+    "latency_sec": 2.0682567919720896,
+    "json_ok": true,
+    "top3": [
+      "Braised Bok Choy",
+      "Udon Noodles",
+      "Pasta Pomodoro"
+    ],
+    "top3_labels": [
+      "match",
+      "match",
+      "miss"
+    ]
+  },
+  {
+    "variant": "baseline",
+    "mood": "ramen or pho",
+    "date": "2026-04-07",
+    "tag": "high-signal-cuisine",
+    "relationship": "adjacent",
+    "profile": "I love hearty Italian comfort food -- lasagna and risotto.",
+    "repeat": 2,
+    "available_matches": 2,
+    "match_count": 2,
+    "weak_count": 0,
+    "faithfulness": 0.6666666666666666,
+    "recall": 1.0,
+    "latency_sec": 1.7661964579601772,
+    "json_ok": true,
+    "top3": [
+      "Braised Bok Choy",
+      "Udon Noodles",
+      "Pasta Pomodoro"
+    ],
+    "top3_labels": [
+      "match",
+      "match",
+      "miss"
+    ]
+  },
+  {
+    "variant": "baseline",
+    "mood": "breakfast-y food",
+    "date": "2026-04-07",
+    "tag": "temporal",
+    "relationship": "adjacent",
+    "profile": "I love hearty dinner entrees -- steak, pasta, and roasts.",
+    "repeat": 0,
+    "available_matches": 20,
+    "match_count": 3,
+    "weak_count": 0,
+    "faithfulness": 1.0,
+    "recall": 0.15,
+    "latency_sec": 1.361214749980718,
+    "json_ok": true,
+    "top3": [
+      "Bacon Scramble",
+      "Avo Breakfast Sandwich",
+      "Scrambled Eggs"
+    ],
+    "top3_labels": [
+      "match",
+      "match",
+      "match"
+    ]
+  },
+  {
+    "variant": "baseline",
+    "mood": "breakfast-y food",
+    "date": "2026-04-07",
+    "tag": "temporal",
+    "relationship": "adjacent",
+    "profile": "I love hearty dinner entrees -- steak, pasta, and roasts.",
+    "repeat": 1,
+    "available_matches": 20,
+    "match_count": 3,
+    "weak_count": 0,
+    "faithfulness": 1.0,
+    "recall": 0.15,
+    "latency_sec": 1.9969861669815145,
+    "json_ok": true,
+    "top3": [
+      "Bacon Scramble",
+      "Avo Breakfast Sandwich",
+      "Breakfast Fried Rice"
+    ],
+    "top3_labels": [
+      "match",
+      "match",
+      "match"
+    ]
+  },
+  {
+    "variant": "baseline",
+    "mood": "breakfast-y food",
+    "date": "2026-04-07",
+    "tag": "temporal",
+    "relationship": "adjacent",
+    "profile": "I love hearty dinner entrees -- steak, pasta, and roasts.",
+    "repeat": 2,
+    "available_matches": 20,
+    "match_count": 3,
+    "weak_count": 0,
+    "faithfulness": 1.0,
+    "recall": 0.15,
+    "latency_sec": 1.8853317920002155,
+    "json_ok": true,
+    "top3": [
+      "Bacon Scramble",
+      "Avo Breakfast Sandwich",
+      "Breakfast Fried Rice"
+    ],
+    "top3_labels": [
+      "match",
+      "match",
+      "match"
+    ]
+  },
+  {
+    "variant": "baseline",
+    "mood": "something cheesy",
+    "date": "2026-04-07",
+    "tag": "high-signal-attribute",
+    "relationship": "adjacent",
+    "profile": "I love clean lean meals -- grilled fish, salads, and vegetables.",
+    "repeat": 0,
+    "available_matches": 22,
+    "match_count": 3,
+    "weak_count": 0,
+    "faithfulness": 1.0,
+    "recall": 0.13636363636363635,
+    "latency_sec": 1.9816903329920024,
+    "json_ok": true,
+    "top3": [
+      "Four-Cheese Pizza",
+      "Creamy Pesto",
+      "Creamy Polenta"
+    ],
+    "top3_labels": [
+      "match",
+      "match",
+      "match"
+    ]
+  },
+  {
+    "variant": "baseline",
+    "mood": "something cheesy",
+    "date": "2026-04-07",
+    "tag": "high-signal-attribute",
+    "relationship": "adjacent",
+    "profile": "I love clean lean meals -- grilled fish, salads, and vegetables.",
+    "repeat": 1,
+    "available_matches": 22,
+    "match_count": 3,
+    "weak_count": 0,
+    "faithfulness": 1.0,
+    "recall": 0.13636363636363635,
+    "latency_sec": 1.9044518750160933,
+    "json_ok": true,
+    "top3": [
+      "Four-Cheese Pizza",
+      "Creamy Pesto",
+      "Creamy Polenta"
+    ],
+    "top3_labels": [
+      "match",
+      "match",
+      "match"
+    ]
+  },
+  {
+    "variant": "baseline",
+    "mood": "something cheesy",
+    "date": "2026-04-07",
+    "tag": "high-signal-attribute",
+    "relationship": "adjacent",
+    "profile": "I love clean lean meals -- grilled fish, salads, and vegetables.",
+    "repeat": 2,
+    "available_matches": 22,
+    "match_count": 3,
+    "weak_count": 0,
+    "faithfulness": 1.0,
+    "recall": 0.13636363636363635,
+    "latency_sec": 2.1890820829430595,
+    "json_ok": true,
+    "top3": [
+      "Four-Cheese Pizza",
+      "Creamy Pesto",
+      "Creamy Polenta"
+    ],
+    "top3_labels": [
+      "match",
+      "match",
+      "match"
+    ]
+  },
+  {
+    "variant": "baseline",
+    "mood": "fresh and crunchy",
+    "date": "2026-04-07",
+    "tag": "high-signal-attribute",
+    "relationship": "adjacent",
+    "profile": "I love soft, slow-cooked dishes -- braises and stews.",
+    "repeat": 0,
+    "available_matches": 14,
+    "match_count": 1,
+    "weak_count": 0,
+    "faithfulness": 0.3333333333333333,
+    "recall": 0.07142857142857142,
+    "latency_sec": 1.9580802919808775,
+    "json_ok": true,
+    "top3": [
+      "Seasonal Fruit",
+      "Seasonal Steamed Vegetables",
+      "Flavor Forward Legumes"
+    ],
+    "top3_labels": [
+      "match",
+      "miss",
+      "miss"
+    ]
+  },
+  {
+    "variant": "baseline",
+    "mood": "fresh and crunchy",
+    "date": "2026-04-07",
+    "tag": "high-signal-attribute",
+    "relationship": "adjacent",
+    "profile": "I love soft, slow-cooked dishes -- braises and stews.",
+    "repeat": 1,
+    "available_matches": 14,
+    "match_count": 1,
+    "weak_count": 0,
+    "faithfulness": 0.3333333333333333,
+    "recall": 0.07142857142857142,
+    "latency_sec": 1.792399458005093,
+    "json_ok": true,
+    "top3": [
+      "Seasonal Fruit",
+      "Seasonal Steamed Vegetables",
+      "Flavor Forward Legumes"
+    ],
+    "top3_labels": [
+      "match",
+      "miss",
+      "miss"
+    ]
+  },
+  {
+    "variant": "baseline",
+    "mood": "fresh and crunchy",
+    "date": "2026-04-07",
+    "tag": "high-signal-attribute",
+    "relationship": "adjacent",
+    "profile": "I love soft, slow-cooked dishes -- braises and stews.",
+    "repeat": 2,
+    "available_matches": 14,
+    "match_count": 1,
+    "weak_count": 0,
+    "faithfulness": 0.3333333333333333,
+    "recall": 0.07142857142857142,
+    "latency_sec": 1.6014432500232942,
+    "json_ok": true,
+    "top3": [
+      "Seasonal Fruit",
+      "Flavor Forward Legumes",
+      "Seasonal Steamed Vegetables"
+    ],
+    "top3_labels": [
+      "match",
+      "miss",
+      "miss"
+    ]
+  },
+  {
+    "variant": "baseline",
+    "mood": "something Mediterranean",
+    "date": "2026-04-07",
+    "tag": "cross-cutting",
+    "relationship": "adjacent",
+    "profile": "I love East Asian flavors -- sushi, ramen, and stir-fries.",
+    "repeat": 0,
+    "available_matches": 8,
+    "match_count": 1,
+    "weak_count": 0,
+    "faithfulness": 0.3333333333333333,
+    "recall": 0.125,
+    "latency_sec": 1.8155001250561327,
+    "json_ok": true,
+    "top3": [
+      "Citrus Scented Basmati Rice",
+      "Spiced Zucchini",
+      "Flavor Forward Legumes"
+    ],
+    "top3_labels": [
+      "miss",
+      "match",
+      "miss"
+    ]
+  },
+  {
+    "variant": "baseline",
+    "mood": "something Mediterranean",
+    "date": "2026-04-07",
+    "tag": "cross-cutting",
+    "relationship": "adjacent",
+    "profile": "I love East Asian flavors -- sushi, ramen, and stir-fries.",
+    "repeat": 1,
+    "available_matches": 8,
+    "match_count": 1,
+    "weak_count": 0,
+    "faithfulness": 0.3333333333333333,
+    "recall": 0.125,
+    "latency_sec": 601.2981572499848,
+    "json_ok": true,
+    "top3": [
+      "Spiced Zucchini",
+      "Citrus Scented Basmati Rice",
+      "Flavor Forward Legumes"
+    ],
+    "top3_labels": [
+      "match",
+      "miss",
+      "miss"
+    ]
+  },
+  {
+    "variant": "baseline",
+    "mood": "something Mediterranean",
+    "date": "2026-04-07",
+    "tag": "cross-cutting",
+    "relationship": "adjacent",
+    "profile": "I love East Asian flavors -- sushi, ramen, and stir-fries.",
+    "repeat": 2,
+    "available_matches": 8,
+    "match_count": 1,
+    "weak_count": 0,
+    "faithfulness": 0.3333333333333333,
+    "recall": 0.125,
+    "latency_sec": 4.5172300830017775,
+    "json_ok": true,
+    "top3": [
+      "Citrus Scented Basmati Rice",
+      "Spiced Zucchini",
+      "Flavor Forward Legumes"
+    ],
+    "top3_labels": [
+      "miss",
+      "match",
+      "miss"
+    ]
+  },
+  {
+    "variant": "baseline",
+    "mood": "craving carbs",
+    "date": "2026-04-07",
+    "tag": "vague",
+    "relationship": "adjacent",
+    "profile": "I love grilled proteins and salads -- usually skip bread and rice.",
+    "repeat": 0,
+    "available_matches": 65,
+    "match_count": 3,
+    "weak_count": 0,
+    "faithfulness": 1.0,
+    "recall": 0.046153846153846156,
+    "latency_sec": 1.7736939580063336,
+    "json_ok": true,
+    "top3": [
+      "Garlic Breadstick",
+      "Coconut Rice",
+      "Cilantro Jasmine Rice"
+    ],
+    "top3_labels": [
+      "match",
+      "match",
+      "match"
+    ]
+  },
+  {
+    "variant": "baseline",
+    "mood": "craving carbs",
+    "date": "2026-04-07",
+    "tag": "vague",
+    "relationship": "adjacent",
+    "profile": "I love grilled proteins and salads -- usually skip bread and rice.",
+    "repeat": 1,
+    "available_matches": 65,
+    "match_count": 3,
+    "weak_count": 0,
+    "faithfulness": 1.0,
+    "recall": 0.046153846153846156,
+    "latency_sec": 2.0181724579888396,
+    "json_ok": true,
+    "top3": [
+      "Garlic Breadstick",
+      "Broccoli Cheese & Rice Casserole",
+      "Craveable Grains"
+    ],
+    "top3_labels": [
+      "match",
+      "match",
+      "match"
+    ]
+  },
+  {
+    "variant": "baseline",
+    "mood": "craving carbs",
+    "date": "2026-04-07",
+    "tag": "vague",
+    "relationship": "adjacent",
+    "profile": "I love grilled proteins and salads -- usually skip bread and rice.",
+    "repeat": 2,
+    "available_matches": 65,
+    "match_count": 3,
+    "weak_count": 0,
+    "faithfulness": 1.0,
+    "recall": 0.046153846153846156,
+    "latency_sec": 1.7238954160129651,
+    "json_ok": true,
+    "top3": [
+      "Garlic Breadstick",
+      "Coconut Rice",
+      "Jasmine Rice"
+    ],
+    "top3_labels": [
+      "match",
+      "match",
+      "match"
+    ]
+  },
+  {
+    "variant": "baseline",
+    "mood": "noodles",
+    "date": "2026-03-30",
+    "tag": "high-signal-cuisine",
+    "relationship": "contrast",
+    "profile": "I'm strictly carnivore -- only grilled meats, no starches, no carbs of any kind.",
+    "repeat": 0,
+    "available_matches": 10,
+    "match_count": 3,
+    "weak_count": 0,
+    "faithfulness": 1.0,
+    "recall": 0.3,
+    "latency_sec": 1.6715173340053298,
+    "json_ok": true,
+    "top3": [
+      "Garlic Noodles",
+      "Pancit Noodles",
+      "Pasta"
+    ],
+    "top3_labels": [
+      "match",
+      "match",
+      "match"
+    ]
+  },
+  {
+    "variant": "baseline",
+    "mood": "noodles",
+    "date": "2026-03-30",
+    "tag": "high-signal-cuisine",
+    "relationship": "contrast",
+    "profile": "I'm strictly carnivore -- only grilled meats, no starches, no carbs of any kind.",
+    "repeat": 1,
+    "available_matches": 10,
+    "match_count": 3,
+    "weak_count": 0,
+    "faithfulness": 1.0,
+    "recall": 0.3,
+    "latency_sec": 1.8945963340229355,
+    "json_ok": true,
+    "top3": [
+      "Garlic Noodles",
+      "Pancit Noodles",
+      "Pasta"
+    ],
+    "top3_labels": [
+      "match",
+      "match",
+      "match"
+    ]
+  },
+  {
+    "variant": "baseline",
+    "mood": "noodles",
+    "date": "2026-03-30",
+    "tag": "high-signal-cuisine",
+    "relationship": "contrast",
+    "profile": "I'm strictly carnivore -- only grilled meats, no starches, no carbs of any kind.",
+    "repeat": 2,
+    "available_matches": 10,
+    "match_count": 3,
+    "weak_count": 0,
+    "faithfulness": 1.0,
+    "recall": 0.3,
+    "latency_sec": 1.706987334007863,
+    "json_ok": true,
+    "top3": [
+      "Pancit Noodles",
+      "Garlic Noodles",
+      "Pasta Alfredo"
+    ],
+    "top3_labels": [
+      "match",
+      "match",
+      "match"
+    ]
+  },
+  {
+    "variant": "baseline",
+    "mood": "pizza",
+    "date": "2026-04-01",
+    "tag": "high-signal-cuisine",
+    "relationship": "contrast",
+    "profile": "I'm strictly health-focused -- only fresh salads and lean proteins, no bread or cheese ever.",
+    "repeat": 0,
+    "available_matches": 2,
+    "match_count": 2,
+    "weak_count": 0,
+    "faithfulness": 0.6666666666666666,
+    "recall": 1.0,
+    "latency_sec": 597.7708282090025,
+    "json_ok": true,
+    "top3": [
+      "Handmade Pizza",
+      "Allergen Friendly Pizza Station"
+    ],
+    "top3_labels": [
+      "match",
+      "match"
+    ]
+  },
+  {
+    "variant": "baseline",
+    "mood": "pizza",
+    "date": "2026-04-01",
+    "tag": "high-signal-cuisine",
+    "relationship": "contrast",
+    "profile": "I'm strictly health-focused -- only fresh salads and lean proteins, no bread or cheese ever.",
+    "repeat": 1,
+    "available_matches": 2,
+    "match_count": 2,
+    "weak_count": 0,
+    "faithfulness": 0.6666666666666666,
+    "recall": 1.0,
+    "latency_sec": 597.0964307920076,
+    "json_ok": true,
+    "top3": [
+      "Handmade Pizza",
+      "Allergen Friendly Pizza Station",
+      "Marinara Sauce"
+    ],
+    "top3_labels": [
+      "match",
+      "match",
+      "miss"
+    ]
+  },
+  {
+    "variant": "baseline",
+    "mood": "pizza",
+    "date": "2026-04-01",
+    "tag": "high-signal-cuisine",
+    "relationship": "contrast",
+    "profile": "I'm strictly health-focused -- only fresh salads and lean proteins, no bread or cheese ever.",
+    "repeat": 2,
+    "available_matches": 2,
+    "match_count": 2,
+    "weak_count": 0,
+    "faithfulness": 0.6666666666666666,
+    "recall": 1.0,
+    "latency_sec": 2.4579198749852367,
+    "json_ok": true,
+    "top3": [
+      "Handmade Pizza",
+      "Allergen Friendly Pizza Station",
+      "Panini Station (Branner)"
+    ],
+    "top3_labels": [
+      "match",
+      "match",
+      "miss"
+    ]
+  },
+  {
+    "variant": "baseline",
+    "mood": "soup",
+    "date": "2026-04-01",
+    "tag": "high-signal-cuisine",
+    "relationship": "contrast",
+    "profile": "I never eat liquid foods with my meal -- always dry, solid plates.",
+    "repeat": 0,
+    "available_matches": 6,
+    "match_count": 2,
+    "weak_count": 1,
+    "faithfulness": 0.6666666666666666,
+    "recall": 0.3333333333333333,
+    "latency_sec": 1.7361039159586653,
+    "json_ok": true,
+    "top3": [
+      "Creamy Tomato Basil Soup",
+      "Miso Soup with Mushrooms & Tofu",
+      "Farro with Mixed Mushrooms"
+    ],
+    "top3_labels": [
+      "match",
+      "match",
+      "weak"
+    ]
+  },
+  {
+    "variant": "baseline",
+    "mood": "soup",
+    "date": "2026-04-01",
+    "tag": "high-signal-cuisine",
+    "relationship": "contrast",
+    "profile": "I never eat liquid foods with my meal -- always dry, solid plates.",
+    "repeat": 1,
+    "available_matches": 6,
+    "match_count": 2,
+    "weak_count": 1,
+    "faithfulness": 0.6666666666666666,
+    "recall": 0.3333333333333333,
+    "latency_sec": 2.0479766659555025,
+    "json_ok": true,
+    "top3": [
+      "Creamy Tomato Basil Soup",
+      "Miso Soup with Mushrooms & Tofu",
+      "Farro with Mixed Mushrooms"
+    ],
+    "top3_labels": [
+      "match",
+      "match",
+      "weak"
+    ]
+  },
+  {
+    "variant": "baseline",
+    "mood": "soup",
+    "date": "2026-04-01",
+    "tag": "high-signal-cuisine",
+    "relationship": "contrast",
+    "profile": "I never eat liquid foods with my meal -- always dry, solid plates.",
+    "repeat": 2,
+    "available_matches": 6,
+    "match_count": 2,
+    "weak_count": 1,
+    "faithfulness": 0.6666666666666666,
+    "recall": 0.3333333333333333,
+    "latency_sec": 2.0489430830348283,
+    "json_ok": true,
+    "top3": [
+      "Creamy Tomato Basil Soup",
+      "Miso Soup with Mushrooms & Tofu",
+      "Farro with Mixed Mushrooms"
+    ],
+    "top3_labels": [
+      "match",
+      "match",
+      "weak"
+    ]
+  },
+  {
+    "variant": "baseline",
+    "mood": "Mexican food",
+    "date": "2026-04-05",
+    "tag": "cross-cutting",
+    "relationship": "contrast",
+    "profile": "I dislike all Latin American cuisine -- I only eat East Asian food.",
+    "repeat": 0,
+    "available_matches": 2,
+    "match_count": 1,
+    "weak_count": 0,
+    "faithfulness": 0.3333333333333333,
+    "recall": 0.5,
+    "latency_sec": 2.045059374999255,
+    "json_ok": true,
+    "top3": [
+      "Cheese Quesadilla",
+      "Chimichurri Sauce",
+      "Chimichurri Steak"
+    ],
+    "top3_labels": [
+      "match",
+      "miss",
+      "miss"
+    ]
+  },
+  {
+    "variant": "baseline",
+    "mood": "Mexican food",
+    "date": "2026-04-05",
+    "tag": "cross-cutting",
+    "relationship": "contrast",
+    "profile": "I dislike all Latin American cuisine -- I only eat East Asian food.",
+    "repeat": 1,
+    "available_matches": 2,
+    "match_count": 1,
+    "weak_count": 0,
+    "faithfulness": 0.3333333333333333,
+    "recall": 0.5,
+    "latency_sec": 1.6953052090248093,
+    "json_ok": true,
+    "top3": [
+      "Cheese Quesadilla",
+      "Chimichurri Sauce",
+      "Chimichurri Steak"
+    ],
+    "top3_labels": [
+      "match",
+      "miss",
+      "miss"
+    ]
+  },
+  {
+    "variant": "baseline",
+    "mood": "Mexican food",
+    "date": "2026-04-05",
+    "tag": "cross-cutting",
+    "relationship": "contrast",
+    "profile": "I dislike all Latin American cuisine -- I only eat East Asian food.",
+    "repeat": 2,
+    "available_matches": 2,
+    "match_count": 1,
+    "weak_count": 0,
+    "faithfulness": 0.3333333333333333,
+    "recall": 0.5,
+    "latency_sec": 1.9242339580086991,
+    "json_ok": true,
+    "top3": [
+      "Cheese Quesadilla",
+      "Chimichurri Steak",
+      "Chimichurri Sauce"
+    ],
+    "top3_labels": [
+      "match",
+      "miss",
+      "miss"
+    ]
+  },
+  {
+    "variant": "baseline",
+    "mood": "comfort food",
+    "date": "2026-03-30",
+    "tag": "vague",
+    "relationship": "contrast",
+    "profile": "I'm a minimalist eater -- only light, raw, whole foods like fresh fruit and vegetables.",
+    "repeat": 0,
+    "available_matches": 65,
+    "match_count": 2,
+    "weak_count": 0,
+    "faithfulness": 0.6666666666666666,
+    "recall": 0.03076923076923077,
+    "latency_sec": 2.524166958988644,
+    "json_ok": true,
+    "top3": [
+      "Handmade Pizza",
+      "Pancit Noodles",
+      "Seared Salmon"
+    ],
+    "top3_labels": [
+      "match",
+      "match",
+      "miss"
+    ]
+  },
+  {
+    "variant": "baseline",
+    "mood": "comfort food",
+    "date": "2026-03-30",
+    "tag": "vague",
+    "relationship": "contrast",
+    "profile": "I'm a minimalist eater -- only light, raw, whole foods like fresh fruit and vegetables.",
+    "repeat": 1,
+    "available_matches": 65,
+    "match_count": 2,
+    "weak_count": 0,
+    "faithfulness": 0.6666666666666666,
+    "recall": 0.03076923076923077,
+    "latency_sec": 1.944509124965407,
+    "json_ok": true,
+    "top3": [
+      "Handmade Pizza",
+      "Pancit Noodles",
+      "Seared Salmon"
+    ],
+    "top3_labels": [
+      "match",
+      "match",
+      "miss"
+    ]
+  },
+  {
+    "variant": "baseline",
+    "mood": "comfort food",
+    "date": "2026-03-30",
+    "tag": "vague",
+    "relationship": "contrast",
+    "profile": "I'm a minimalist eater -- only light, raw, whole foods like fresh fruit and vegetables.",
+    "repeat": 2,
+    "available_matches": 65,
+    "match_count": 2,
+    "weak_count": 0,
+    "faithfulness": 0.6666666666666666,
+    "recall": 0.03076923076923077,
+    "latency_sec": 2.0499504169565625,
+    "json_ok": true,
+    "top3": [
+      "Handmade Pizza",
+      "Pancit Noodles",
+      "Seared Salmon"
+    ],
+    "top3_labels": [
+      "match",
+      "match",
+      "miss"
+    ]
+  },
+  {
+    "variant": "baseline",
+    "mood": "noodles",
+    "date": "2026-03-30",
+    "tag": "high-signal-cuisine",
+    "relationship": "aligned",
+    "profile": "I love noodle dishes of all kinds -- pasta, ramen, pho, lo mein, udon.",
+    "repeat": 0,
+    "available_matches": 10,
+    "match_count": 3,
+    "weak_count": 0,
+    "faithfulness": 1.0,
+    "recall": 0.3,
+    "latency_sec": 2.249463874963112,
+    "json_ok": true,
+    "top3": [
+      "Pancit Noodles",
+      "Garlic Noodles",
+      "Pasta"
+    ],
+    "top3_labels": [
+      "match",
+      "match",
+      "match"
+    ]
+  },
+  {
+    "variant": "baseline",
+    "mood": "noodles",
+    "date": "2026-03-30",
+    "tag": "high-signal-cuisine",
+    "relationship": "aligned",
+    "profile": "I love noodle dishes of all kinds -- pasta, ramen, pho, lo mein, udon.",
+    "repeat": 1,
+    "available_matches": 10,
+    "match_count": 3,
+    "weak_count": 0,
+    "faithfulness": 1.0,
+    "recall": 0.3,
+    "latency_sec": 1.8458823340479285,
+    "json_ok": true,
+    "top3": [
+      "Pancit Noodles",
+      "Garlic Noodles",
+      "Pasta"
+    ],
+    "top3_labels": [
+      "match",
+      "match",
+      "match"
+    ]
+  },
+  {
+    "variant": "baseline",
+    "mood": "noodles",
+    "date": "2026-03-30",
+    "tag": "high-signal-cuisine",
+    "relationship": "aligned",
+    "profile": "I love noodle dishes of all kinds -- pasta, ramen, pho, lo mein, udon.",
+    "repeat": 2,
+    "available_matches": 10,
+    "match_count": 3,
+    "weak_count": 0,
+    "faithfulness": 1.0,
+    "recall": 0.3,
+    "latency_sec": 2.0478565839584917,
+    "json_ok": true,
+    "top3": [
+      "Pancit Noodles",
+      "Garlic Noodles",
+      "Pasta"
+    ],
+    "top3_labels": [
+      "match",
+      "match",
+      "match"
+    ]
+  },
+  {
+    "variant": "baseline",
+    "mood": "pizza",
+    "date": "2026-04-01",
+    "tag": "high-signal-cuisine",
+    "relationship": "aligned",
+    "profile": "I love Italian food -- pizza, pasta, antipasti, and bruschetta.",
+    "repeat": 0,
+    "available_matches": 2,
+    "match_count": 2,
+    "weak_count": 0,
+    "faithfulness": 0.6666666666666666,
+    "recall": 1.0,
+    "latency_sec": 2.0478462080354802,
+    "json_ok": true,
+    "top3": [
+      "Handmade Pizza",
+      "Allergen Friendly Pizza Station",
+      "Pasta Marinara"
+    ],
+    "top3_labels": [
+      "match",
+      "match",
+      "miss"
+    ]
+  },
+  {
+    "variant": "baseline",
+    "mood": "pizza",
+    "date": "2026-04-01",
+    "tag": "high-signal-cuisine",
+    "relationship": "aligned",
+    "profile": "I love Italian food -- pizza, pasta, antipasti, and bruschetta.",
+    "repeat": 1,
+    "available_matches": 2,
+    "match_count": 2,
+    "weak_count": 0,
+    "faithfulness": 0.6666666666666666,
+    "recall": 1.0,
+    "latency_sec": 1.636359167052433,
+    "json_ok": true,
+    "top3": [
+      "Handmade Pizza",
+      "Allergen Friendly Pizza Station"
+    ],
+    "top3_labels": [
+      "match",
+      "match"
+    ]
+  },
+  {
+    "variant": "baseline",
+    "mood": "pizza",
+    "date": "2026-04-01",
+    "tag": "high-signal-cuisine",
+    "relationship": "aligned",
+    "profile": "I love Italian food -- pizza, pasta, antipasti, and bruschetta.",
+    "repeat": 2,
+    "available_matches": 2,
+    "match_count": 2,
+    "weak_count": 0,
+    "faithfulness": 0.6666666666666666,
+    "recall": 1.0,
+    "latency_sec": 601.4360422500176,
+    "json_ok": true,
+    "top3": [
+      "Handmade Pizza",
+      "Allergen Friendly Pizza Station"
+    ],
+    "top3_labels": [
+      "match",
+      "match"
+    ]
+  }
+]
