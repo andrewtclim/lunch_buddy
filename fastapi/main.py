@@ -17,6 +17,7 @@ sys.path.insert(
 from recommend import (
     recommend,
     fetch_dish_embedding,
+    get_embedding,
     update_preference_vector,
     summarize_preferences,
 )  # noqa: E402
@@ -327,4 +328,67 @@ def pick(
     return PickResponse(
         status="ok",
         message=f"Enjoy your {body.dish_name}!",
+    )
+
+
+# ---------------------------------------------------------------------------
+# GET /me/profile -- lightweight profile existence check
+# ---------------------------------------------------------------------------
+
+
+@app.get("/me/profile")
+def me_profile(
+    current_user: AuthenticatedUser = Depends(get_current_user),
+):
+    # returns {has_profile: true/false} -- no Gemini, no heavy work
+    profile = load_user_pref(current_user.user_id)
+    return {"has_profile": profile is not None}
+
+
+# ---------------------------------------------------------------------------
+# POST /onboard -- first-time taste profile setup
+# ---------------------------------------------------------------------------
+
+
+class OnboardRequest(BaseModel):
+    blurb: str  # free-text signup description, e.g. "I love spicy noodles"
+
+
+class OnboardResponse(BaseModel):
+    status: str  # "ok" or "error"
+    preference_summary: str  # generated one-sentence taste profile
+
+
+@app.post("/onboard", response_model=OnboardResponse)
+def onboard(
+    body: OnboardRequest,
+    current_user: AuthenticatedUser = Depends(get_current_user),
+) -> OnboardResponse:
+    # guard: block if the user already has a profile
+    existing = load_user_pref(current_user.user_id)
+    if existing is not None:
+        raise HTTPException(
+            status_code=409,
+            detail="Profile already exists. Use /predict to get recommendations.",
+        )
+
+    # 1. embed the signup blurb -- this becomes both preference_vector and
+    #    original_profile_vector (the immutable baseline for 3-vector blend)
+    pref_vec = get_embedding(body.blurb)
+
+    # 2. ask Gemini to distill the blurb into a concise preference summary
+    preference_summary = summarize_preferences(body.blurb, [])
+
+    # 3. persist the new user profile to Supabase
+    save_user_pref(
+        user_id=current_user.user_id,
+        pref_vec=pref_vec,
+        preference_summary=preference_summary,
+        allergens=[],  # allergens synced separately (future)
+        original_profile_vector=pref_vec,  # write-once baseline
+    )
+
+    return OnboardResponse(
+        status="ok",
+        preference_summary=preference_summary,
     )
