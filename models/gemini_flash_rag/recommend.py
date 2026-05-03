@@ -103,13 +103,14 @@ GEN_MODEL = "gemini-2.5-flash"  # generator LLM
 
 ALPHA = 0.3  # how strongly each dish pick nudges the stored preference vector
 # how strongly a daily mood nudges the query vector (when mood given)
-BETA_WITH_MOOD = 0.5
+BETA_WITH_MOOD = 0.8
 BETA_NO_MOOD = 0.0  # no mood means query_vec = pref_vec directly
 # alpha and beta are independent:
 #   alpha updates pref_vec permanently after a pick
 #   beta shifts query_vec temporarily for today's search only
-# beta=0.5 when mood is given so the user's explicit request meaningfully
-# shifts what surfaces -- validated in exp_06 benchmark
+# beta=0.8: exp_09 ablation (48 items, 4-pick simulation, SE=0.05) showed adj
+# faith@3 improved monotonically from 0.774 → 0.889 as beta went 0.5 → 0.8,
+# with no regression on aligned cases. Prior value was 0.5 (set in exp_06).
 
 # initialize the Vertex AI client once -- reused for all API calls in this session
 client = genai.Client(vertexai=True, project=PROJECT_ID, location=LOCATION)
@@ -160,6 +161,30 @@ def blend_mood(
     # meaningfully shift what surfaces in the search
     blended = (1 - beta) * pref_vec + beta * mood_vec
     # normalize so cosine search treats both users equally
+    return normalize(blended)
+
+
+def three_way_blend(
+    mood_vec: np.ndarray,
+    recent_vecs: list[np.ndarray],
+    original_vec: np.ndarray,
+    beta: float = BETA_WITH_MOOD,
+) -> np.ndarray:
+    # 3-vector query blend for users with pick history:
+    #   alpha1 (mood)     = beta             -- always dominant; user's explicit ask today
+    #   alpha2 (recent)   = (1-beta)*(n/5)   -- grows from 0 → (1-beta) over first 5 picks
+    #   alpha3 (original) = (1-beta) - alpha2 -- shrinks from (1-beta) → 0 as history builds
+    #
+    # At n=0 picks: reduces to blend_mood(original_vec, mood_vec, beta) -- same as before
+    # At n≥5 picks: original profile is fully replaced by recent choices
+    n = min(len(recent_vecs), 5)
+    alpha1 = beta
+    alpha2 = (1 - beta) * (n / 5)
+    alpha3 = (1 - beta) - alpha2
+    blended = alpha1 * mood_vec + alpha3 * original_vec
+    if alpha2 > 0:
+        recent_mean = np.mean(recent_vecs[:5], axis=0)
+        blended += alpha2 * normalize(recent_mean)
     return normalize(blended)
 
 
@@ -374,7 +399,7 @@ From the list above, return two things:
 1. "recommendations" -- the top 3 dishes that best match today's craving. \
 Use the general taste profile to break ties between equally good matches, \
 but do not let the profile override what the user asked for today. \
-For each include: dish name, dining hall, and one concise reason it fits today's craving.
+For each include: dish name, dining hall, and one concise reason it fits today's craving — keep the tone friendly and casual.
  
 2. "alternatives" -- 2 dishes from the remaining list that are meaningfully different \
 in cuisine or style from the top 3 (to broaden the user's options). \
@@ -394,7 +419,7 @@ Available dishes today:
 From the list above, return two things:
  
 1. "recommendations" -- the top 3 dishes that best match the user's preference. \
-For each include: dish name, dining hall, and one concise reason why it fits.
+For each include: dish name, dining hall, and one concise reason why it fits — keep the tone friendly and casual.
  
 2. "alternatives" -- 2 dishes from the remaining list that are meaningfully different \
 in cuisine or style from the top 3 (to broaden the user's options). \
@@ -495,42 +520,58 @@ def update_preference_vector(
 
 
 def recommend(
-    # user's current preference vector (768-dim)
-    pref_vec: np.ndarray,
+    pref_vec: np.ndarray,  # user's current EMA preference vector (768-dim)
     preference_summary: str,  # one-sentence description of user's taste
-    # hard allergen exclusions (e.g. ["gluten"])
-    user_allergens: list[str],
+    user_allergens: list[str],  # hard allergen exclusions (e.g. ["gluten"])
     date_str: str,  # date to pull dishes for, "YYYY-MM-DD"
     daily_mood: str | None = None,  # optional free-text mood for today
     table: str = "daily_menu",  # which Supabase table to search
-) -> tuple[list[dict], np.ndarray]:
-    # runs the full pipeline and returns:
-    #   - recs: list of up to 3 recommendation dicts from Gemini
-    #   - query_vec: the vector that was used for retrieval (blended if mood given)
-    #     caller uses query_vec for nothing -- it's returned only for logging/debug
+    beta: float | None = None,  # mood weight; None → BETA_WITH_MOOD default
+    top_k_retrieval: int = 80,  # raw candidates fetched from pgvector
+    top_k_gemini: int = 20,  # candidates passed to Gemini after dedup/filter
+    original_profile_vec: np.ndarray | None = None,  # signup embedding (3-vector)
+    recent_choices_vecs: list[np.ndarray] | None = None,  # last ≤5 picks (3-vector)
+) -> tuple[list[dict], list[dict], np.ndarray]:
+    # runs the full pipeline and returns (recs, alts, query_vec):
+    #   recs/alts:  recommendation and alternative dicts from Gemini
+    #   query_vec:  the retrieval vector (returned for logging/debug only)
     #
-    # NOTE: pref_vec is NOT updated here -- updating requires the user's pick,
+    # Blend logic when mood is provided:
+    #   - original_profile_vec present → three_way_blend() (mood + recent + original)
+    #   - otherwise → blend_mood() fallback (mood + pref_vec, existing behavior)
+    # When no mood: query_vec = pref_vec regardless of 3-vector params.
+    #
+    # pref_vec is NOT updated here -- updating requires the user's pick,
     # which happens outside this function. See update_preference_vector() above.
 
-    # step 1 -- if mood was provided, embed it and blend into a temporary query vector
-    if daily_mood:
-        mood_vec = get_embedding(daily_mood)  # embed the mood string
-        # 50/50 profile/mood (BETA_WITH_MOOD)
-        query_vec = blend_mood(pref_vec, mood_vec)
-    else:
-        query_vec = pref_vec  # no mood -- use profile directly
+    beta_val = beta if beta is not None else BETA_WITH_MOOD
 
-    # step 2 -- cosine search: find today's top 40 dishes closest to query_vec
-    # 40 gives the filter steps enough to work with on sparse days (weekends,
-    # limited halls) without pulling in dishes that are too far from the preference
-    candidates = retrieve_dishes(query_vec, date_str, table=table, limit=40)
+    # step 1 -- build query vector
+    if daily_mood:
+        mood_vec = get_embedding(daily_mood)
+        if original_profile_vec is not None:
+            query_vec = three_way_blend(
+                mood_vec,
+                recent_choices_vecs or [],
+                original_profile_vec,
+                beta=beta_val,
+            )
+        else:
+            query_vec = blend_mood(pref_vec, mood_vec, beta=beta_val)
+    else:
+        query_vec = pref_vec
+
+    # step 2 -- cosine search: top_k_retrieval raw candidates
+    # wider funnel (default 80) gives dedup more to work with -- backfill_menu
+    # stores ~10 rows per unique dish (one per station), so 80 raw → ~15-20 unique
+    candidates = retrieve_dishes(
+        query_vec, date_str, table=table, limit=top_k_retrieval
+    )
 
     # step 3 -- clean up: remove station labels, allergen conflicts, duplicates
     candidates = filter_placeholders(candidates)
     candidates = filter_allergens(candidates, user_allergens)
-    candidates = deduplicate(candidates)[:10]  # top 10 go to Gemini
-    # (was 5 -- extra 5 give Gemini room
-    #  to pick 2 diverse alternatives)
+    candidates = deduplicate(candidates)[:top_k_gemini]
 
     # step 4 -- ask Gemini to pick top 3 recommendations + 2 diverse alternatives
     recs, alts = call_gemini(preference_summary, candidates, daily_mood=daily_mood)

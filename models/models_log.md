@@ -21,8 +21,8 @@ over time, their taste profile quietly drifts toward what they actually choose.
 
 2. **Retrieval.** When the user wants a recommendation, we run a cosine similarity
    search against that day's dish embeddings in Supabase/pgvector. We pull the top
-   20 closest dishes, drop allergen conflicts and placeholder station labels, and
-   pass the top 5 to Gemini.
+   80 closest dishes, drop allergen conflicts and placeholder station labels, and
+   pass the top 20 to Gemini.
 
 3. **Generation.** Gemini 2.5 Flash receives the user's current preference summary
    (plain English, one sentence) and the 5 candidate dishes. It picks the top 3 and
@@ -127,6 +127,16 @@ Gemini 2.5 Flash), FastAPI, Python, Docker, MLflow (experiment tracking).
   log results to MLflow.
 - **Files.** `experiments/exp_04_RAG_learning/`
 
+### exp_05 — FastAPI deploy scaffold — Apr 10 2026 — scaffold only
+
+- **What we tried.** Set up a FastAPI + Docker scaffold for serving recommendations
+  as a real API endpoint. `POST /predict` skeleton exists. Patrick added JWT auth
+  via Supabase JWKS.
+- **Status.** Scaffold only -- `/predict` is not yet wired to Supabase + Gemini.
+  Docker build confirmed working; `/health` and `/` endpoints respond correctly.
+  `python-jose` missing from `requirements.txt` (needed for JWT verify -- Patrick fix).
+- **Files.** `experiments/exp_05_fastapi_deploy/`, `fastapi/main.py`
+
 ### exp_06 — thinking_budget benchmark + prompt v2 — Apr 12 2026 — done
 
 - **What we tried.** Benchmarked `thinking_budget=0` (disables extended reasoning in
@@ -152,15 +162,26 @@ Gemini 2.5 Flash), FastAPI, Python, Docker, MLflow (experiment tracking).
 - **Registered.** `gemini_flash_rag_v2` in MLflow Model Registry.
 - **Files.** `gemini_flash_rag/recommend.py`, `gemini_flash_rag/register.py`
 
-### exp_05 — FastAPI deploy scaffold — Apr 10 2026 — scaffold only
+### exp_07 — connection pooling benchmark — Apr 25 2026 — done
 
-- **What we tried.** Set up a FastAPI + Docker scaffold for serving recommendations
-  as a real API endpoint. `POST /predict` skeleton exists. Patrick added JWT auth
-  via Supabase JWKS.
-- **Status.** Scaffold only -- `/predict` is not yet wired to Supabase + Gemini.
-  Docker build confirmed working; `/health` and `/` endpoints respond correctly.
-  `python-jose` missing from `requirements.txt` (needed for JWT verify -- Patrick fix).
-- **Files.** `experiments/exp_05_fastapi_deploy/`, `fastapi/main.py`
+- **What we tried.** Benchmarked `psycopg2.pool.ThreadedConnectionPool` vs fresh-connection-per-call on `retrieve_dishes()`. 30 calls each, Gemini excluded from timing.
+- **Results.** avg 761ms → 228ms (3.3x); p95 1163ms → 273ms (4.3x). Each fresh connection pays ~530ms TCP+TLS+auth overhead; pooled calls 2+ reuse it.
+- **Decision.** Pooling applied to all three DB functions in `recommend.py` (min=1, max=5). `try/finally` on `putconn()` prevents pool exhaustion on exceptions.
+- **Files.** `experiments/exp_07_connection_pooling/`
+
+### exp_08 — mood faithfulness eval — Apr 29 2026 — done
+
+- **What we tried.** LLM-as-judge eval for mood fidelity. Judge labels each (mood, dish) pair as match/weak/miss; faith@3 = matches-in-top-3 / 3. 37 profiles × 3 repeats across 3 categories: *adjacent* (profile opposes mood — the hard case), *aligned* (profile supports mood), *contrast* (profile strongly opposes in a different dimension). Ran baseline and three variants.
+- **Results.** Baseline adj faith@3=0.633; wider_funnel (top_k_retrieval=80, top_k_gemini=20): adj=0.717, aligned=0.833 (no regression). Wider pool helps but adj still trails — root cause: at beta=0.5 the blended query falls between profile and mood vectors in a retrieval dead zone (mood dilution).
+- **Decision.** wider_funnel defaults shipped (`top_k_retrieval=80`, `top_k_gemini=20`). Beta raise + signal separation queued as exp_09.
+- **Files.** `experiments/exp_08_mood_faithfulness/`
+
+### exp_09 — alpha1 (mood weight) ablation — May 2 2026 — done
+
+- **What we tried.** Swept `BETA_WITH_MOOD` (α₁) over {0.5, 0.6, 0.7, 0.8} with realistic pick history. Simulation: 4 no-mood picks on Mar 30/Apr 1/Apr 3/Apr 5 (profile-driven, random top-3 pick each day), eval on Apr 7 with mood. Single-eval-day design keeps history length identical across all profiles. Eval set expanded to 48 Apr 7 profiles (33 adj, 13 contrast, 2 aligned; SE=0.050 on adj slice) — new profiles reused existing judge labels, zero extra API calls.
+- **Results.** adj faith@3 improved monotonically: 0.774 → 0.808 → 0.872 → **0.889** (α₁=0.5→0.6→0.7→0.8). No aligned regression at any value.
+- **Decision.** `BETA_WITH_MOOD` updated 0.5 → 0.8 in `recommend.py`.
+- **Files.** `experiments/exp_09_alpha1_ablation/`
 
 ---
 
@@ -337,3 +358,36 @@ Applied benchmark findings from exp_06. Four files changed:
 - Confirm `DATABASE_URL_IPV4` is present in `models/.env` after `user_prefs.py` change.
 - Judge LLM -- Gemini Pro evaluation pass still not wired [WIP].
 - Retrieval pool size -- fetch 100-150 then filter-then-rank still a future fix.
+
+---
+
+## Session log — May 2 2026
+
+### 3-vector architecture — feature/3-vector-architecture branch
+
+Implemented the signal separation designed to fix mood dilution (diagnosed in exp_08, quantified in exp_09). Previously, signup preference and pick history were permanently fused into one EMA vector (`preference_vector`); mood was blended on top at query time. The new design splits them into three independent vectors so each can be weighted appropriately.
+
+**New blend formula (mood present):**
+```
+query_vec = α₁·mood_vec + α₂·recent_vec + α₃·original_vec
+α₁ = 0.8 (fixed), α₂ = 0.2·(n/5), α₃ = 0.2 - α₂   [n = min(picks, 5)]
+```
+At n=0: `0.8·mood + 0.2·original` (same as the exp_09 winner). At n≥5: `0.8·mood + 0.2·recent` (original fully replaced). No mood: `query_vec = pref_vec` unchanged.
+
+**`supabase/migrations/20260502000000_add_3vector_columns.sql`**
+- `original_profile_vector vector(768)` — nullable; NULL = pre-migration user
+- `recent_choices jsonb NOT NULL DEFAULT '[]'::jsonb` — last ≤5 pick embeddings, most-recent first
+
+**`gemini_flash_rag/user_prefs.py`**
+- `load_user_pref()` extended: returns `original_profile_vector` (falls back to `pref_vec` when NULL), `recent_choices_raw`, `recent_choices_vecs`
+- `save_user_pref()` extended: new optional params `recent_choices` and `original_profile_vector`; `COALESCE` in SQL makes `original_profile_vector` write-once (never overwritten by picks); `recent_choices` conditional-overwrite (only updates when a non-empty array is passed)
+
+**`gemini_flash_rag/recommend.py`**
+- New `three_way_blend(mood_vec, recent_vecs, original_vec, beta)` — implements the ramp formula
+- `recommend()`: two new optional params (`original_profile_vec`, `recent_choices_vecs`); uses `three_way_blend()` when `original_profile_vec` is not None, falls back to `blend_mood()` for pre-migration users
+- `BETA_WITH_MOOD` updated 0.5 → 0.8 (exp_09 result)
+
+### Pending
+
+- Apply Supabase migration to live database
+- Wire new fields through `fastapi/main.py`: `/predict` passes `original_profile_vec` and `recent_choices_vecs`; `/pick` prepends new dish embedding to `recent_choices` and trims to 5
