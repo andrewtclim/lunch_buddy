@@ -4,17 +4,22 @@ export type DishCard = {
   dish_name: string;
   dining_hall: string;
   reason: string;
+  distance_m: number | null;
 };
 
 export type PredictRequestBody = {
   mood?: string;
   date?: string;
+  latitude?: number;
+  longitude?: number;
+  radius_m?: number;
 };
 
 export type PredictResponseBody = {
   recommendations: DishCard[];
   alternatives: DishCard[];
   preference_summary: string;
+  halls_searched: string[] | null;
 };
 
 // --- /pick: tell the backend which dish the user chose ---

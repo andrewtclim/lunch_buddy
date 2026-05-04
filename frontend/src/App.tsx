@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import type { Session } from "@supabase/supabase-js";
 import { predict, pickDish } from "./api";
-import type { PredictResponseBody } from "./api";
+import type { PredictRequestBody, PredictResponseBody } from "./api";
 import AuthPage from "./AuthPage";
 import ProfilePage from "./ProfilePage";
 import TasteTuningPlaceholder from "./TasteTuningPlaceholder";
@@ -25,6 +25,9 @@ export default function App() {
   const [result, setResult] = useState<PredictResponseBody | null>(null);
   const [pickedDish, setPickedDish] = useState<string | null>(null);
   const [pickMsg, setPickMsg] = useState<string | null>(null);
+  const [userLocation, setUserLocation] = useState<{ lat: number; lon: number } | null>(null);
+  const [locationEnabled, setLocationEnabled] = useState(true);
+  const [locationStatus, setLocationStatus] = useState("detecting...");
 
   const userId = session?.user?.id ?? null;
 
@@ -56,6 +59,32 @@ export default function App() {
     setProfile(loadProfile(userId));
   }, [userId]);
 
+  // auto-detect location on mount; dev override via VITE_DEV_LOCATION env var
+  // usage: VITE_DEV_LOCATION=37.4248,-122.1655 npm run dev
+  useEffect(() => {
+    const devLoc = import.meta.env.VITE_DEV_LOCATION as string | undefined;
+    if (devLoc) {
+      const [lat, lon] = devLoc.split(",").map(Number);
+      if (!isNaN(lat) && !isNaN(lon)) {
+        setUserLocation({ lat, lon });
+        setLocationStatus("dev override");
+        return;
+      }
+    }
+    if (!navigator.geolocation) {
+      setLocationStatus("not available");
+      return;
+    }
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        setUserLocation({ lat: pos.coords.latitude, lon: pos.coords.longitude });
+        setLocationStatus("detected");
+      },
+      () => setLocationStatus("unavailable"),
+      { enableHighAccuracy: false, timeout: 5000 },
+    );
+  }, []);
+
   async function onRecommend(e: React.FormEvent) {
     e.preventDefault();
     setError(null);
@@ -63,9 +92,13 @@ export default function App() {
     setPickedDish(null);
     setPickMsg(null);
     setLoading(true);
-    const body = {
+    const body: PredictRequestBody = {
       mood: moodText.trim() || undefined,
     };
+    if (locationEnabled && userLocation) {
+      body.latitude = userLocation.lat;
+      body.longitude = userLocation.lon;
+    }
     try {
       const data = await predict(body, session?.access_token);
       setResult(data);
@@ -139,6 +172,12 @@ export default function App() {
     return <TasteTuningPlaceholder onBack={() => setView("profile")} />;
   }
 
+  // format distance for display: "350m" or "1.2km"
+  function formatDistance(m: number | null): string | null {
+    if (m === null) return null;
+    return m < 1000 ? `${m}m` : `${(m / 1000).toFixed(1)}km`;
+  }
+
   const displayLabel =
     profile.displayName.trim() ||
     session.user.email?.split("@")[0] ||
@@ -173,6 +212,16 @@ export default function App() {
           />
         </label>
 
+        <label className="location-toggle">
+          <input
+            type="checkbox"
+            checked={locationEnabled}
+            onChange={(e) => setLocationEnabled(e.target.checked)}
+          />
+          <span>Filter by nearby dining halls</span>
+          <span className="location-status">({locationStatus})</span>
+        </label>
+
         <button type="submit" className="primary" disabled={loading}>
           {loading ? "Finding dishes..." : "Get Recommendations"}
         </button>
@@ -190,6 +239,11 @@ export default function App() {
           <p className="preference-hint">
             Your taste profile: {result.preference_summary}
           </p>
+          {result.halls_searched && (
+            <p className="halls-hint">
+              Nearby halls: {result.halls_searched.join(", ")}
+            </p>
+          )}
 
           {pickMsg ? (
             // after picking: show only the chosen dish, centered
@@ -199,7 +253,12 @@ export default function App() {
                 .map((dish) => (
                   <div className="card dish-card picked" key={`${dish.dish_name}-${dish.dining_hall}`}>
                     <h3 className="dish-name">{dish.dish_name}</h3>
-                    <p className="dish-hall">{dish.dining_hall}</p>
+                    <p className="dish-hall">
+                      {dish.dining_hall}
+                      {formatDistance(dish.distance_m) && (
+                        <span className="dish-distance"> - {formatDistance(dish.distance_m)} away</span>
+                      )}
+                    </p>
                     <p className="dish-reason">{dish.reason}</p>
                     <p className="pick-msg">{pickMsg}</p>
                   </div>
@@ -218,7 +277,12 @@ export default function App() {
               {[...result.recommendations, ...result.alternatives].map((dish) => (
                 <div className="card dish-card" key={`${dish.dish_name}-${dish.dining_hall}`}>
                   <h3 className="dish-name">{dish.dish_name}</h3>
-                  <p className="dish-hall">{dish.dining_hall}</p>
+                  <p className="dish-hall">
+                    {dish.dining_hall}
+                    {formatDistance(dish.distance_m) && (
+                      <span className="dish-distance"> - {formatDistance(dish.distance_m)} away</span>
+                    )}
+                  </p>
                   <p className="dish-reason">{dish.reason}</p>
                   <button
                     type="button"
