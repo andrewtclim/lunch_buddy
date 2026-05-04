@@ -258,10 +258,11 @@ export default function App() {
     return <TasteTuningPlaceholder onBack={() => setView("profile")} />;
   }
 
-  // format distance for display: "350m" or "1.2km"
+  // format distance for display: "350ft" or "0.2mi"
   function formatDistance(m: number | null): string | null {
     if (m === null) return null;
-    return m < 1000 ? `${m}m` : `${(m / 1000).toFixed(1)}km`;
+    const ft = Math.round(m * 3.281);
+    return ft < 5280 ? `${ft}ft` : `${(ft / 5280).toFixed(1)}mi`;
   }
 
   const displayLabel =
