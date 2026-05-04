@@ -65,6 +65,61 @@ export async function pickDish(
   return data as PickResponseBody;
 }
 
+// --- /me/profile: lightweight profile check ---
+
+export async function checkProfile(
+  accessToken: string,
+): Promise<boolean> {
+  const res = await fetch(`${base}/me/profile`, {
+    headers: { Authorization: `Bearer ${accessToken}` },
+  });
+  if (!res.ok) return false;  // network/auth error -- assume no profile
+  const data = await res.json();
+  return data.has_profile === true;
+}
+
+// --- /onboard: first-time taste profile setup ---
+
+export type OnboardRequestBody = {
+  blurb: string;  // free-text signup description
+};
+
+export type OnboardResponseBody = {
+  status: string;
+  preference_summary: string;
+};
+
+export async function onboard(
+  body: OnboardRequestBody,
+  accessToken?: string | null,
+): Promise<OnboardResponseBody> {
+  const headers: Record<string, string> = { "Content-Type": "application/json" };
+  if (accessToken) {
+    headers.Authorization = `Bearer ${accessToken}`;
+  }
+
+  const res = await fetch(`${base}/onboard`, {
+    method: "POST",
+    headers,
+    body: JSON.stringify(body),
+  });
+  const text = await res.text();
+  let data: unknown = null;
+  try {
+    data = text ? JSON.parse(text) : null;
+  } catch {
+    throw new Error(`Invalid JSON from server (${res.status})`);
+  }
+  if (!res.ok) {
+    const detail =
+      typeof data === "object" && data !== null && "detail" in data
+        ? String((data as { detail: unknown }).detail)
+        : text || res.statusText;
+    throw new Error(detail);
+  }
+  return data as OnboardResponseBody;
+}
+
 // --- /predict: get recommendations ---
 
 export async function predict(

@@ -158,6 +158,84 @@ def test_pick_no_profile(mock_load):
 
 
 # ---------------------------------------------------------------------------
+# GET /me/profile
+# ---------------------------------------------------------------------------
+
+
+@patch("main.load_user_pref", return_value=_fake_profile)
+def test_me_profile_exists(mock_load):
+    # user with a profile should get {has_profile: true}
+    app.dependency_overrides[get_current_user] = _override_auth
+    try:
+        response = client.get("/me/profile", headers=_auth_header())
+        assert response.status_code == 200
+        assert response.json()["has_profile"] is True
+    finally:
+        app.dependency_overrides.pop(get_current_user, None)
+
+
+@patch("main.load_user_pref", return_value=None)
+def test_me_profile_missing(mock_load):
+    # user with no profile should get {has_profile: false}
+    app.dependency_overrides[get_current_user] = _override_auth
+    try:
+        response = client.get("/me/profile", headers=_auth_header())
+        assert response.status_code == 200
+        assert response.json()["has_profile"] is False
+    finally:
+        app.dependency_overrides.pop(get_current_user, None)
+
+
+def test_me_profile_no_auth():
+    # /me/profile without a bearer token should return 401
+    response = client.get("/me/profile")
+    assert response.status_code == 401
+
+
+# ---------------------------------------------------------------------------
+# POST /onboard
+# ---------------------------------------------------------------------------
+
+
+@patch("main.save_user_pref")
+@patch("main.summarize_preferences", return_value="Loves spicy noodles and garlic")
+@patch("main.get_embedding", return_value=_fake_vec)
+@patch("main.load_user_pref", return_value=None)
+def test_onboard_success(mock_load, mock_embed, mock_summarize, mock_save):
+    # happy path: new user submits blurb, gets profile created
+    app.dependency_overrides[get_current_user] = _override_auth
+    try:
+        payload = {"blurb": "I love spicy noodles and garlic chicken"}
+        response = client.post("/onboard", json=payload, headers=_auth_header())
+        assert response.status_code == 200
+        body = response.json()
+        assert body["status"] == "ok"
+        assert body["preference_summary"] == "Loves spicy noodles and garlic"
+        mock_save.assert_called_once()
+    finally:
+        app.dependency_overrides.pop(get_current_user, None)
+
+
+@patch("main.load_user_pref", return_value=_fake_profile)
+def test_onboard_already_exists(mock_load):
+    # user who already has a profile should get 409
+    app.dependency_overrides[get_current_user] = _override_auth
+    try:
+        payload = {"blurb": "I love spicy noodles"}
+        response = client.post("/onboard", json=payload, headers=_auth_header())
+        assert response.status_code == 409
+    finally:
+        app.dependency_overrides.pop(get_current_user, None)
+
+
+def test_onboard_no_auth():
+    # /onboard without a bearer token should return 401
+    payload = {"blurb": "I love spicy noodles"}
+    response = client.post("/onboard", json=payload)
+    assert response.status_code == 401
+
+
+# ---------------------------------------------------------------------------
 # POST /predict -- location filtering
 # ---------------------------------------------------------------------------
 
