@@ -229,24 +229,42 @@ def get_available_dates(table: str = "backfill_menu") -> list[str]:
 
 
 def retrieve_dishes(
-    query_vec: np.ndarray, date_str: str, table: str = "daily_menu", limit: int = 20
+    query_vec: np.ndarray,
+    date_str: str,
+    table: str = "daily_menu",
+    limit: int = 20,
+    halls: list[str] | None = None,
 ) -> list[dict]:
     # cosine search the given table for today's dishes ranked by similarity to query_vec
     # table defaults to "daily_menu" (production) but can be set to "backfill_menu"
     # (experiment data) -- same schema, so the query works for both
+    # halls: optional list of dining hall names to restrict the search to (location filter)
     conn = _get_pool().getconn()
     try:
         cur = conn.cursor()
-        cur.execute(
-            f"""
-            SELECT dish_name, dining_hall, meal_time, allergens, ingredients
-            FROM {table}
-            WHERE date_served = %s
-            ORDER BY embedding <=> %s::vector
-            LIMIT %s;
-        """,
-            (date_str, query_vec.tolist(), limit),
-        )
+        if halls:
+            # restrict cosine search to only the specified dining halls
+            cur.execute(
+                f"""
+                SELECT dish_name, dining_hall, meal_time, allergens, ingredients
+                FROM {table}
+                WHERE date_served = %s AND dining_hall = ANY(%s)
+                ORDER BY embedding <=> %s::vector
+                LIMIT %s;
+            """,
+                (date_str, halls, query_vec.tolist(), limit),
+            )
+        else:
+            cur.execute(
+                f"""
+                SELECT dish_name, dining_hall, meal_time, allergens, ingredients
+                FROM {table}
+                WHERE date_served = %s
+                ORDER BY embedding <=> %s::vector
+                LIMIT %s;
+            """,
+                (date_str, query_vec.tolist(), limit),
+            )
         rows = cur.fetchall()
         cur.close()
     finally:
@@ -531,6 +549,7 @@ def recommend(
     top_k_gemini: int = 20,  # candidates passed to Gemini after dedup/filter
     original_profile_vec: np.ndarray | None = None,  # signup embedding (3-vector)
     recent_choices_vecs: list[np.ndarray] | None = None,  # last ≤5 picks (3-vector)
+    halls: list[str] | None = None,  # restrict to these dining halls (location filter)
 ) -> tuple[list[dict], list[dict], np.ndarray]:
     # runs the full pipeline and returns (recs, alts, query_vec):
     #   recs/alts:  recommendation and alternative dicts from Gemini
@@ -565,7 +584,7 @@ def recommend(
     # wider funnel (default 80) gives dedup more to work with -- backfill_menu
     # stores ~10 rows per unique dish (one per station), so 80 raw → ~15-20 unique
     candidates = retrieve_dishes(
-        query_vec, date_str, table=table, limit=top_k_retrieval
+        query_vec, date_str, table=table, limit=top_k_retrieval, halls=halls
     )
 
     # step 3 -- clean up: remove station labels, allergen conflicts, duplicates

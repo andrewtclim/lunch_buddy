@@ -94,6 +94,9 @@ _fake_profile = {
     "preference_vector": _fake_vec.copy(),
     "preference_summary": "Likes spicy food",
     "allergens": ["shellfish"],
+    "original_profile_vector": _fake_vec.copy(),
+    "recent_choices_raw": [],
+    "recent_choices_vecs": [],
 }
 
 
@@ -230,3 +233,64 @@ def test_onboard_no_auth():
     payload = {"blurb": "I love spicy noodles"}
     response = client.post("/onboard", json=payload)
     assert response.status_code == 401
+
+
+# ---------------------------------------------------------------------------
+# POST /predict -- location filtering
+# ---------------------------------------------------------------------------
+
+# fake recs/alts returned by recommend()
+_fake_recs = [{"dish_name": "Pad Thai", "dining_hall": "Arrillaga", "reason": "great"}]
+_fake_alts = [{"dish_name": "Salad", "dining_hall": "Stern", "reason": "fresh"}]
+
+
+@patch("main.recommend", return_value=(_fake_recs, _fake_alts, _fake_vec))
+@patch("main.filter_nearby_halls", return_value=["Arrillaga", "Stern Dining"])
+@patch("main.load_user_pref", return_value=_fake_profile)
+def test_predict_with_location(mock_load, mock_halls, mock_rec):
+    # when lat/lon provided, halls_searched should be populated
+    app.dependency_overrides[get_current_user] = _override_auth
+    try:
+        payload = {"latitude": 37.4248, "longitude": -122.1655}
+        response = client.post("/predict", json=payload, headers=_auth_header())
+        assert response.status_code == 200
+        body = response.json()
+        assert body["halls_searched"] == ["Arrillaga", "Stern Dining"]
+        # verify filter_nearby_halls was called with the coordinates
+        mock_halls.assert_called_once_with(37.4248, -122.1655, 800.0)
+    finally:
+        app.dependency_overrides.pop(get_current_user, None)
+
+
+@patch("main.recommend", return_value=(_fake_recs, _fake_alts, _fake_vec))
+@patch("main.load_user_pref", return_value=_fake_profile)
+def test_predict_without_location(mock_load, mock_rec):
+    # when no lat/lon, halls_searched should be null (all halls searched)
+    app.dependency_overrides[get_current_user] = _override_auth
+    try:
+        payload = {"mood": "something spicy"}
+        response = client.post("/predict", json=payload, headers=_auth_header())
+        assert response.status_code == 200
+        body = response.json()
+        assert body["halls_searched"] is None
+    finally:
+        app.dependency_overrides.pop(get_current_user, None)
+
+
+@patch("main.recommend", return_value=(_fake_recs, _fake_alts, _fake_vec))
+@patch("main.filter_nearby_halls", return_value=[])
+@patch("main.load_user_pref", return_value=_fake_profile)
+def test_predict_no_nearby_halls(mock_load, mock_halls, mock_rec):
+    # when no halls are nearby, should fall back to all halls (halls=None)
+    app.dependency_overrides[get_current_user] = _override_auth
+    try:
+        payload = {"latitude": 40.0, "longitude": -74.0}
+        response = client.post("/predict", json=payload, headers=_auth_header())
+        assert response.status_code == 200
+        body = response.json()
+        assert body["halls_searched"] is None
+        # recommend should have been called with halls=None
+        _, kwargs = mock_rec.call_args
+        assert kwargs.get("halls") is None
+    finally:
+        app.dependency_overrides.pop(get_current_user, None)

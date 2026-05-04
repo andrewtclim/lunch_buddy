@@ -9,11 +9,12 @@ from urllib.request import urlopen
 from contextlib import asynccontextmanager
 from typing import Any, Optional
 
-# make models/gemini_flash_rag importable from fastapi/
+# make models/gemini_flash_rag and project root importable from fastapi/
 sys.path.insert(
     0,
     os.path.join(os.path.dirname(__file__), "..", "models", "gemini_flash_rag"),
 )
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 from recommend import (
     recommend,
     fetch_dish_embedding,
@@ -22,6 +23,8 @@ from recommend import (
     summarize_preferences,
 )  # noqa: E402
 from user_prefs import load_user_pref, save_user_pref  # noqa: E402
+from location_filter.proximity import filter_nearby_halls, haversine_distance  # noqa: E402
+from location_filter.hall_coords import get_coords  # noqa: E402
 
 from fastapi import Depends, FastAPI, HTTPException
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
@@ -118,18 +121,23 @@ app.add_middleware(
 class PredictRequest(BaseModel):
     mood: Optional[str] = None  # free-text mood for today, e.g. "something spicy"
     date: Optional[str] = None  # "YYYY-MM-DD"; defaults to today server-side if omitted
+    latitude: Optional[float] = None  # user's lat from browser Geolocation
+    longitude: Optional[float] = None  # user's lon from browser Geolocation
+    radius_m: Optional[float] = None  # walking radius in meters (default 800)
 
 
 class DishCard(BaseModel):
     dish_name: str  # e.g. "Gochujang Spiced Chicken"
     dining_hall: str  # e.g. "Arrillaga"
     reason: str  # one-sentence explanation from Gemini
+    distance_m: float | None = None  # meters from user, if location provided
 
 
 class PredictResponse(BaseModel):
     recommendations: list[DishCard]  # top 3 matches
     alternatives: list[DishCard]  # 2 diverse alternatives
     preference_summary: str  # user's current taste profile sentence
+    halls_searched: list[str] | None = None  # nearby halls used, or null = all halls
 
 
 def _fetch_jwks() -> dict[str, Any]:
@@ -230,7 +238,15 @@ def predict(
     # 2. default date to today if client didn't send one
     date_str = body.date or date.today().isoformat()
 
-    # 3. call the real recommendation pipeline
+    # 3. resolve nearby halls from user's location (if provided)
+    halls = None
+    if body.latitude is not None and body.longitude is not None:
+        radius = body.radius_m or 800.0
+        halls = filter_nearby_halls(body.latitude, body.longitude, radius)
+        if not halls:
+            halls = None  # no nearby halls = search all
+
+    # 4. call the real recommendation pipeline
     recs, alts, _query_vec = recommend(
         pref_vec=profile["preference_vector"],
         preference_summary=profile["preference_summary"],
@@ -240,13 +256,24 @@ def predict(
         table="daily_menu",
         original_profile_vec=profile["original_profile_vector"],
         recent_choices_vecs=profile["recent_choices_vecs"],
+        halls=halls,
     )
 
-    # 4. return structured response -- no EMA update here (deferred to /pick)
+    # 5. attach distance to each dish card if user sent location
+    def _with_distance(dish: dict) -> dict:
+        if body.latitude is not None and body.longitude is not None:
+            coords = get_coords(dish["dining_hall"])
+            if coords:
+                dist = haversine_distance(body.latitude, body.longitude, coords[0], coords[1])
+                return {**dish, "distance_m": round(dist)}
+        return dish
+
+    # 6. return structured response -- no EMA update here (deferred to /pick)
     return PredictResponse(
-        recommendations=[DishCard(**d) for d in recs],
-        alternatives=[DishCard(**d) for d in alts],
+        recommendations=[DishCard(**_with_distance(d)) for d in recs],
+        alternatives=[DishCard(**_with_distance(d)) for d in alts],
         preference_summary=profile["preference_summary"],
+        halls_searched=halls,
     )
 
 
