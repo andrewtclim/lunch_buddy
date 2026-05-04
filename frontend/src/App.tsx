@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import type { Session } from "@supabase/supabase-js";
-import { predict, pickDish } from "./api";
+import { predict, pickDish, onboard, checkProfile } from "./api";
 import type { PredictResponseBody } from "./api";
 import AuthPage from "./AuthPage";
 import ProfilePage from "./ProfilePage";
@@ -25,6 +25,10 @@ export default function App() {
   const [result, setResult] = useState<PredictResponseBody | null>(null);
   const [pickedDish, setPickedDish] = useState<string | null>(null);
   const [pickMsg, setPickMsg] = useState<string | null>(null);
+  const [needsOnboarding, setNeedsOnboarding] = useState<boolean | null>(null);
+  const [onboardBlurb, setOnboardBlurb] = useState("");
+  const [onboardLoading, setOnboardLoading] = useState(false);
+  const [onboardError, setOnboardError] = useState<string | null>(null);
 
   const userId = session?.user?.id ?? null;
 
@@ -56,6 +60,31 @@ export default function App() {
     setProfile(loadProfile(userId));
   }, [userId]);
 
+  // check if the logged-in user has a profile yet
+  useEffect(() => {
+    const token = session?.access_token;
+    if (!token) {
+      setNeedsOnboarding(null);
+      return;
+    }
+    checkProfile(token).then((has) => setNeedsOnboarding(!has));
+  }, [session?.access_token]);
+
+  async function onOnboard(e: React.FormEvent) {
+    e.preventDefault();
+    if (!onboardBlurb.trim()) return;
+    setOnboardLoading(true);
+    setOnboardError(null);
+    try {
+      await onboard({ blurb: onboardBlurb.trim() }, session?.access_token);
+      setNeedsOnboarding(false);
+    } catch (err) {
+      setOnboardError(err instanceof Error ? err.message : "Onboarding failed");
+    } finally {
+      setOnboardLoading(false);
+    }
+  }
+
   async function onRecommend(e: React.FormEvent) {
     e.preventDefault();
     setError(null);
@@ -70,7 +99,12 @@ export default function App() {
       const data = await predict(body, session?.access_token);
       setResult(data);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Request failed");
+      const msg = err instanceof Error ? err.message : "Request failed";
+      if (msg.includes("taste profile")) {
+        setNeedsOnboarding(true);
+        return;
+      }
+      setError(msg);
     } finally {
       setLoading(false);
     }
@@ -119,6 +153,58 @@ export default function App() {
         <div className="card message">
           <p>Missing user session.</p>
         </div>
+      </div>
+    );
+  }
+
+  if (needsOnboarding === null) {
+    return (
+      <div className="app">
+        <div className="card message">
+          <p>Loading your profile...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (needsOnboarding) {
+    return (
+      <div className="app">
+        <header className="header">
+          <h1>Lunch Buddy</h1>
+          <p className="tagline">Welcome! Tell us what you like to eat.</p>
+        </header>
+
+        <form className="card" onSubmit={onOnboard}>
+          <h2 className="home-prompt">Set up your taste profile</h2>
+          <label className="field">
+            <span className="label">
+              Describe your food preferences in a sentence or two
+            </span>
+            <textarea
+              name="blurb"
+              rows={4}
+              placeholder="e.g. I love spicy noodles, grilled chicken, and anything with garlic. Not a fan of seafood."
+              value={onboardBlurb}
+              onChange={(e) => setOnboardBlurb(e.target.value)}
+            />
+          </label>
+
+          <button
+            type="submit"
+            className="primary"
+            disabled={onboardLoading || !onboardBlurb.trim()}
+          >
+            {onboardLoading ? "Setting up..." : "Save & Continue"}
+          </button>
+        </form>
+
+        {onboardError && (
+          <div className="card message error" role="alert">
+            <strong>Error</strong>
+            <p>{onboardError}</p>
+          </div>
+        )}
       </div>
     );
   }
