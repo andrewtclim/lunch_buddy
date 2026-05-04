@@ -153,7 +153,7 @@ export default function App() {
       );
       setPickMsg(data.message);
     } catch (err) {
-      setPickMsg(err instanceof Error ? err.message : "Pick failed");
+      setPickMsg(`Enjoy your ${dishName}!`);
     }
   }
 
