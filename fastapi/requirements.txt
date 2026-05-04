@@ -8,3 +8,8 @@ google-cloud-storage==3.10.1
 pydantic==2.12.5
 python-dotenv==1.0.1
 python-jose[cryptography]==3.3.0
+
+# pipeline deps (recommend.py, user_prefs.py)
+google-genai>=1.0.0
+psycopg2-binary==2.9.10
+numpy>=1.26.0

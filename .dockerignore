@@ -1,0 +1,15 @@
+__pycache__/
+*.pyc
+.env
+.git/
+.github/
+frontend/
+scraper/
+tests/
+models/experiments/
+*.md
+.DS_Store
+.vscode/
+.claude/
+.playwright-mcp/
+node_modules/

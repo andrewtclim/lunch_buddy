@@ -1,0 +1,25 @@
+FROM python:3.11-slim
+
+ENV PYTHONUNBUFFERED=1
+
+WORKDIR /app
+
+# system deps for psycopg2
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    build-essential libpq-dev \
+  && rm -rf /var/lib/apt/lists/*
+
+# install Python deps
+COPY fastapi/requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+# copy only the directories the API needs
+COPY fastapi/ ./fastapi/
+COPY models/gemini_flash_rag/ ./models/gemini_flash_rag/
+COPY location_filter/ ./location_filter/
+
+WORKDIR /app/fastapi
+
+EXPOSE 8080
+
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8080"]
