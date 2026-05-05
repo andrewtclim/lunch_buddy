@@ -1,9 +1,48 @@
+/* ── Google Fonts ── */
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Space+Mono:wght@400;700&display=swap');
+
 :root {
-  font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+  /* ── palette ── */
+  --color-base:       #EDEAE3;
+  --color-surface:    #FFFFFF;
+  --color-surface-2:  #EDE9E0;
+  --color-border:     #D5CFC4;
+  --color-red:        #E63946;
+  --color-red-hover:  #C42D39;
+  --color-violet:     #6B3FA0;
+  --color-violet-hover:#5A3488;
+  --color-green:      #6DBE45;
+  --color-green-hover:#5AA838;
+  --color-text:       #2D2A26;
+  --color-text-muted: #7A7572;
+  --color-success:    #6DBE45;
+  --color-error:      #E63946;
+
+  /* ── typography ── */
+  --font-display: 'Bebas Neue', sans-serif;
+  --font-mono:    'Space Mono', monospace;
+  --font-body:    'Space Mono', monospace;
+
+  /* ── shadows ── */
+  --shadow-hard:       4px 4px 0 var(--color-violet);
+  --shadow-hard-red:   4px 4px 0 var(--color-red);
+  --shadow-hard-green: 4px 4px 0 var(--color-green);
+
+  /* ── borders ── */
+  --border:          2px solid var(--color-border);
+  --border-red:      2px solid var(--color-red);
+  --border-violet:   2px solid var(--color-violet);
+  --border-green:    2px solid var(--color-green);
+  --radius:          4px;
+
+  /* ── transitions ── */
+  --ease-snap: 120ms ease-out;
+
+  font-family: var(--font-body);
   line-height: 1.5;
   font-weight: 400;
-  color: #1a1a1a;
-  background-color: #f6f7f9;
+  color: var(--color-text);
+  background-color: var(--color-base);
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;

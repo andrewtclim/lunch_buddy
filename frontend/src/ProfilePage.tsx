@@ -1,152 +1,147 @@
 import { useEffect, useState } from "react";
-import {
-  PROFILE_ALLERGEN_OPTIONS,
-  PROFILE_ALLERGEN_OPTIONS_EXTRA,
-  PROFILE_DIET_OPTIONS,
-  PROFILE_DIET_OPTIONS_EXTRA,
-} from "./profileOptions";
-import { loadProfile, saveProfile } from "./profileStorage";
-import type { ProfileState } from "./profileTypes";
-
-function toggleInList(list: string[], value: string): string[] {
-  if (list.includes(value)) return list.filter((x) => x !== value);
-  return [...list, value];
-}
+import { PROFILE_ALLERGEN_OPTIONS, PROFILE_DIET_OPTIONS } from "./profileOptions";
+import { updateAllergens } from "./api";
 
 type ProfilePageProps = {
   userId: string;
   email: string | undefined;
+  accessToken?: string | null;
   onBack: () => void;
-  onOpenTasteTuning: () => void;
-  onProfileSaved?: (state: ProfileState) => void;
 };
 
 export default function ProfilePage({
   userId,
   email,
+  accessToken,
   onBack,
-  onOpenTasteTuning,
-  onProfileSaved,
 }: ProfilePageProps) {
   const [displayName, setDisplayName] = useState("");
   const [allergens, setAllergens] = useState<string[]>([]);
   const [diets, setDiets] = useState<string[]>([]);
+  const [saving, setSaving] = useState(false);
   const [savedHint, setSavedHint] = useState(false);
 
   useEffect(() => {
-    const p = loadProfile(userId);
-    setDisplayName(p.displayName);
-    setAllergens(p.allergens);
-    setDiets(p.diets);
+    try {
+      const raw = localStorage.getItem(`lunchBuddy.profile.${userId}`);
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        setDisplayName(parsed.displayName || "");
+        setAllergens(parsed.allergens || []);
+        setDiets(parsed.diets || []);
+      }
+    } catch { /* ignore */ }
   }, [userId]);
 
-  function persist(next: ProfileState, showNameSavedHint: boolean) {
-    saveProfile(userId, next);
-    onProfileSaved?.(next);
-    if (showNameSavedHint) {
+  function persistLocal(nextAllergens: string[], nextDiets: string[], nextName: string) {
+    localStorage.setItem(
+      `lunchBuddy.profile.${userId}`,
+      JSON.stringify({ displayName: nextName, allergens: nextAllergens, diets: nextDiets }),
+    );
+  }
+
+  function toggleAllergen(value: string) {
+    const next = allergens.includes(value)
+      ? allergens.filter((x) => x !== value)
+      : [...allergens, value];
+    setAllergens(next);
+    persistLocal(next, diets, displayName);
+  }
+
+  async function saveAllergens() {
+    setSaving(true);
+    try {
+      await updateAllergens(allergens, accessToken);
       setSavedHint(true);
-      window.setTimeout(() => setSavedHint(false), 2000);
-    }
+      setTimeout(() => setSavedHint(false), 2000);
+    } catch { /* silent fail */ }
+    finally { setSaving(false); }
   }
 
-  function handleSaveDisplayName(e: React.FormEvent) {
+  function toggleDiet(value: string) {
+    const next = diets.includes(value)
+      ? diets.filter((x) => x !== value)
+      : [...diets, value];
+    setDiets(next);
+    persistLocal(allergens, next, displayName);
+    // TODO: sync dietary restrictions to backend once pipeline supports them
+  }
+
+  function saveDisplayName(e: React.FormEvent) {
     e.preventDefault();
-    persist({ displayName, allergens, diets }, true);
+    persistLocal(allergens, diets, displayName.trim());
+    setSavedHint(true);
+    setTimeout(() => setSavedHint(false), 2000);
+    // TODO: sync display name to profiles table in Supabase
   }
-
-  function handleAllergenToggle(value: string) {
-    const nextAllergens = toggleInList(allergens, value);
-    setAllergens(nextAllergens);
-    persist({ displayName, allergens: nextAllergens, diets }, false);
-  }
-
-  function handleDietToggle(value: string) {
-    const nextDiets = toggleInList(diets, value);
-    setDiets(nextDiets);
-    persist({ displayName, allergens, diets: nextDiets }, false);
-  }
-
-  const allergenChoices = [...PROFILE_ALLERGEN_OPTIONS, ...PROFILE_ALLERGEN_OPTIONS_EXTRA];
-  const dietChoices = [...PROFILE_DIET_OPTIONS, ...PROFILE_DIET_OPTIONS_EXTRA];
 
   return (
-    <div className="app">
-      <header className="header">
-        <button type="button" className="link-back" onClick={onBack}>
-          ← Back to lunch
-        </button>
-        <h1>Your profile</h1>
-        <p className="tagline">
-          {email ? <span className="muted">{email}</span> : null}
-        </p>
-      </header>
+    <div className="auth-page">
+      <div className="auth-container profile-container">
+        <h1 className="auth-title">Your Profile</h1>
+        <p className="auth-subtitle">{email}</p>
 
-      <form className="card profile-section" onSubmit={handleSaveDisplayName}>
-        <h2 className="section-title">Display name</h2>
-        <p className="section-help">Shown in the app; synced to your account when backend storage is wired up.</p>
-        <label className="field">
-          <span className="label">Name</span>
+        <form className="profile-section-styled" onSubmit={saveDisplayName}>
+          <span className="auth-label">Display name</span>
           <input
+            className="profile-input"
             type="text"
-            autoComplete="nickname"
-            placeholder="How should we call you?"
+            placeholder="What should we call you?"
             value={displayName}
             onChange={(e) => setDisplayName(e.target.value)}
           />
-        </label>
-        <button type="submit" className="primary">
-          Save display name
-        </button>
-        {savedHint && (
-          <p className="saved-hint" role="status">
-            Saved locally on this device.
-          </p>
-        )}
-      </form>
+          <button type="submit" className="profile-save-btn">Save</button>
+        </form>
 
-      <section className="card profile-section">
-        <h2 className="section-title">Allergens</h2>
-        <p className="section-help">We’ll use these to filter recommendations. More options may be added later.</p>
-        <div className="chips chips-extended">
-          {allergenChoices.map((opt) => (
-            <label key={opt} className="chip">
-              <input
-                type="checkbox"
-                checked={allergens.includes(opt)}
-                onChange={() => handleAllergenToggle(opt)}
-              />
-              <span>{opt}</span>
-            </label>
-          ))}
+        <div className="profile-section-styled">
+          <span className="auth-label">Allergens</span>
+          <p className="profile-help">We filter these out of your recommendations</p>
+          <div className="onboard-chips">
+            {PROFILE_ALLERGEN_OPTIONS.map((opt) => (
+              <button
+                key={opt}
+                type="button"
+                className={`onboard-chip ${allergens.includes(opt) ? "active" : ""}`}
+                onClick={() => toggleAllergen(opt)}
+              >
+                {opt}
+              </button>
+            ))}
+          </div>
+          <button
+            type="button"
+            className="profile-save-btn"
+            onClick={saveAllergens}
+            disabled={saving}
+          >
+            {saving ? "Saving..." : "Save allergens"}
+          </button>
         </div>
-      </section>
 
-      <section className="card profile-section">
-        <h2 className="section-title">Dietary restrictions</h2>
-        <p className="section-help">Vegetarian, vegan, halal — additional diets can be added over time.</p>
-        <div className="chips chips-extended">
-          {dietChoices.map((opt) => (
-            <label key={opt} className="chip">
-              <input
-                type="checkbox"
-                checked={diets.includes(opt)}
-                onChange={() => handleDietToggle(opt)}
-              />
-              <span>{opt}</span>
-            </label>
-          ))}
+        <div className="profile-section-styled">
+          <span className="auth-label">Dietary restrictions</span>
+          <div className="onboard-chips">
+            {PROFILE_DIET_OPTIONS.map((opt) => (
+              <button
+                key={opt}
+                type="button"
+                className={`onboard-chip ${diets.includes(opt) ? "active" : ""}`}
+                onClick={() => toggleDiet(opt)}
+              >
+                {opt}
+              </button>
+            ))}
+          </div>
         </div>
-      </section>
 
-      <section className="card profile-section placeholder-section">
-        <h2 className="section-title">Taste profile</h2>
-        <p className="section-help">
-          Soon you’ll be able to run a short exercise to initialize or tune your preference vector from a few choices.
-        </p>
-        <button type="button" className="link-standalone" onClick={onOpenTasteTuning}>
-          Tune your taste profile →
-        </button>
-      </section>
+        {savedHint && <p className="profile-saved">Saved</p>}
+
+        <div className="profile-actions">
+          <button type="button" className="secondary" onClick={onBack}>
+            Back to lunch
+          </button>
+        </div>
+      </div>
     </div>
   );
 }

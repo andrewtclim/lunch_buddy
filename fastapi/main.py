@@ -22,7 +22,7 @@ from recommend import (
     update_preference_vector,
     summarize_preferences,
 )  # noqa: E402
-from user_prefs import load_user_pref, save_user_pref  # noqa: E402
+from user_prefs import load_user_pref, save_user_pref, update_allergens  # noqa: E402
 from location_filter.proximity import filter_nearby_halls, haversine_distance  # noqa: E402
 from location_filter.hall_coords import get_coords  # noqa: E402
 
@@ -379,6 +379,7 @@ def me_profile(
 
 class OnboardRequest(BaseModel):
     blurb: str  # free-text signup description, e.g. "I love spicy noodles"
+    allergens: list[str] = []  # e.g. ["Egg", "Milk", "Shellfish"]
 
 
 class OnboardResponse(BaseModel):
@@ -411,7 +412,7 @@ def onboard(
         user_id=current_user.user_id,
         pref_vec=pref_vec,
         preference_summary=preference_summary,
-        allergens=[],  # allergens synced separately (future)
+        allergens=body.allergens,
         original_profile_vector=pref_vec,  # write-once baseline
     )
 
@@ -419,3 +420,28 @@ def onboard(
         status="ok",
         preference_summary=preference_summary,
     )
+
+
+# ---------------------------------------------------------------------------
+# PUT /me/allergens -- update allergens for the current user
+# ---------------------------------------------------------------------------
+
+
+class UpdateAllergensRequest(BaseModel):
+    allergens: list[str]
+
+
+class UpdateAllergensResponse(BaseModel):
+    status: str
+    allergens: list[str]
+
+
+@app.put("/me/allergens", response_model=UpdateAllergensResponse)
+def put_allergens(
+    body: UpdateAllergensRequest,
+    current_user: AuthenticatedUser = Depends(get_current_user),
+) -> UpdateAllergensResponse:
+    updated = update_allergens(current_user.user_id, body.allergens)
+    if not updated:
+        raise HTTPException(status_code=422, detail="No profile found. Complete onboarding first.")
+    return UpdateAllergensResponse(status="ok", allergens=body.allergens)

@@ -82,6 +82,7 @@ export async function checkProfile(
 
 export type OnboardRequestBody = {
   blurb: string;  // free-text signup description
+  allergens?: string[];  // e.g. ["Egg", "Milk"]
 };
 
 export type OnboardResponseBody = {
@@ -118,6 +119,29 @@ export async function onboard(
     throw new Error(detail);
   }
   return data as OnboardResponseBody;
+}
+
+// --- PUT /me/allergens: update allergens ---
+
+export async function updateAllergens(
+  allergens: string[],
+  accessToken?: string | null,
+): Promise<{ status: string; allergens: string[] }> {
+  const headers: Record<string, string> = { "Content-Type": "application/json" };
+  if (accessToken) {
+    headers.Authorization = `Bearer ${accessToken}`;
+  }
+
+  const res = await fetch(`${base}/me/allergens`, {
+    method: "PUT",
+    headers,
+    body: JSON.stringify({ allergens }),
+  });
+  if (!res.ok) {
+    const text = await res.text();
+    throw new Error(text || res.statusText);
+  }
+  return res.json();
 }
 
 // --- /predict: get recommendations ---
