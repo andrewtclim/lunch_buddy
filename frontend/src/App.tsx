@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import type { Session } from "@supabase/supabase-js";
+import { Analytics } from "@vercel/analytics/react";
 import { predict, pickDish, onboard, checkProfile } from "./api";
 import type { PredictRequestBody, PredictResponseBody } from "./api";
 import AuthPage from "./AuthPage";
@@ -385,6 +386,7 @@ export default function App() {
           )}
         </>
       )}
+      <Analytics />
     </div>
   );
 }
