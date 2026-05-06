@@ -24,7 +24,7 @@ An LLM agent surfaces a ranked top-3 recommendation, personalized to you and upd
 
 ## Demo Video
 
-![Lunch Buddy Demo](demo/app_demo_1.gif)
+![Lunch Buddy Demo](demo/app_demo_2.gif)
 
 ---
 ## System Overview
