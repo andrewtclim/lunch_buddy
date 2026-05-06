@@ -1,0 +1,50 @@
+name: Deploy Backend to Cloud Run
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "fastapi/**"
+      - "models/gemini_flash_rag/**"
+      - "location_filter/**"
+      - "Dockerfile.cloudrun"
+      - ".dockerignore"
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Authenticate to Google Cloud
+        run: |
+          echo "${{ secrets.GCP_SA_KEY }}" | base64 --decode > /tmp/gcp-key.json
+          echo "GOOGLE_APPLICATION_CREDENTIALS=/tmp/gcp-key.json" >> $GITHUB_ENV
+
+      - name: Configure Docker for Artifact Registry
+        run: |
+          gcloud auth activate-service-account --key-file=/tmp/gcp-key.json
+          gcloud auth configure-docker us-central1-docker.pkg.dev --quiet
+
+      - name: Build Docker image
+        run: |
+          docker build --platform linux/amd64 \
+            -f Dockerfile.cloudrun \
+            -t us-central1-docker.pkg.dev/lunch-buddy-491800/lunch-buddy/api:latest \
+            -t us-central1-docker.pkg.dev/lunch-buddy-491800/lunch-buddy/api:${{ github.sha }} \
+            .
+
+      - name: Push to Artifact Registry
+        run: |
+          docker push us-central1-docker.pkg.dev/lunch-buddy-491800/lunch-buddy/api:latest
+          docker push us-central1-docker.pkg.dev/lunch-buddy-491800/lunch-buddy/api:${{ github.sha }}
+
+      - name: Deploy to Cloud Run
+        run: |
+          gcloud run deploy lunch-buddy-api \
+            --image us-central1-docker.pkg.dev/lunch-buddy-491800/lunch-buddy/api:${{ github.sha }} \
+            --region us-central1 \
+            --project lunch-buddy-491800 \
+            --quiet
