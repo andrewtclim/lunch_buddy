@@ -36,57 +36,56 @@ export default function AuthPage({ onAuthSuccess }: AuthPageProps) {
   }
 
   return (
-    <div className="app">
-      <header className="header">
-        <h1>Lunch Buddy</h1>
-        <p className="tagline">Sign in to get personalized lunch recommendations.</p>
-      </header>
+    <div className="auth-page">
+      <div className="auth-container">
+        <h1 className="auth-title">Lunch Buddy</h1>
+        <p className="auth-subtitle">The friend that always knows where to go</p>
 
-      <form className="card" onSubmit={onSubmit}>
-        <h2>{mode === "signin" ? "Sign In" : "Create Account"}</h2>
+        <form className="auth-form" onSubmit={onSubmit}>
 
-        <label className="field">
-          <span className="label">Email</span>
-          <input
-            type="email"
-            autoComplete="email"
-            required
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-          />
-        </label>
+          <label className="auth-field">
+            <span className="auth-label">Email</span>
+            <input
+              type="email"
+              autoComplete="email"
+              required
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
+          </label>
 
-        <label className="field">
-          <span className="label">Password</span>
-          <input
-            type="password"
-            autoComplete={mode === "signin" ? "current-password" : "new-password"}
-            minLength={6}
-            required
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-          />
-        </label>
+          <label className="auth-field">
+            <span className="auth-label">Password</span>
+            <input
+              type="password"
+              autoComplete={mode === "signin" ? "current-password" : "new-password"}
+              minLength={6}
+              required
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+          </label>
 
-        <button type="submit" className="primary" disabled={loading}>
-          {loading ? "Working..." : mode === "signin" ? "Sign In" : "Create Account"}
-        </button>
+          <button type="submit" className="auth-submit" disabled={loading}>
+            {loading ? "Working..." : mode === "signin" ? "Sign In" : "Create Account"}
+          </button>
 
-        <button
-          type="button"
-          className="secondary"
-          onClick={() => setMode((m) => (m === "signin" ? "signup" : "signin"))}
-          disabled={loading}
-        >
-          {mode === "signin" ? "Need an account? Create one" : "Already have an account? Sign in"}
-        </button>
-      </form>
+          <button
+            type="button"
+            className="auth-toggle"
+            onClick={() => setMode((m) => (m === "signin" ? "signup" : "signin"))}
+            disabled={loading}
+          >
+            {mode === "signin" ? "Need an account? Create one" : "Already have an account? Sign in"}
+          </button>
+        </form>
 
-      {message && (
-        <div className="card message" role="status">
-          <p>{message}</p>
-        </div>
-      )}
+        {message && (
+          <div className="auth-message" role="status">
+            <p>{message}</p>
+          </div>
+        )}
+      </div>
     </div>
   );
 }

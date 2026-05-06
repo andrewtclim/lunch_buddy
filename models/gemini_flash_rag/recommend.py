@@ -327,8 +327,8 @@ def filter_allergens(dishes: list[dict], user_allergens: list[str]) -> list[dict
     # this runs before scoring; no similarity score can override an allergen conflict
     if not user_allergens:
         return dishes  # skip the check entirely if no allergens
-    user_set = set(user_allergens)
-    return [d for d in dishes if set(d["allergens"]).isdisjoint(user_set)]
+    user_set = {a.lower() for a in user_allergens}
+    return [d for d in dishes if {a.lower() for a in d["allergens"]}.isdisjoint(user_set)]
 
 
 def deduplicate(dishes: list[dict]) -> list[dict]:

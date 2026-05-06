@@ -7,6 +7,8 @@ import ProfilePage from "./ProfilePage";
 import TasteTuningPlaceholder from "./TasteTuningPlaceholder";
 import { loadProfile } from "./profileStorage";
 import type { ProfileState } from "./profileTypes";
+import { PROFILE_ALLERGEN_OPTIONS } from "./profileOptions";
+import DishCard from "./DishCard";
 import { supabase } from "./supabaseClient";
 import "./App.css";
 
@@ -27,9 +29,9 @@ export default function App() {
   const [pickMsg, setPickMsg] = useState<string | null>(null);
   const [userLocation, setUserLocation] = useState<{ lat: number; lon: number } | null>(null);
   const [locationEnabled, setLocationEnabled] = useState(true);
-  const [locationStatus, setLocationStatus] = useState("detecting...");
   const [needsOnboarding, setNeedsOnboarding] = useState<boolean | null>(null);
   const [onboardBlurb, setOnboardBlurb] = useState("");
+  const [onboardAllergens, setOnboardAllergens] = useState<string[]>([]);
   const [onboardLoading, setOnboardLoading] = useState(false);
   const [onboardError, setOnboardError] = useState<string | null>(null);
 
@@ -71,20 +73,15 @@ export default function App() {
       const [lat, lon] = devLoc.split(",").map(Number);
       if (!isNaN(lat) && !isNaN(lon)) {
         setUserLocation({ lat, lon });
-        setLocationStatus("dev override");
         return;
       }
     }
-    if (!navigator.geolocation) {
-      setLocationStatus("not available");
-      return;
-    }
+    if (!navigator.geolocation) return;
     navigator.geolocation.getCurrentPosition(
       (pos) => {
         setUserLocation({ lat: pos.coords.latitude, lon: pos.coords.longitude });
-        setLocationStatus("detected");
       },
-      () => setLocationStatus("unavailable"),
+      () => {},
       { enableHighAccuracy: false, timeout: 5000 },
     );
   }, []);
@@ -105,7 +102,7 @@ export default function App() {
     setOnboardLoading(true);
     setOnboardError(null);
     try {
-      await onboard({ blurb: onboardBlurb.trim() }, session?.access_token);
+      await onboard({ blurb: onboardBlurb.trim(), allergens: onboardAllergens }, session?.access_token);
       setNeedsOnboarding(false);
     } catch (err) {
       setOnboardError(err instanceof Error ? err.message : "Onboarding failed");
@@ -162,9 +159,6 @@ export default function App() {
     setView("home");
   }
 
-  function handleProfileSaved(next: ProfileState) {
-    setProfile(next);
-  }
 
   if (!authReady) {
     return (
@@ -201,43 +195,62 @@ export default function App() {
   }
 
   if (needsOnboarding) {
+    function toggleAllergen(value: string) {
+      setOnboardAllergens((prev) =>
+        prev.includes(value) ? prev.filter((x) => x !== value) : [...prev, value]
+      );
+    }
+
     return (
-      <div className="app">
-        <header className="header">
-          <h1>Lunch Buddy</h1>
-          <p className="tagline">Welcome! Tell us what you like to eat.</p>
-        </header>
+      <div className="auth-page">
+        <div className="auth-container onboard-container">
+          <h1 className="auth-title">Lunch Buddy</h1>
+          <p className="auth-subtitle">Tell us what you like to eat</p>
 
-        <form className="card" onSubmit={onOnboard}>
-          <h2 className="home-prompt">Set up your taste profile</h2>
-          <label className="field">
-            <span className="label">
-              Describe your food preferences in a sentence or two
-            </span>
-            <textarea
-              name="blurb"
-              rows={4}
-              placeholder="e.g. I love spicy noodles, grilled chicken, and anything with garlic. Not a fan of seafood."
-              value={onboardBlurb}
-              onChange={(e) => setOnboardBlurb(e.target.value)}
-            />
-          </label>
+          <form className="auth-form" onSubmit={onOnboard}>
+            <label className="auth-field">
+              <span className="auth-label">Describe your food preferences</span>
+              <textarea
+                className="onboard-textarea"
+                name="blurb"
+                rows={3}
+                placeholder="e.g. I love spicy noodles, grilled chicken, and anything with garlic."
+                value={onboardBlurb}
+                onChange={(e) => setOnboardBlurb(e.target.value)}
+              />
+            </label>
 
-          <button
-            type="submit"
-            className="primary"
-            disabled={onboardLoading || !onboardBlurb.trim()}
-          >
-            {onboardLoading ? "Setting up..." : "Save & Continue"}
-          </button>
-        </form>
+            <div className="onboard-section">
+              <span className="auth-label">Any allergens?</span>
+              <div className="onboard-chips">
+                {PROFILE_ALLERGEN_OPTIONS.map((opt) => (
+                  <button
+                    key={opt}
+                    type="button"
+                    className={`onboard-chip ${onboardAllergens.includes(opt) ? "active" : ""}`}
+                    onClick={() => toggleAllergen(opt)}
+                  >
+                    {opt}
+                  </button>
+                ))}
+              </div>
+            </div>
 
-        {onboardError && (
-          <div className="card message error" role="alert">
-            <strong>Error</strong>
-            <p>{onboardError}</p>
-          </div>
-        )}
+            <button
+              type="submit"
+              className="auth-submit"
+              disabled={onboardLoading || !onboardBlurb.trim()}
+            >
+              {onboardLoading ? "Setting up..." : "Save & Continue"}
+            </button>
+          </form>
+
+          {onboardError && (
+            <div className="auth-message" role="alert">
+              <p>{onboardError}</p>
+            </div>
+          )}
+        </div>
       </div>
     );
   }
@@ -247,22 +260,14 @@ export default function App() {
       <ProfilePage
         userId={userId}
         email={session.user.email}
+        accessToken={session.access_token}
         onBack={() => setView("home")}
-        onOpenTasteTuning={() => setView("tuning")}
-        onProfileSaved={handleProfileSaved}
       />
     );
   }
 
   if (view === "tuning") {
     return <TasteTuningPlaceholder onBack={() => setView("profile")} />;
-  }
-
-  // format distance for display: "350ft" or "0.2mi"
-  function formatDistance(m: number | null): string | null {
-    if (m === null) return null;
-    const ft = Math.round(m * 3.281);
-    return ft < 5280 ? `${ft}ft` : `${(ft / 5280).toFixed(1)}mi`;
   }
 
   const displayLabel =
@@ -274,7 +279,7 @@ export default function App() {
     <div className="app">
       <header className="header">
         <h1>Lunch Buddy</h1>
-        <p className="tagline">Hi, {displayLabel} — what sounds good today?</p>
+        <p className="tagline">{displayLabel}'s table</p>
         <div className="auth-row">
           <button type="button" className="link-inline" onClick={() => setView("profile")}>
             Profile
@@ -286,33 +291,74 @@ export default function App() {
         </div>
       </header>
 
-      {!pickMsg && <form className="card" onSubmit={onRecommend}>
-        <h2 className="home-prompt">What do you want for lunch?</h2>
-        <label className="field">
-          <span className="label">Your mood or cravings (optional)</span>
-          <textarea
-            name="mood"
-            rows={3}
-            placeholder="e.g. something spicy, light and warm, craving sushi..."
-            value={moodText}
-            onChange={(e) => setMoodText(e.target.value)}
-          />
-        </label>
+      {!result && !pickMsg && (
+        <form onSubmit={onRecommend}>
+          <div className="plate-wrapper">
+            {/* Fork */}
+            <svg className="plate-fork" viewBox="0 0 32 180" fill="none" xmlns="http://www.w3.org/2000/svg">
+              {/* Tines - slim pills with rounded ends */}
+              <rect x="9" y="6" width="3" height="44" rx="1.5" fill="#D0CCC5"/>
+              <rect x="10" y="6" width="1.5" height="44" rx="0.75" fill="#B8B4AD"/>
+              <rect x="13.5" y="6" width="3" height="44" rx="1.5" fill="#D0CCC5"/>
+              <rect x="14.5" y="6" width="1.5" height="44" rx="0.75" fill="#B8B4AD"/>
+              <rect x="18" y="6" width="3" height="44" rx="1.5" fill="#D0CCC5"/>
+              <rect x="19" y="6" width="1.5" height="44" rx="0.75" fill="#B8B4AD"/>
+              <rect x="22.5" y="6" width="3" height="44" rx="1.5" fill="#D0CCC5"/>
+              <rect x="23.5" y="6" width="1.5" height="44" rx="0.75" fill="#B8B4AD"/>
+              {/* Neck - narrow connector */}
+              <path d="M9 50 C9 60 13 66 16 66 C19 66 23 60 25.5 50" fill="#D0CCC5"/>
+              <path d="M16 50 C17 50 23 60 25.5 50" fill="#B8B4AD"/>
+              {/* Neck stem */}
+              <rect x="14" y="66" width="4" height="10" rx="2" fill="#D0CCC5"/>
+              <rect x="16" y="66" width="2" height="10" rx="1" fill="#B8B4AD"/>
+              {/* Handle - wider */}
+              <rect x="11" y="76" width="10" height="96" rx="5" fill="#D0CCC5"/>
+              <rect x="16" y="76" width="5" height="96" rx="2.5" fill="#B8B4AD"/>
+            </svg>
 
-        <label className="location-toggle">
-          <input
-            type="checkbox"
-            checked={locationEnabled}
-            onChange={(e) => setLocationEnabled(e.target.checked)}
-          />
-          <span>Filter by nearby dining halls</span>
-          <span className="location-status">({locationStatus})</span>
-        </label>
+            <div className="plate">
+              <div className="plate-inner">
+                <h2>What's on your mind?</h2>
+                <textarea
+                  name="mood"
+                  rows={3}
+                  placeholder="spicy, light, craving sushi..."
+                  value={moodText}
+                  onChange={(e) => setMoodText(e.target.value)}
+                />
+                <div className="plate-controls">
+                  <label className="location-toggle">
+                    <input
+                      type="checkbox"
+                      checked={locationEnabled}
+                      onChange={(e) => setLocationEnabled(e.target.checked)}
+                    />
+                    <span>Nearby halls only</span>
+                  </label>
+                  <button type="submit" className="primary" disabled={loading}>
+                    {loading ? "Finding..." : "Get Recs"}
+                  </button>
+                </div>
+              </div>
+            </div>
 
-        <button type="submit" className="primary" disabled={loading}>
-          {loading ? "Finding dishes..." : "Get Recommendations"}
-        </button>
-      </form>}
+            {/* Knife */}
+            <svg className="plate-knife" viewBox="0 0 32 180" fill="none" xmlns="http://www.w3.org/2000/svg">
+              {/* Blade - straight spine, wider and longer with gentle curve to tip */}
+              <path d="M12 4 L12 82 C12 82 13 84 16 84 C19 84 23 81 23 76 C23 66 22 46 21 28 C20 16 17 7 12 4 Z" fill="#D0CCC5"/>
+              <path d="M16 84 C19 84 23 81 23 76 C23 66 22 46 21 28 C20 16 17 7 12 4 L12 10 C15 16 18 28 19.5 46 C20.5 64 20 78 16 84 Z" fill="#B8B4AD"/>
+              {/* Spine line */}
+              <line x1="12" y1="4" x2="12" y2="84" stroke="#A8A49D" strokeWidth="0.5"/>
+              {/* Bolster */}
+              <rect x="12" y="84" width="8" height="6" rx="2" fill="#D0CCC5"/>
+              <rect x="16" y="84" width="4" height="6" rx="2" fill="#B8B4AD"/>
+              {/* Handle - wider */}
+              <rect x="11" y="90" width="10" height="82" rx="5" fill="#D0CCC5"/>
+              <rect x="16" y="90" width="5" height="82" rx="2.5" fill="#B8B4AD"/>
+            </svg>
+          </div>
+        </form>
+      )}
 
       {error && (
         <div className="card message error" role="alert">
@@ -323,30 +369,21 @@ export default function App() {
 
       {result && (
         <>
-          <p className="preference-hint">
-            Your taste profile: {result.preference_summary}
-          </p>
-          {result.halls_searched && (
-            <p className="halls-hint">
-              Nearby halls: {result.halls_searched.join(", ")}
+          {!pickMsg && (
+            <p className="preference-hint">
+              Here are some options nearby you might enjoy
             </p>
           )}
 
           {pickMsg ? (
-            // after picking: show only the chosen dish, centered
             <div className="pick-confirmation">
               {[...result.recommendations, ...result.alternatives]
                 .filter((dish) => dish.dish_name === pickedDish)
                 .map((dish) => (
-                  <div className="card dish-card picked" key={`${dish.dish_name}-${dish.dining_hall}`}>
-                    <h3 className="dish-name">{dish.dish_name}</h3>
-                    <p className="dish-hall">
-                      {dish.dining_hall}
-                      {formatDistance(dish.distance_m) && (
-                        <span className="dish-distance"> - {formatDistance(dish.distance_m)} away</span>
-                      )}
-                    </p>
-                    <p className="dish-reason">{dish.reason}</p>
+                  <div className="dish-card" key={`${dish.dish_name}-${dish.dining_hall}`}>
+                    <h3 className="dish-card__name">{dish.dish_name}</h3>
+                    <p className="dish-card__hall">{dish.dining_hall}</p>
+                    <p className="dish-card__reason">{dish.reason}</p>
                     <p className="pick-msg">{pickMsg}</p>
                   </div>
                 ))}
@@ -357,31 +394,38 @@ export default function App() {
               >
                 Back to results
               </button>
+              <button
+                type="button"
+                className="secondary"
+                onClick={() => { setResult(null); setPickedDish(null); setPickMsg(null); }}
+              >
+                New search
+              </button>
             </div>
           ) : (
-            // before picking: show all dish cards
-            <div className="dish-cards">
-              {[...result.recommendations, ...result.alternatives].map((dish) => (
-                <div className="card dish-card" key={`${dish.dish_name}-${dish.dining_hall}`}>
-                  <h3 className="dish-name">{dish.dish_name}</h3>
-                  <p className="dish-hall">
-                    {dish.dining_hall}
-                    {formatDistance(dish.distance_m) && (
-                      <span className="dish-distance"> - {formatDistance(dish.distance_m)} away</span>
-                    )}
-                  </p>
-                  <p className="dish-reason">{dish.reason}</p>
-                  <button
-                    type="button"
-                    className="secondary"
+            <>
+              <div className="dish-cards">
+                {[...result.recommendations, ...result.alternatives].map((dish) => (
+                  <DishCard
+                    key={`${dish.dish_name}-${dish.dining_hall}`}
+                    dish_name={dish.dish_name}
+                    dining_hall={dish.dining_hall}
+                    reason={dish.reason}
+                    distance_m={dish.distance_m}
+                    picked={pickedDish === dish.dish_name}
                     disabled={pickedDish !== null}
-                    onClick={() => onPick(dish.dish_name, dish.dining_hall)}
-                  >
-                    {pickedDish === dish.dish_name ? "Picking..." : "Pick this"}
-                  </button>
-                </div>
-              ))}
-            </div>
+                    onPick={() => onPick(dish.dish_name, dish.dining_hall)}
+                  />
+                ))}
+              </div>
+              <button
+                type="button"
+                className="secondary back-to-plate"
+                onClick={() => { setResult(null); setPickedDish(null); setPickMsg(null); }}
+              >
+                Change my mood
+              </button>
+            </>
           )}
         </>
       )}

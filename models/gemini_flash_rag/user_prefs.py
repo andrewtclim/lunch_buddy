@@ -124,3 +124,23 @@ def save_user_pref(
     conn.commit()
     cur.close()
     conn.close()
+
+
+def update_allergens(user_id: str, allergens: list[str]) -> bool:
+    # update only the allergens column for an existing user
+    # returns False if no row exists for the user
+    conn = psycopg2.connect(DATABASE_URL)
+    cur = conn.cursor()
+    cur.execute(
+        """
+        UPDATE user_pref
+        SET allergens = %s, last_updated = now()
+        WHERE user_id = %s;
+        """,
+        (allergens, user_id),
+    )
+    updated = cur.rowcount > 0
+    conn.commit()
+    cur.close()
+    conn.close()
+    return updated
